@@ -1,0 +1,3 @@
+python C:/Users/alien/Documents/PyCharm-Projects/PaddleDetection/tools/export_model.py -c C:/Users/alien/Documents/PyCharm-Projects/PaddleDetection/configs/rtdetr/rtdetr_r50vd_6x_coco.yml -o weights=rtdetr_hgnetv2_x_6x_coco.pdparams trt=True --output_dir=output_inference
+paddle2onnx --model_dir=output_inference/rtdetr_r50vd_6x_coco/ --model_filename model.pdmodel --params_filename model.pdiparams --opset_version 16 --save_file rtdetr_r50vd_6x_coco.onnx
+trtexec --onnx=rtdetr_r50vd_6x_coco.onnx --workspace=8192 --shapes=image:1x3x640x640 --saveEngine=rtdetr_r50vd_6x_coco.trt --fp16 --builderOptimizationLevel=5 --verbose

@@ -3,3 +3,5 @@
 *.onnx
 *.pt
 *.bin
+*.trt
+CV/output_inference
