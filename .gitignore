@@ -2,6 +2,7 @@
 *.pdparams
 *.onnx
 *.pt
+*.pth
 *.bin
 *.trt
 CV/output_inference
