@@ -6,3 +6,4 @@
 *.bin
 *.trt
 CV/output_inference
+ASR/huggingface
