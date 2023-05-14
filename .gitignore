@@ -5,5 +5,7 @@
 *.pth
 *.bin
 *.trt
+*.safetensors
 CV/output_inference
 ASR/huggingface
+ASR/checkpoints
