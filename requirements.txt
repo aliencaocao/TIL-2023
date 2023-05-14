@@ -11,4 +11,4 @@ hf_transfer
 kenlm @ https://github.com/kpu/kenlm
 jiwer
 accelerate
-# pip install --upgrade git+https://github.com/NVIDIA/TransformerEngine.git@stable
+transformer_engine @ https://github.com/NVIDIA/TransformerEngine.git@stable
