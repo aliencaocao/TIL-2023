@@ -8,7 +8,7 @@ transformers
 datasets
 evaluate
 hf_transfer
-kenlm @ https://github.com/kpu/kenlm
+kenlm @ git+https://github.com/kpu/kenlm.git@stable
 jiwer
 accelerate
-transformer_engine @ https://github.com/NVIDIA/TransformerEngine.git@stable
+transformer_engine @ git+https://github.com/NVIDIA/TransformerEngine.git@stable
