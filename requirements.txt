@@ -11,10 +11,14 @@ hf_transfer
 kenlm @ git+https://github.com/kpu/kenlm.git@master
 jiwer
 accelerate
-transformer_engine @ git+https://github.com/NVIDIA/TransformerEngine.git@stable
+# transformer_engine @ git+https://github.com/NVIDIA/TransformerEngine.git@stable
 scikit-learn
 pytorch_optimizer
 librosa
 soundfile
 safetensors
 tensorboard
+psutil
+opencv-python
+pycocotools
+onnxruntime-gpu

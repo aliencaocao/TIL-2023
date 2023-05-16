@@ -9,3 +9,4 @@
 CV/output_inference
 ASR/huggingface
 ASR/checkpoints
+AST/onnx_model
