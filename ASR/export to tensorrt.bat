@@ -1,0 +1,1 @@
+trtexec --onnx=onnx_model/wav2vec2-conformer.onnx --workspace=8192 --shapes=input:1x16000 --saveEngine=wav2vec2-conformer.trt --builderOptimizationLevel=5 --fp16 --verbose --heuristic --useSpinWait

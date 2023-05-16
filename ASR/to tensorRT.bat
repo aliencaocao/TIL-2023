@@ -1,0 +1,1 @@
+trtexec --onnx=wav2vec2-conformer.onnx --workspace=8192 --shapes=input:1x16000 --saveEngine=wav2vec2-conformer.trt --fp16 --builderOptimizationLevel=5 --verbose
