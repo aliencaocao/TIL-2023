@@ -1,0 +1,5 @@
+python ../../../PaddleDetection/tools/train.py -c rtdetr_hgnetv2_x_6x_coco.yml --eval --amp
+
+-r rtdetr_hgnetv2_x_6x_coco.pdparams
+
+try if use pretrained backbone only or resume from pretrained checkpoint is btr
