@@ -1,0 +1,61 @@
+{
+    "images": [
+        {
+            "file_name": "cv_sample.png",
+            "height": 415,
+            "width": 1024,
+            "id": 0
+        }
+    ],
+    "categories": [
+        {
+            "supercategory": "Defect",
+            "id": 1,
+            "name": "plushie"
+        }
+    ],
+    "annotations": [
+        {
+            "id": 1,
+            "image_id": 0,
+            "bbox": [
+                38.0,
+                94.0,
+                422.0,
+                290.0
+            ],
+            "area": 122380,
+            "iscrowd": 0,
+            "category_id": 1,
+            "segmentation": []
+        },
+        {
+            "id": 2,
+            "image_id": 0,
+            "bbox": [
+                378.0,
+                24.0,
+                342.0,
+                261.0
+            ],
+            "area": 89262,
+            "iscrowd": 0,
+            "category_id": 1,
+            "segmentation": []
+        },
+        {
+            "id": 3,
+            "image_id": 0,
+            "bbox": [
+                665.0,
+                32.0,
+                325.0,
+                256.0
+            ],
+            "area": 83200,
+            "iscrowd": 0,
+            "category_id": 1,
+            "segmentation": []
+        }
+    ]
+}
