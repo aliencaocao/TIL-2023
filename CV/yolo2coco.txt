@@ -1,0 +1,3 @@
+first put the Labels folder into Images folder as a subfolder
+
+python main.py --yolo-subdir --path <Absolute path to dataset_root_dir> --output <Name of the json file>
