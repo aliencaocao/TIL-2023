@@ -8,6 +8,8 @@ from pathlib import Path
 txt_dirs = [
   "../cv_sample_data_yolo/train/labels",
   "../cv_sample_data_yolo/val/labels",
+  
+  # obviously there will be no labels for test set so remove this
   "../cv_sample_data_yolo/test/labels",
 ]
 
