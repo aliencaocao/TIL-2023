@@ -4,7 +4,7 @@ use_mlu: false
 use_npu: false
 log_iter: 20
 save_dir: checkpoints
-snapshot_epoch: 3  # save model every x epoch
+snapshot_epoch: 1  # save model every x epoch
 print_flops: false
 print_params: false
 
