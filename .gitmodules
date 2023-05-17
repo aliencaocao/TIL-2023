@@ -1,0 +1,3 @@
+[submodule "CV/Yolo-to-COCO-format-converter"]
+	path = CV/Yolo-to-COCO-format-converter
+	url = https://github.com/aliencaocao/Yolo-to-COCO-format-converter
