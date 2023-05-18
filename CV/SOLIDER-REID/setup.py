@@ -8,7 +8,7 @@ setup(name='TranReID',
       author_email='xxx',
       url='xxx',
       install_requires=[
-          'numpy', 'torch==1.6.0', 'torchvision==0.7.0',
+          'numpy', 'torch==1.13.1', 'torchvision==0.7.0',
           'h5py', 'opencv-python', 'yacs', 'timm==0.3.2'
           ],
       packages=find_packages(),
