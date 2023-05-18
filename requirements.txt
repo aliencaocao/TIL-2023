@@ -8,7 +8,7 @@ transformers
 datasets
 evaluate
 hf_transfer
-kenlm @ git+https://github.com/kpu/kenlm.git@master
+kenlm @ git+https://github.com/kpu/kenlm
 jiwer
 accelerate
 # transformer_engine @ git+https://github.com/NVIDIA/TransformerEngine.git@stable
@@ -25,3 +25,4 @@ onnxruntime-gpu
 ensemble_boxes
 orjson
 imagesize
+textgrids @ git+https://github.com/Legisign/Praat-textgrids

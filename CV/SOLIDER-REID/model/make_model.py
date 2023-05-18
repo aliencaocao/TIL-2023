@@ -1,11 +1,14 @@
+import copy
+
 import torch
 import torch.nn as nn
-from .backbones.resnet import ResNet, Bottleneck
-import copy
-from .backbones.vit_pytorch import vit_base_patch16_224_TransReID, vit_small_patch16_224_TransReID
+from loss.metric_learning import AMSoftmax, Arcface, CircleLoss, Cosface
+
+from .backbones.resnet import Bottleneck, ResNet
+from .backbones.resnet_ibn_a import resnet50_ibn_a
 from .backbones.swin_transformer import swin_base_patch4_window7_224, swin_small_patch4_window7_224, swin_tiny_patch4_window7_224
-from loss.metric_learning import Arcface, Cosface, AMSoftmax, CircleLoss
-from .backbones.resnet_ibn_a import resnet50_ibn_a,resnet101_ibn_a
+from .backbones.vit_pytorch import vit_base_patch16_224_TransReID, vit_small_patch16_224_TransReID
+
 
 def shuffle_unit(features, shift, group, begin=1):
 
@@ -189,12 +192,6 @@ class build_transformer(nn.Module):
 
         convert_weights = True if pretrain_choice == 'imagenet' else False
         self.base = factory[cfg.MODEL.TRANSFORMER_TYPE](img_size=cfg.INPUT.SIZE_TRAIN, drop_path_rate=cfg.MODEL.DROP_PATH, drop_rate= cfg.MODEL.DROP_OUT,attn_drop_rate=cfg.MODEL.ATT_DROP_RATE, pretrained=model_path, convert_weights=convert_weights, semantic_weight=semantic_weight)
-        if model_path != '':
-            param_dict = torch.load(model_path)
-            for i in param_dict:
-                if 'classifier' in i:
-                    continue
-                self.state_dict()[i].copy_(param_dict[i])
         self.in_planes = self.base.num_features[-1]
 
         self.num_classes = num_classes
@@ -228,6 +225,13 @@ class build_transformer(nn.Module):
         self.bottleneck.apply(weights_init_kaiming)
 
         self.dropout = nn.Dropout(self.dropout_rate)
+
+        if model_path != '':
+            param_dict = torch.load(model_path)
+            for i in param_dict:
+                if 'classifier' in i:
+                    continue
+                self.state_dict()[i].copy_(param_dict[i])
 
         #if pretrain_choice == 'self':
         #    self.load_param(model_path)

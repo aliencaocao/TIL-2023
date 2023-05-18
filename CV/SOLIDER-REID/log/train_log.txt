@@ -1,6 +1,6 @@
-2023-05-18 18:11:24 transreid INFO: Saving model in the path :./log
-2023-05-18 18:11:24 transreid INFO: Loaded configuration file TIL.yml
-2023-05-18 18:11:24 transreid INFO: Running with config:
+2023-05-18 21:10:33 transreid INFO: Saving model in the path :./log
+2023-05-18 21:10:33 transreid INFO: Loaded configuration file TIL.yml
+2023-05-18 21:10:33 transreid INFO: Running with config:
 DATALOADER:
   NUM_INSTANCE: 2
   NUM_WORKERS: 4
@@ -67,7 +67,7 @@ SOLVER:
   COSINE_SCALE: 30
   EVAL_PERIOD: 10
   GAMMA: 0.1
-  IMS_PER_BATCH: 64
+  IMS_PER_BATCH: 4
   LARGE_FC_LR: False
   LOG_PERIOD: 20
   MARGIN: 0.3
@@ -90,11 +90,14 @@ TEST:
   NECK_FEAT: before
   RE_RANKING: True
   WEIGHT: 
-2023-05-18 18:11:24 transreid.check INFO: Dataset statistics:
-2023-05-18 18:11:24 transreid.check INFO:   ----------------------------------------
-2023-05-18 18:11:24 transreid.check INFO:   subset   | # ids | # images | # cameras
-2023-05-18 18:11:24 transreid.check INFO:   ----------------------------------------
-2023-05-18 18:11:24 transreid.check INFO:   train    |     3 |        3 |         1
-2023-05-18 18:11:24 transreid.check INFO:   query    |     0 |        0 |         0
-2023-05-18 18:11:24 transreid.check INFO:   gallery  |     3 |        3 |         1
-2023-05-18 18:11:24 transreid.check INFO:   ----------------------------------------
+2023-05-18 21:10:33 transreid.check INFO: Dataset statistics:
+2023-05-18 21:10:33 transreid.check INFO:   ----------------------------------------
+2023-05-18 21:10:33 transreid.check INFO:   subset   | # ids | # images | # cameras
+2023-05-18 21:10:33 transreid.check INFO:   ----------------------------------------
+2023-05-18 21:10:33 transreid.check INFO:   train    |     3 |        4 |         1
+2023-05-18 21:10:33 transreid.check INFO:   query    |     0 |        0 |         0
+2023-05-18 21:10:33 transreid.check INFO:   gallery  |     3 |        4 |         1
+2023-05-18 21:10:33 transreid.check INFO:   ----------------------------------------
+2023-05-18 21:10:34 transreid INFO: ===========using cosine learning rate=======
+2023-05-18 21:10:34 transreid.train INFO: start training
+2023-05-18 21:10:42 transreid.train INFO: Epoch 1 done. Time per epoch: 7.691[s] Speed: 0.5[samples/s]
