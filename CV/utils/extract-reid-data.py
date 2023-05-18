@@ -4,26 +4,14 @@ import os
 from pathlib import Path
 from PIL import Image
 
-dataset_dirs = [
-  "../cv_sample_data_yolo/train",
-  "../cv_sample_data_yolo/val",
-  "../cv_sample_data_yolo/test",
-]
+dataset_dir = (Path(__file__) / "../../cv_sample_data_yolo").resolve()
 
-def extract_reid_data(dataset_dir):
-  dataset_path = Path(dataset_dir)
-  reid_data_path = dataset_path / "reid"
-
-  try:
-    os.mkdir(reid_data_path)
-  except FileExistsError:
-    print(f"Folder {reid_data_path} already exists")
-
-  labels_dir = dataset_path / "labels"
+def extract_reid_data(dataset_split_path, output_path):
+  labels_dir = dataset_split_path / "labels"
 
   for label_filename in labels_dir.glob("*.txt"):
     # assumes img is PNG
-    img_path = dataset_path / "images" / (label_filename.stem + ".png")
+    img_path = dataset_split_path / "images" / (label_filename.stem + ".png")
     img = Image.open(img_path)
     
     with open(label_filename) as label_file:
@@ -45,7 +33,17 @@ def extract_reid_data(dataset_dir):
           y2 * img.height,
         ))
 
-        img_cropped.save(dataset_path / "reid" / f"{obj_id}_c1s1_000001_00.png")
+        img_cropped.save(output_path / f"{obj_id}_c1s1_000001_00.png")
 
-for dataset_dir in dataset_dirs:
-  extract_reid_data(dataset_dir)
+reid_dir = dataset_dir / "reid"
+
+try:
+  os.mkdir(reid_dir)
+  os.mkdir(reid_dir / "bounding_box_train")
+  os.mkdir(reid_dir / "bounding_box_test")
+  os.mkdir(reid_dir / "query")
+except FileExistsError as err:
+  pass
+
+extract_reid_data(dataset_dir / "train", reid_dir / "bounding_box_train")
+extract_reid_data(dataset_dir / "val", reid_dir / "bounding_box_test")
