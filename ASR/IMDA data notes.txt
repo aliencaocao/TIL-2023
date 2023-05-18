@@ -1,0 +1,101 @@
+The entire corpus is organised into a few parts. 
+
+Part 1 features about 1000 hours of prompted recordings of phonetically-balanced scripts from about 1000 local English speakers. 
+
+Part 2 presents about 1000 hours of prompted recordings of sentences randomly generated from words based on people, food, location, brands, etc, from about 1000 local English speakers as well. Transcriptions of the recordings have been done orthographically and are available for download.
+
+Part 3 consists of about 1000 hours of conversational data recorded from about 1000 local English speakers, split into pairs. The data includes conversations covering daily life and of speakers playing games provided. 
+
+Parts 1 and 2 were recorded in quiet rooms using 3 microphones: a headset/ standing microphone (channel 0), a boundary microphone (channel 1), and a mobile phone (channel 3). Recordings that are available for download here have been down-sampled to 16kHz. Details of the microphone models used for each speaker as well as some corresponding non-personal and anonymized information can be found in the accompanying spreadsheets. 
+
+Part 3's recordings were split into 2 environments. In the Same Room environment where speakers were in same room, the recordings were done using 2 microphones: a close-talk mic and a boundary mic. In the Separate Room environment, speakers were separated into individual rooms. The recordings were done using 2 microphones in each room: a standing mic and a telephone. 
+
+Parts 4, 5 and 6 are available via a separate link, provided in this folder. 
+
+Directory Structure
+
+The root folder contains subdirectories for Part 1, Part 2 and Part 3, a LEXICON subdirectory, a LICENCE file and a VERSION file. 
+
+Part 1 and Part 2’s subdirectories are further organized into a DATA subdirectory, DOC folder for speaker and microphone information and transcription documentation, as well as a PROMPT INFO file. The DATA directory contains the audio recordings and corresponding transcriptions organized by the channel. The structure is as follows: 
+•	/SCRIPT: containing orthographic transcripts saved in TXT format and organized by speaker number and session number (0 or 1)
+•	/WAVE: containing audio files in WAV format, sampled at 16kHz, zipped into folders by the speaker number. Each folder further separates the audio files by the session number.
+
+Part 3 is further organised into a six subdirectories, 3 for each recording environment (Same Room or Separate Room). Among each group of 3 subdirectories, 1 contains transcriptions, while the remaining 2 contain audio data from each of the two microphones used for the environment. There is also a manifest document at the root of the Part 3 folder that lists the files released.
+
+Summary of Part 3 data organization:
+- Same Room environment, files organized by speaker number:
+    /Scripts Same: Orthographic transcripts saved in TextGrid format
+    /Audio Same BoundaryMic: Audio files in WAV format recorded using the boundary mic, sampled at 16kHz
+    /Audio Same CloseMic: Audio files in WAV format recorded using the close-talk mic, sampled at 16kHz
+
+- Separate Room environment, files organized by speaker number and session number:
+    /Scripts Separate: Orthographic transcripts saved in TextGrid format 
+    /Audio Separate IVR: Audio files in WAV format recorded using the telephone, sampled at 16kHz
+    /Audio Separate StandingMic: Audio files in WAV format recorded using the standing mic, sampled at 16kHz
+
+
+The LEXICON subdirectory contains 2 files:
+- Phonetic Inventory: containing a description of the identified phones of Singapore English
+- LEXICON.txt: containing the phonetic transcription of all valid words in Part 1, Part 2 and Part 3
+
+
+Updates
+
+Updates will occur to this folder directly and at any time:
+- The version file will be changed to reflect this;
+- Depending on your Dropbox settings, your directory may SYNC the changes automatically;
+- UPDATE HISTORY.txt will give a brief description or summary of the update;
+- Older versions of the corpus will not be available.
+
+
+
+The additional corpus is organised into a few parts. 
+
+
+
+Under Part 4, speakers were encouraged as best as possible to switch from Singapore English to their Mother Tongue languages. These recordings were done under two environments. In the Same Room recordings, speakers sit at least two metres apart and record using their mobile phones. In the Different Room environment, speakers would speak through each other via Zoom on their laptops, and recording using their mobile phones. 
+Under Part 5, speakers were made to speak following the 4 styles: Debate, Finance topics, Positive Emotion and Negative Emotions. All recordings were done in a Separate room session, via Zoom, where the audio is recorded using the mobile phone. 
+Under Part 6, speakers were made to speak following the 3 styles within either of the 3 designs: Design 1 (holiday/hotel/restaurant), Design 2 (bank, telephone, insurance), Design 3 (HDB, MOE, MSF). All recordings were done in a Separate room session, via Zoom, where the audio is recorded using the mobile phone. 
+
+Directory Structure
+
+The root folder contains subdirectories for Part 4, Part 5 and Part 6, a LICENCE file and a VERSION file.
+
+
+Summary of Part 4 data organisation:
+- Codeswitching
+   - Same Room environment, files organized by speaker number:
+    /Scripts Same Room: Orthographic transcripts saved in TextGrid format
+    /Audio Same Room: Audio files in WAV format recorded using the mobile phone mic, sampled at 16kHz
+   - Different Room environment, files organized by speaker number and session number:
+    /Scripts Diff Room: Orthographic transcripts saved in TextGrid format 
+    /Audio Diff Room: Audio files in WAV format recorded using the mobile phone, sampled at 16kHz
+
+Summary of Part 5 data organisation:
+  - Debates, files organised by speaker number:
+   /Debate Scripts: Orthographic transcripts saved in TextGrid format
+   /Debate Audio: Audio files in WAV format recorded using the mobile phone mic, sampled at 16kHz
+  - Finance + Emotions, files organised by speaker number:
+   /Finance + Emotions Scripts: Orthographic transcripts saved in TextGrid format
+   /Finance + Emotions Audio: Audio files in WAV format recorded using the mobile phone mic, sampled at 16kHz
+
+Summary of Part 6 data organisation:
+- Call Centre
+ - Data broadly classified under 3 different experiment designs
+  - Design 1 (holiday/hotel/restaurant), files organised by speaker number:
+   /Design 1 Scripts: Orthographic transcripts saved in TextGrid format
+   /Design 1 Audio: Audio files in WAV format recorded using the mobile phone mic, sampled at 16kHz
+  - Design 2 (bank, telephone, insurance), files organised by speaker number:
+   /Design 2 Scripts: Orthographic transcripts saved in TextGrid format
+   /Design 2 Audio: Audio files in WAV format recorded using the mobile phone mic, sampled at 16kHz
+  - Design 3 (HDB, MOE, MSF), files organised by speaker number:
+   /Design 3 Scripts: Orthographic transcripts saved in TextGrid format
+   /Design 3 Audio: Audio files in WAV format recorded using the mobile phone mic, sampled at 16kHz
+
+Updates
+
+Updates will occur to this folder directly and at any time:
+- The version file will be changed to reflect this;
+- Depending on your Dropbox settings, your directory may SYNC the changes automatically;
+- UPDATE HISTORY.txt will give a brief description or summary of the update;
+- Older versions of the corpus will not be available.
