@@ -33,7 +33,8 @@ def extract_reid_data(dataset_split_path, output_path):
           y2 * img.height,
         ))
 
-        img_cropped.save(output_path / f"{obj_id}_c1s1_000001_00.png")
+        num_existing_imgs_of_obj = len(list(output_path.glob(f"{obj_id}_*.png")))
+        img_cropped.save(output_path / f"{obj_id}_c1s1_{num_existing_imgs_of_obj + 1}_00.png")
 
 reid_dir = dataset_dir / "reid"
 
