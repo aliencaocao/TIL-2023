@@ -16,10 +16,13 @@ def extract_reid_data(dataset_split_path, output_path):
     
     with open(label_filename) as label_file:
       for line in label_file:
+        if len(line.strip()) == 0:
+          continue
+
         line_split = line.split(" ")
         # not sure whether obj_id is 0- or 1-indexed; the +1 is there for safety
-        obj_id = int(line_split[0]) + 1
-        x, y, w, h = [float(x) for x in line_split[1:]]
+        obj_id = int(line_split[0].strip()) + 1
+        x, y, w, h = [float(x.strip()) for x in line_split[1:]]
 
         x1 = x - w/2
         x2 = x + w/2
