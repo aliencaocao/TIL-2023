@@ -6,6 +6,7 @@
 *.bin
 *.trt
 *.safetensors
+*.zip
 CV/RT-DETR/checkpoints
 CV/RT-DETR/dataset
 CV/RT-DETR/output_inference
@@ -16,4 +17,5 @@ ASR/musan_noise
 ASR/IMDA
 ASR/IMDA_TIL
 ASR/audio
+ASR/audio_augmented_folder
 ASR/test
