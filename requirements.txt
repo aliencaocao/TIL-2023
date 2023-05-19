@@ -26,3 +26,4 @@ ensemble_boxes
 orjson
 imagesize
 textgrids @ git+https://github.com/Legisign/Praat-textgrids
+pydub
