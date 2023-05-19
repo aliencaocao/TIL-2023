@@ -28,7 +28,8 @@ def relabel_dir(txt_dir):
       reader = csv.reader(infile, delimiter=" ")
       writer = csv.writer(outfile, delimiter=" ")
       for row in reader:
-        writer.writerow([0] + row[1:])
+        if len(row) > 0:
+          writer.writerow([0] + row[1:])
 
 for txt_dir in txt_dirs:
   relabel_dir(txt_dir)
