@@ -15,3 +15,5 @@ ASR/onnx_model
 ASR/musan_noise
 ASR/IMDA
 ASR/IMDA_TIL
+ASR/audio
+ASR/test
