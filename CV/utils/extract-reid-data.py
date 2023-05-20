@@ -3,15 +3,17 @@
 import os
 from pathlib import Path
 from shutil import copytree
-
+from tqdm import tqdm
 from PIL import Image
 
 dataset_dir = (Path(__file__) / "../../RT-DETR/dataset").resolve()
 
 def extract_reid_data(dataset_split_path, output_path):
+  print(f"Processing {dataset_split_path}, outputting to {output_path}")
+
   labels_dir = dataset_split_path / "labels"
 
-  for img_idx, label_filename in enumerate(labels_dir.glob("*.txt")):
+  for img_idx, label_filename in tqdm(enumerate(labels_dir.glob("*.txt"))):
     # assumes img is PNG
     img_path = dataset_split_path / "images" / (label_filename.stem + ".png")
     img = Image.open(img_path)
