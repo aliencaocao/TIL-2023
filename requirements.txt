@@ -2,6 +2,8 @@ numpy
 pandas
 tensorrt
 torch
+torchvision
+torchaudio
 pycuda
 pyctcdecode
 transformers
@@ -27,4 +29,6 @@ orjson
 imagesize
 textgrids @ git+https://github.com/Legisign/Praat-textgrids
 pydub
+timm
 mmcv-full
+yacs
