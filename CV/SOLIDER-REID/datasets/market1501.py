@@ -5,14 +5,12 @@
 """
 
 import glob
+import os.path as osp
 import re
 
-import os
-import os.path as osp
-
 from .bases import BaseImageDataset
-from collections import defaultdict
-import pickle
+
+
 class Market1501(BaseImageDataset):
     """
     Market1501
@@ -31,7 +29,6 @@ class Market1501(BaseImageDataset):
         self.dataset_dir = osp.join(root, self.dataset_dir)
         self.train_dir = osp.join(self.dataset_dir, 'bounding_box_train')
         self.query_dir = osp.join(self.dataset_dir, 'query')
-        os.makedirs(self.query_dir, exist_ok=True)
         self.gallery_dir = osp.join(self.dataset_dir, 'bounding_box_test')
 
         self._check_before_run()
