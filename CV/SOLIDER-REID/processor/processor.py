@@ -119,16 +119,6 @@ def do_train(cfg,
                     logger.info("mAP: {:.1%}".format(mAP))
                     for r in [1, 5, 10]:
                         logger.info("CMC curve, Rank-{:<3}:{:.1%}".format(r, cmc[r - 1]))
-                    if epoch % checkpoint_period == 0 and mAP > best_map:
-                        best_map = mAP
-                        if cfg.MODEL.DIST_TRAIN:
-                            if dist.get_rank() == 0:
-                                torch.save(model.state_dict(),
-                                           os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.NAME + '_{}.pth'.format(epoch)))
-                        else:
-                            torch.save(model.state_dict(),
-                                       os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.NAME + '_{}.pth'.format(epoch)))
-                    torch.cuda.empty_cache()
             else:
                 model.eval()
                 for n_iter, (img, vid, camid, camids, target_view, _) in enumerate(val_loader):
@@ -143,7 +133,16 @@ def do_train(cfg,
                 logger.info("mAP: {:.1%}".format(mAP))
                 for r in [1, 5, 10]:
                     logger.info("CMC curve, Rank-{:<3}:{:.1%}".format(r, cmc[r - 1]))
-                torch.cuda.empty_cache()
+            if epoch % checkpoint_period == 0 and mAP > best_map:
+                best_map = mAP
+                if cfg.MODEL.DIST_TRAIN:
+                    if dist.get_rank() == 0:
+                        torch.save(model.state_dict(),
+                                   os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.NAME + '_{}_map{}.pth'.format(epoch, best_map)))
+                else:
+                    torch.save(model.state_dict(),
+                               os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.NAME + '_{}_map{}.pth'.format(epoch, best_map)))
+            torch.cuda.empty_cache()
 
 def do_inference(cfg,
                  model,
