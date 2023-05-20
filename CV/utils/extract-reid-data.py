@@ -2,10 +2,11 @@
 
 import os
 from pathlib import Path
+
 from PIL import Image
 from shutil import copytree
 
-dataset_dir = (Path(__file__) / "../../cv_sample_data_yolo").resolve()
+dataset_dir = (Path(__file__) / "../../RT-DETR/dataset").resolve()
 
 def extract_reid_data(dataset_split_path, output_path):
   labels_dir = dataset_split_path / "labels"

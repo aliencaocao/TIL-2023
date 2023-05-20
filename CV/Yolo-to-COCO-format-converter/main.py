@@ -13,7 +13,7 @@ from create_annotations import (coco_format, create_annotation_from_yolo_format,
 # Don't change the list name 'Classes'          #
 #################################################
 
-YOLO_DARKNET_SUB_DIR = "Labels"
+YOLO_DARKNET_SUB_DIR = "relabelled"
 
 classes = [
     "plushie",
@@ -198,7 +198,7 @@ def get_args():
 
 def main(opt):
     output_name = opt.output
-    output_path = "output/" + output_name
+    output_path = output_name
 
     print("Start!")
 

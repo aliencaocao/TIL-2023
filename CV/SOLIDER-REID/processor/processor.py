@@ -1,14 +1,14 @@
 import logging
 import os
-import cv2
-import numpy as np
 import time
+
 import torch
+import torch.distributed as dist
 import torch.nn as nn
+from torch.cuda import amp
 from utils.meter import AverageMeter
 from utils.metrics import R1_mAP_eval
-from torch.cuda import amp
-import torch.distributed as dist
+
 
 def do_train(cfg,
              model,
@@ -41,6 +41,7 @@ def do_train(cfg,
 
     evaluator = R1_mAP_eval(num_query, max_rank=50, feat_norm=cfg.TEST.FEAT_NORM)
     scaler = amp.GradScaler()
+    best_map = 0
     # train
     for epoch in range(1, epochs + 1):
         start_time = time.time()
@@ -102,15 +103,6 @@ def do_train(cfg,
             logger.info("Epoch {} done. Time per epoch: {:.3f}[s] Speed: {:.1f}[samples/s]"
                     .format(epoch, time_per_batch * (n_iter + 1), train_loader.batch_size / time_per_batch))
 
-        if epoch % checkpoint_period == 0:
-            if cfg.MODEL.DIST_TRAIN:
-                if dist.get_rank() == 0:
-                    torch.save(model.state_dict(),
-                               os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.NAME + '_{}.pth'.format(epoch)))
-            else:
-                torch.save(model.state_dict(),
-                           os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.NAME + '_{}.pth'.format(epoch)))
-
         if epoch % eval_period == 0:
             if cfg.MODEL.DIST_TRAIN:
                 if dist.get_rank() == 0:
@@ -127,6 +119,15 @@ def do_train(cfg,
                     logger.info("mAP: {:.1%}".format(mAP))
                     for r in [1, 5, 10]:
                         logger.info("CMC curve, Rank-{:<3}:{:.1%}".format(r, cmc[r - 1]))
+                    if epoch % checkpoint_period == 0 and mAP > best_map:
+                        best_map = mAP
+                        if cfg.MODEL.DIST_TRAIN:
+                            if dist.get_rank() == 0:
+                                torch.save(model.state_dict(),
+                                           os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.NAME + '_{}.pth'.format(epoch)))
+                        else:
+                            torch.save(model.state_dict(),
+                                       os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.NAME + '_{}.pth'.format(epoch)))
                     torch.cuda.empty_cache()
             else:
                 model.eval()

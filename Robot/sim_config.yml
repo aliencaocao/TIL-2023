@@ -1,0 +1,49 @@
+---
+# network
+host: '0.0.0.0'
+port: 5566
+
+# map
+map_file: './data/maps/map_complex_1cm.png'
+map_scale: 0.01
+
+# display
+robot_radius: 10
+
+# simulation
+start_pose:
+  x: 1.0
+  y: 1.0
+  z: 0.0
+use_noisy_pose: off
+robot_phy_length: 0.32
+pos_noise_stddev: 0.05
+
+# localization proxy
+proxy_real_robot: off
+proxy_host: 'localhost'
+proxy_port: 5567
+
+# logging
+log_level: 'debug'
+
+# clues
+clues:
+  - clue_id: 1
+    trigger:
+      x: 1.0
+      y: 1.0
+      r: 0.5
+    location:
+      x: 4.0
+      y: 3.0
+    audio_file: './data/audio/SM4_F48_A0100.wav'
+
+# targets
+targets:
+  - target_id: 1
+    trigger:
+      x: 2.0
+      y: 2.0
+      r: 0.2
+    image_file: './data/imgs/fallen_person.jpeg'
