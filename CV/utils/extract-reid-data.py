@@ -6,7 +6,7 @@ from pathlib import Path
 from PIL import Image
 from shutil import copytree
 
-dataset_dir = (Path(__file__) / "../../RT-DETR/dataset").resolve()
+dataset_dir = (Path(__file__) / "../../cv_sample_data_yolo").resolve()
 
 def extract_reid_data(dataset_split_path, output_path):
   labels_dir = dataset_split_path / "labels"
@@ -15,6 +15,8 @@ def extract_reid_data(dataset_split_path, output_path):
     # assumes img is PNG
     img_path = dataset_split_path / "images" / (label_filename.stem + ".png")
     img = Image.open(img_path)
+
+    num_obj_instances = {}
     
     with open(label_filename) as label_file:
       for line in label_file:
@@ -38,8 +40,12 @@ def extract_reid_data(dataset_split_path, output_path):
           y2 * img.height,
         ))
 
-        num_obj_instances_in_frame = len(list(output_path.glob(f"{obj_id}_c{img_idx + 1}*.png")))
-        img_cropped.save(output_path / f"{obj_id}_c{img_idx + 1}s1_1_{num_obj_instances_in_frame + 1}.png")
+        if obj_id not in num_obj_instances:
+          num_obj_instances[obj_id] = 1
+        else:
+          num_obj_instances[obj_id] += 1
+
+        img_cropped.save(output_path / f"{obj_id}_c{img_idx + 1}s1_1_{num_obj_instances[obj_id]}.png")
 
 reid_dir = dataset_dir / "reid"
 output_train_dir = reid_dir / "bounding_box_train"
