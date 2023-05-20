@@ -5,14 +5,14 @@ TrainDataset:
   name: COCODataSet
   image_dir: images # relative to dataset_dir
   anno_path: train.json
-  dataset_dir: dataset/train # relative to CV/RT-DETR
+  dataset_dir: dataset\train # relative to CV/RT-DETR
   data_fields: ['image', 'gt_bbox', 'gt_class', 'is_crowd']
 
 EvalDataset:
   name: COCODataSet
   image_dir: images
   anno_path: val.json
-  dataset_dir: dataset/val
+  dataset_dir: dataset\val
   allow_empty: false
 
 TestDataset:

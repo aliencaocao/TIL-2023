@@ -2,9 +2,10 @@
 
 import os
 from pathlib import Path
+
 from PIL import Image
 
-dataset_dir = (Path(__file__) / "../../cv_sample_data_yolo").resolve()
+dataset_dir = (Path(__file__) / "../../RT-DETR/dataset").resolve()
 
 def extract_reid_data(dataset_split_path, output_path):
   labels_dir = dataset_split_path / "labels"
@@ -16,10 +17,13 @@ def extract_reid_data(dataset_split_path, output_path):
     
     with open(label_filename) as label_file:
       for line in label_file:
+        if len(line.strip()) == 0:
+          continue
+
         line_split = line.split(" ")
         # not sure whether obj_id is 0- or 1-indexed; the +1 is there for safety
-        obj_id = int(line_split[0]) + 1
-        x, y, w, h = [float(x) for x in line_split[1:]]
+        obj_id = int(line_split[0].strip()) + 1
+        x, y, w, h = [float(x.strip()) for x in line_split[1:]]
 
         x1 = x - w/2
         x2 = x + w/2
@@ -33,7 +37,8 @@ def extract_reid_data(dataset_split_path, output_path):
           y2 * img.height,
         ))
 
-        img_cropped.save(output_path / f"{obj_id}_c1s1_000001_00.png")
+        num_existing_imgs_of_obj = len(list(output_path.glob(f"{obj_id}_*.png")))
+        img_cropped.save(output_path / f"{obj_id}_c1s1_{num_existing_imgs_of_obj + 1}_00.png")
 
 reid_dir = dataset_dir / "reid"
 
