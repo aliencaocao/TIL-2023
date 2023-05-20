@@ -16,7 +16,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 model_name= 'facebook/wav2vec2-conformer-rel-pos-large-960h-ft'
-checkpoint_name= 'checkpoints/checkpoint-750/'
+# checkpoint_name= 'checkpoints/checkpoint-750/'
 
 processor = Wav2Vec2Processor.from_pretrained(model_name)
 
@@ -87,7 +87,7 @@ training_args = TrainingArguments(
     per_device_train_batch_size=per_gpu_bs,
     gradient_accumulation_steps=math.ceil(effective_bs/per_gpu_bs),
     learning_rate=1e-4,
-    num_train_epochs=30,
+    num_train_epochs=15,
     gradient_checkpointing=False,
     fp16=True,
     # bf16=True,  # for A100
