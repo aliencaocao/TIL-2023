@@ -16,12 +16,12 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 model_name= 'facebook/wav2vec2-conformer-rel-pos-large-960h-ft'
-checkpoint_name= 'checkpoints/checkpoint-4125/'
+checkpoint_name= 'wav2vec2-checkpoints/checkpoint-4125/'
 
 processor = Wav2Vec2Processor.from_pretrained(model_name)
 
-ds = load_dataset('audiofolder', data_dir='audio_augmented_without_musan', split='train')  # specify split to return a Dataset object instead of a DatasetDict
-ds = ds.train_test_split(test_size=0.2)
+ds = load_dataset('audiofolder', data_dir='TIL_data_folder', split='train')  # specify split to return a Dataset object instead of a DatasetDict
+ds = ds.train_test_split(test_size=0.05)
 
 def prepare_dataset(batch):
     model_name = 'facebook/wav2vec2-conformer-rel-pos-large-960h-ft'
@@ -73,7 +73,7 @@ def compute_metrics(pred):
     return {"wer": wer.compute(predictions=pred_str, references=label_str)}
 
 model = Wav2Vec2ConformerForCTC.from_pretrained(
-    checkpoint_name,
+    model_name,
     ctc_loss_reduction="mean",
     pad_token_id=processor.tokenizer.pad_token_id,
     mask_time_prob=0.7,
@@ -86,12 +86,12 @@ model.freeze_feature_encoder()
 per_gpu_bs = 4
 effective_bs = 32
 training_args = TrainingArguments(
-    output_dir="checkpoints",
+    output_dir="wav2vec2-checkpoints",
     overwrite_output_dir =True,
     per_device_train_batch_size=per_gpu_bs,
     gradient_accumulation_steps=math.ceil(effective_bs/per_gpu_bs),
-    learning_rate=5e-5,
-    num_train_epochs=10,
+    learning_rate=1e-4,
+    num_train_epochs=20,
     gradient_checkpointing=False,
     fp16=True,
     # bf16=True,  # for A100
