@@ -30,12 +30,16 @@ class Market1501(BaseImageDataset):
         self.train_dir = osp.join(self.dataset_dir, 'bounding_box_train')
         self.query_dir = osp.join(self.dataset_dir, 'query')
         self.gallery_dir = osp.join(self.dataset_dir, 'bounding_box_test')
+        self.test_dir = osp.join(self.dataset_dir, 'test')
+        self.test_query = osp.join(self.dataset_dir, 'suspects')
 
         self._check_before_run()
         self.pid_begin = pid_begin
         train = self._process_dir(self.train_dir, relabel=True)
         query = self._process_dir(self.query_dir, relabel=False)
         gallery = self._process_dir(self.gallery_dir, relabel=False)
+        test = self._process_dir(self.test_dir, relabel=False)
+        test_query = self._process_dir(self.test_query, relabel=False)
 
         if verbose:
             print("=> Market1501 loaded")
@@ -44,10 +48,14 @@ class Market1501(BaseImageDataset):
         self.train = train
         self.query = query
         self.gallery = gallery
+        self.test = test
+        self.test_query = test_query
 
         self.num_train_pids, self.num_train_imgs, self.num_train_cams, self.num_train_vids = self.get_imagedata_info(self.train)
         self.num_query_pids, self.num_query_imgs, self.num_query_cams, self.num_query_vids = self.get_imagedata_info(self.query)
         self.num_gallery_pids, self.num_gallery_imgs, self.num_gallery_cams, self.num_gallery_vids = self.get_imagedata_info(self.gallery)
+        # self.num_test_pids, self.num_test_imgs, self.num_test_cams, self.num_test_vids = self.get_imagedata_info(self.test)
+        # self.num_test_query_pids, self.num_test_query_imgs, self.num_test_query_cams, self.num_test_query_vids = self.get_imagedata_info(self.test_query)
 
     def _check_before_run(self):
         """Check if all files are available before going deeper"""
@@ -74,9 +82,10 @@ class Market1501(BaseImageDataset):
         for img_path in sorted(img_paths):
             pid, camid = map(int, pattern.search(img_path).groups())
             if pid == -1: continue  # junk images are just ignored
-            assert 0 <= pid <= 1501  # pid == 0 means background
+            # assert 0 <= pid <= 1501  # pid == 0 means background
             # assert 1 <= camid <= 6
-            camid -= 1  # index starts from 0
+            if dir_path != self.test_dir or dir_path != self.test_query:
+                camid -= 1  # index starts from 0
             if relabel: pid = pid2label[pid]
 
             dataset.append((img_path, self.pid_begin + pid, camid, 1))

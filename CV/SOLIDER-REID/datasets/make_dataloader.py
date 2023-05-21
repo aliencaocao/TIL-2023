@@ -1,15 +1,16 @@
 import torch
+import torch.distributed as dist
 import torchvision.transforms as T
+from timm.data.random_erasing import RandomErasing
 from torch.utils.data import DataLoader
 
 from .bases import ImageDataset
-from timm.data.random_erasing import RandomErasing
-from .sampler import RandomIdentitySampler, RandomIdentitySampler_IdUniform
 from .market1501 import Market1501
-from .msmt17 import MSMT17
-from .sampler_ddp import RandomIdentitySampler_DDP
-import torch.distributed as dist
 from .mm import MM
+from .msmt17 import MSMT17
+from .sampler import RandomIdentitySampler, RandomIdentitySampler_IdUniform
+from .sampler_ddp import RandomIdentitySampler_DDP
+
 __factory = {
     'market1501': Market1501,
     'msmt17': MSMT17,
@@ -32,6 +33,12 @@ def val_collate_fn(batch):
     viewids = torch.tensor(viewids, dtype=torch.int64)
     camids_batch = torch.tensor(camids, dtype=torch.int64)
     return torch.stack(imgs, dim=0), pids, camids, camids_batch, viewids, img_paths
+
+
+def test_collate_fn(batch):
+    imgs, pids, camids, viewids, img_paths = zip(*batch)
+    return torch.stack(imgs, dim=0), img_paths
+
 
 def make_dataloader(cfg):
     train_transforms = T.Compose([
@@ -56,6 +63,16 @@ def make_dataloader(cfg):
         dataset = OURAPI(root_train=cfg.DATASETS.ROOT_TRAIN_DIR, root_val=cfg.DATASETS.ROOT_VAL_DIR, config=cfg)
     else:
         dataset = __factory[cfg.DATASETS.NAMES](root=cfg.DATASETS.ROOT_DIR)
+
+    if cfg.TEST_MODE:
+        test_set = ImageDataset(dataset.test_query + dataset.test, val_transforms)
+
+        test_loader = DataLoader(
+            test_set, batch_size=cfg.TEST.IMS_PER_BATCH, shuffle=False, num_workers=num_workers,
+            collate_fn=test_collate_fn
+        )
+
+        return test_loader, dataset.num_train_pids, dataset.num_train_cams, dataset.num_train_vids
 
     train_set = ImageDataset(dataset.train, train_transforms)
     train_set_normal = ImageDataset(dataset.train, val_transforms)
@@ -106,7 +123,7 @@ def make_dataloader(cfg):
         collate_fn=val_collate_fn
     )
     train_loader_normal = DataLoader(
-        train_set_normal, batch_size=cfg.TEST.IMS_PER_BATCH, shuffle=False, num_workers=num_workers,
+        train_set_normal, batch_size=cfg.TEST.IMS_PER_BATCH, shuffle=True, num_workers=num_workers,
         collate_fn=val_collate_fn
     )
     return train_loader, train_loader_normal, val_loader, len(dataset.query), num_classes, cam_num, view_num
