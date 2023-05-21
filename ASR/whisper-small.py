@@ -36,11 +36,9 @@ ds = ds.map(prepare_dataset, num_proc=8, batched=True, batch_size=512)
 
 @dataclass
 class DataCollatorSpeechSeq2SeqWithPadding:
-    processor: WhisperProcessor
-
+    processor: Any
     def __call__(self, features: List[Dict[str, Union[List[int], torch.Tensor]]]) -> Dict[str, torch.Tensor]:
         # split inputs and labels since they have to be of different lengths and need different padding methods
-        
         # first treat the audio inputs by simply returning torch tensors
         input_features = [{"input_features": feature["input_features"]} for feature in features]
         batch = self.processor.feature_extractor.pad(input_features, return_tensors="pt")
@@ -102,6 +100,7 @@ training_args = Seq2SeqTrainingArguments(
     learning_rate=1e-4,
     num_train_epochs=20,
     gradient_checkpointing=False,
+    predict_with_generate=True,
     # optim="adafactor",
     fp16=True,
     # bf16=True,  # for A100
@@ -170,7 +169,6 @@ trainer = CustomWhisperTrainer(
     args=training_args,
     train_dataset=ds['train'],
     eval_dataset=ds['test'],
-    tokenizer=processor.feature_extractor,
     data_collator=data_collator,
     compute_metrics=compute_metrics,
     # optimizers=(optimizer, scheduler),
