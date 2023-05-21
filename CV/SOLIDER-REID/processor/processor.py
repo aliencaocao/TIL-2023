@@ -7,7 +7,7 @@ import torch.distributed as dist
 import torch.nn as nn
 from torch.cuda import amp
 from utils.meter import AverageMeter
-from utils.metrics import R1_mAP_eval
+from utils.metrics import Postprocessor, R1_mAP_eval
 
 
 def do_train(cfg,
@@ -146,11 +146,12 @@ def do_train(cfg,
 
 def do_inference(cfg,
                  model,
-                 test_loader):
+                 test_loader,
+                 num_query):
     device = "cuda"
     logger = logging.getLogger("transreid.test")
     logger.info("Enter inferencing")
-
+    postprocessor  = Postprocessor(num_query, max_rank=50, feat_norm=cfg.TEST.FEAT_NORM, reranking=cfg.TEST.RE_RANKING)
 
     if device:
         if torch.cuda.device_count() > 1:
@@ -165,8 +166,10 @@ def do_inference(cfg,
         with torch.no_grad():
             img = img.to(device)
             feat , _ = model(img)
-            print(feat.shape)
+            postprocessor.update(feat)
+            print(feat.shape)  # (64, 1024), 64 is batch size, 1024 is feat dim
             img_path_list.extend(imgpath)
-
-
+            dist_mat = postprocessor.compute()
+            print(dist_mat)  # not sure what this represents exactly... shape is (64, 0), batch size is 64 but 0 is caused by empty tensor which tbh is expected cuz i havent modify much yet so the compute dont work properly
+            exit()  # end the inference here for debugging, remove this line for actual
 
