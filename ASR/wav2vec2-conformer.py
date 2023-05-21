@@ -145,8 +145,8 @@ class CTCTrainer(Trainer):
             loss = loss / self.args.gradient_accumulation_steps
 
         if os.name != 'nt':
-            # accelerator.backward(self.scaler.scale(loss))
-            self.scaler.scale(loss).backward()
+            accelerator.backward(self.scaler.scale(loss))
+            # self.scaler.scale(loss).backward()
         else:
             self.scaler.scale(loss).backward()
         return loss.detach()
