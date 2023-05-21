@@ -1,10 +1,9 @@
-from PIL import Image, ImageFile
-
-from torch.utils.data import Dataset
-import os.path as osp
-import random
-import torch
 import logging
+import os.path as osp
+
+from PIL import Image, ImageFile
+from torch.utils.data import Dataset
+
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
@@ -85,3 +84,13 @@ class ImageDataset(Dataset):
 
         return img, pid, camid, trackid, img_path
         #  return img, pid, camid, trackid,img_path.split('/')[-1]
+
+class TestImageDataset(ImageDataset):
+    def __getitem__(self, index):
+        img_path = self.dataset[index]
+        img = read_image(img_path)
+
+        if self.transform is not None:
+            img = self.transform(img)
+
+        return img, img_path

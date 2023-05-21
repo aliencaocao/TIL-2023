@@ -160,7 +160,6 @@ def do_inference(cfg,
 
     model.eval()
     img_path_list = []
-    print(list(test_loader))
 
     for img, imgpath in test_loader:
         with torch.no_grad():

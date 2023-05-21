@@ -1,17 +1,16 @@
-from pathlib import Path
-import os
 import csv
-from tqdm import tqdm
+import os
+from pathlib import Path
+
 from PIL import Image
+from tqdm import tqdm
 
 preds_csv_path = Path("../RT-DETR/submission.csv")
-test_imgs_path = Path("/home/yip/Downloads/Test/images")
-output_path = Path("../cv_sample_data_yolo/reid/obj_det_output_bboxes")
+test_imgs_path = Path("../RT-DETR/dataset/test/images")
+output_path = Path("../RT-DETR/dataset/reid/test")
 
-try:
-  os.mkdir(output_path)
-except FileExistsError:
-  print(f"Folder {output_path} already exists.")
+
+os.makedirs(output_path, exist_ok=True)
 
 with open(preds_csv_path) as preds_file:
   reader = csv.reader(preds_file)
