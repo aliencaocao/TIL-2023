@@ -19,8 +19,8 @@ ASR/musan_noise
 ASR/IMDA
 ASR/IMDA_TIL
 ASR/audio
-ASR/audio_augmented_folder
-ASR/audio_augmented_without_musan
+ASR/train_augmented
+ASR/train_augmented_without_musan
 ASR/test
-ASR/TIL_data_folder
+ASR/train
 ASR/model
