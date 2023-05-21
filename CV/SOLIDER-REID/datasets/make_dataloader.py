@@ -11,6 +11,8 @@ from .msmt17 import MSMT17
 from .sampler import RandomIdentitySampler, RandomIdentitySampler_IdUniform
 from .sampler_ddp import RandomIdentitySampler_DDP
 
+from .transforms import GaussianNoise
+
 __factory = {
     'market1501': Market1501,
     'msmt17': MSMT17,
@@ -42,6 +44,7 @@ def test_collate_fn(batch):
 
 def make_dataloader(cfg):
     train_transforms = T.Compose([
+            GaussianNoise(probability=0.5, noise_strength=25),
             T.Resize(cfg.INPUT.SIZE_TRAIN, interpolation=3),
             T.RandomHorizontalFlip(p=cfg.INPUT.PROB),
             T.Pad(cfg.INPUT.PADDING),

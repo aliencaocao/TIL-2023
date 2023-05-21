@@ -10,6 +10,22 @@ import cv2
 from collections import deque
 from PIL import Image, ImageFilter
 import torch
+import numpy as np
+
+class GaussianNoise(object):
+    def __init__(self, probability=0.5, noise_strength=25):
+        self.probability = probability
+        self.noise_strength = noise_strength
+    
+    def __call__(self, img):
+        if random.uniform(0, 1) >= self.probability:
+            return img
+
+        noise = self.noise_strength * np.random.normal(loc=0, scale=1.0, size=img.shape)
+        img_noisy = img + noise
+        img_noisy_clipped = np.clip(img_noisy, 0, 255)
+        
+        return img_noisy_clipped
 
 class RandomErasing(object):
     """ Randomly selects a rectangle region in an image and erases its pixels.
