@@ -133,28 +133,24 @@ def do_train(cfg,
                 logger.info("mAP: {:.1%}".format(mAP))
                 for r in [1, 5, 10]:
                     logger.info("CMC curve, Rank-{:<3}:{:.1%}".format(r, cmc[r - 1]))
-            if epoch % checkpoint_period == 0 and mAP > best_map:
-                best_map = mAP
-                if cfg.MODEL.DIST_TRAIN:
-                    if dist.get_rank() == 0:
-                        torch.save(model.state_dict(),
-                                   os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.NAME + '_{}_map{}.pth'.format(epoch, best_map)))
-                else:
+        if epoch % checkpoint_period == 0:
+            best_map = mAP
+            if cfg.MODEL.DIST_TRAIN:
+                if dist.get_rank() == 0:
                     torch.save(model.state_dict(),
-                               os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.NAME + '_{}_map{}.pth'.format(epoch, best_map)))
-            torch.cuda.empty_cache()
+                               os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.NAME + '_{}_map{}_acc{}.pth'.format(epoch, mAP, acc_meter.avg)))
+            else:
+                torch.save(model.state_dict(),
+                           os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.NAME + '_{}_map{}_acc{}.pth'.format(epoch, mAP, acc_meter.avg)))
+        torch.cuda.empty_cache()
 
 def do_inference(cfg,
                  model,
-                 val_loader,
-                 num_query):
+                 test_loader):
     device = "cuda"
     logger = logging.getLogger("transreid.test")
     logger.info("Enter inferencing")
 
-    evaluator = R1_mAP_eval(num_query, max_rank=50, feat_norm=cfg.TEST.FEAT_NORM, reranking=cfg.TEST.RE_RANKING)
-
-    evaluator.reset()
 
     if device:
         if torch.cuda.device_count() > 1:
@@ -164,21 +160,14 @@ def do_inference(cfg,
 
     model.eval()
     img_path_list = []
+    print(list(test_loader))
 
-    for n_iter, (img, pid, camid, camids, target_view, imgpath) in enumerate(val_loader):
+    for img, imgpath in test_loader:
         with torch.no_grad():
             img = img.to(device)
-            camids = camids.to(device)
-            target_view = target_view.to(device)
-            feat , _ = model(img, cam_label=camids, view_label=target_view)
-            evaluator.update((feat, pid, camid))
+            feat , _ = model(img)
+            print(feat.shape)
             img_path_list.extend(imgpath)
 
-    cmc, mAP, _, _, _, _, _ = evaluator.compute()
-    logger.info("Validation Results ")
-    logger.info("mAP: {:.1%}".format(mAP))
-    for r in [1, 5, 10]:
-        logger.info("CMC curve, Rank-{:<3}:{:.1%}".format(r, cmc[r - 1]))
-    return cmc[0], cmc[4]
 
 
