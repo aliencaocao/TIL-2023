@@ -3,25 +3,21 @@ os.environ['HF_HOME'] = 'huggingface'
 os.environ['HF_HUB_DISABLE_TELEMETRY'] = '1'
 os.environ['HF_HUB_ENABLE_HF_TRANSFER'] = 'True'
 import math
-from datasets import Audio, Dataset, DatasetDict, load_dataset
+from datasets import  load_dataset
 from transformers import Wav2Vec2Processor, Wav2Vec2ConformerForCTC, TrainingArguments, Trainer
 import torch
-import torchaudio
-from torch.utils.data.dataloader import DataLoader
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Union
 import numpy as np
 import evaluate
-import pandas as pd
-from sklearn.model_selection import train_test_split
 
 model_name= 'facebook/wav2vec2-conformer-rel-pos-large-960h-ft'
 checkpoint_name= 'wav2vec2-checkpoints/checkpoint-4125/'
 
 processor = Wav2Vec2Processor.from_pretrained(model_name)
 
-ds = load_dataset('audiofolder', data_dir='TIL_data_folder', split='train')  # specify split to return a Dataset object instead of a DatasetDict
-ds = ds.train_test_split(test_size=0.05)
+ds = load_dataset('audiofolder', data_dir='train', split='train')  # specify split to return a Dataset object instead of a DatasetDict
+ds = ds.train_test_split(test_size=0.2)
 
 def prepare_dataset(batch):
     model_name = 'facebook/wav2vec2-conformer-rel-pos-large-960h-ft'
@@ -81,7 +77,7 @@ model = Wav2Vec2ConformerForCTC.from_pretrained(
     mask_feature_prob=0.7,
     mask_feature_length=10)
 
-model.freeze_feature_encoder()
+# model.freeze_feature_encoder()
 
 per_gpu_bs = 4
 effective_bs = 32
