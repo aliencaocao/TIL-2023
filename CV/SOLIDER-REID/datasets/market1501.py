@@ -24,32 +24,37 @@ class Market1501(BaseImageDataset):
     """
     dataset_dir = ''
 
-    def __init__(self, root='', verbose=True, pid_begin = 0, **kwargs):
+    def __init__(self, root='', verbose=True, pid_begin = 0, TEST_MODE=False, **kwargs):
         super(Market1501, self).__init__()
+        self.TEST_MODE = TEST_MODE
         self.dataset_dir = osp.join(root, self.dataset_dir)
         self.train_dir = osp.join(self.dataset_dir, 'bounding_box_train')
         self.query_dir = osp.join(self.dataset_dir, 'query')
         self.gallery_dir = osp.join(self.dataset_dir, 'bounding_box_test')
-        self.test_dir = osp.join(self.dataset_dir, 'test')
-        self.test_query = osp.join(self.dataset_dir, 'suspects')
+        if TEST_MODE:
+            self.test_dir = osp.join(self.dataset_dir, 'test')
+            self.test_query_dir = osp.join(self.dataset_dir, 'suspects')
 
         self._check_before_run()
         self.pid_begin = pid_begin
         train = self._process_dir(self.train_dir, relabel=True)
         query = self._process_dir(self.query_dir, relabel=False)
         gallery = self._process_dir(self.gallery_dir, relabel=False)
-        test = self._process_dir(self.test_dir, relabel=False)
-        test_query = self._process_dir(self.test_query, relabel=False)
+        if TEST_MODE:
+            test = self._process_dir(self.test_dir, relabel=False)
+            test_query = self._process_dir(self.test_query_dir, relabel=False)
 
         if verbose:
-            print("=> Market1501 loaded")
-            self.print_dataset_statistics(train, query, gallery)
+            print("=> TIL CUSTOM Market1501 loaded")
+            if not self.TEST_MODE:
+                self.print_dataset_statistics(train, query, gallery)
 
         self.train = train
         self.query = query
         self.gallery = gallery
-        self.test = test
-        self.test_query = test_query
+        if TEST_MODE:
+            self.test = test
+            self.test_query = test_query
 
         self.num_train_pids, self.num_train_imgs, self.num_train_cams, self.num_train_vids = self.get_imagedata_info(self.train)
         self.num_query_pids, self.num_query_imgs, self.num_query_cams, self.num_query_vids = self.get_imagedata_info(self.query)
@@ -70,23 +75,25 @@ class Market1501(BaseImageDataset):
 
     def _process_dir(self, dir_path, relabel=False):
         img_paths = glob.glob(osp.join(dir_path, '*.jpg')) + glob.glob(osp.join(dir_path, '*.png'))
-        pattern = re.compile(r'([-\d]+)_c(\d)')
-
-        pid_container = set()
-        for img_path in sorted(img_paths):
-            pid, _ = map(int, pattern.search(img_path).groups())
-            if pid == -1: continue  # junk images are just ignored
-            pid_container.add(pid)
-        pid2label = {pid: label for label, pid in enumerate(pid_container)}
+        TEST_PATH = dir_path == self.test_dir or dir_path == self.test_query_dir
+        if not TEST_PATH:
+            pattern = re.compile(r'([-\d]+)_c(\d)')
+            pid_container = set()
+            for img_path in sorted(img_paths):
+                pid, _ = map(int, pattern.search(img_path).groups())
+                if pid == -1: continue  # junk images are just ignored
+                pid_container.add(pid)
+            pid2label = {pid: label for label, pid in enumerate(pid_container)}
         dataset = []
         for img_path in sorted(img_paths):
-            pid, camid = map(int, pattern.search(img_path).groups())
-            if pid == -1: continue  # junk images are just ignored
-            # assert 0 <= pid <= 1501  # pid == 0 means background
-            # assert 1 <= camid <= 6
-            if dir_path != self.test_dir or dir_path != self.test_query:
+            if not TEST_PATH:
+                pid, camid = map(int, pattern.search(img_path).groups())
+                if pid == -1: continue  # junk images are just ignored
+                # assert 0 <= pid <= 1501  # pid == 0 means background
+                # assert 1 <= camid <= 6
                 camid -= 1  # index starts from 0
-            if relabel: pid = pid2label[pid]
-
-            dataset.append((img_path, self.pid_begin + pid, camid, 1))
+                if relabel: pid = pid2label[pid]
+                dataset.append((img_path, self.pid_begin + pid, camid, 1))
+            else:
+                dataset.append(img_path)
         return dataset
