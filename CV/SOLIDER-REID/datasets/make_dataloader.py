@@ -4,7 +4,7 @@ import torchvision.transforms as T
 from timm.data.random_erasing import RandomErasing
 from torch.utils.data import DataLoader
 
-from .bases import ImageDataset
+from .bases import ImageDataset, TestImageDataset
 from .market1501 import Market1501
 from .mm import MM
 from .msmt17 import MSMT17
@@ -36,7 +36,7 @@ def val_collate_fn(batch):
 
 
 def test_collate_fn(batch):
-    imgs, pids, camids, viewids, img_paths = zip(*batch)
+    imgs, img_paths = zip(*batch)
     return torch.stack(imgs, dim=0), img_paths
 
 
@@ -62,10 +62,10 @@ def make_dataloader(cfg):
     if cfg.DATASETS.NAMES == 'ourapi':
         dataset = OURAPI(root_train=cfg.DATASETS.ROOT_TRAIN_DIR, root_val=cfg.DATASETS.ROOT_VAL_DIR, config=cfg)
     else:
-        dataset = __factory[cfg.DATASETS.NAMES](root=cfg.DATASETS.ROOT_DIR)
+        dataset = __factory[cfg.DATASETS.NAMES](root=cfg.DATASETS.ROOT_DIR, TEST_MODE=cfg.TEST_MODE)
 
     if cfg.TEST_MODE:
-        test_set = ImageDataset(dataset.test_query + dataset.test, val_transforms)
+        test_set = TestImageDataset(dataset.test_query + dataset.test, val_transforms)
 
         test_loader = DataLoader(
             test_set, batch_size=cfg.TEST.IMS_PER_BATCH, shuffle=False, num_workers=num_workers,
