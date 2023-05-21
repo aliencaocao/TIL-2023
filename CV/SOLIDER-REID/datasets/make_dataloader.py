@@ -10,7 +10,6 @@ from .mm import MM
 from .msmt17 import MSMT17
 from .sampler import RandomIdentitySampler, RandomIdentitySampler_IdUniform
 from .sampler_ddp import RandomIdentitySampler_DDP
-
 from .transforms import GaussianNoise
 
 __factory = {
@@ -69,13 +68,16 @@ def make_dataloader(cfg):
 
     if cfg.TEST_MODE:
         test_set = TestImageDataset(dataset.test_query + dataset.test, val_transforms)
+        # test_query is the suspects folder containing the images of the suspects, 1 image per pic in the test set (dataset.test)
+        # test is the gallery folder containing cropped bboxes of each plushie.
+        # the dist_mat returned will give the distance between each suspect and each plushie?
 
         test_loader = DataLoader(
             test_set, batch_size=cfg.TEST.IMS_PER_BATCH, shuffle=False, num_workers=num_workers,
             collate_fn=test_collate_fn
         )
 
-        return test_loader, dataset.num_train_pids, dataset.num_train_cams, dataset.num_train_vids
+        return test_loader, dataset.num_train_pids, dataset.num_train_cams, dataset.num_train_vids, dataset.num_test_query
 
     train_set = ImageDataset(dataset.train, train_transforms)
     train_set_normal = ImageDataset(dataset.train, val_transforms)

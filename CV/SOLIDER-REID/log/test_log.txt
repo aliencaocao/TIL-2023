@@ -1,6 +1,6 @@
-2023-05-21 16:48:34 transreid INFO: Namespace(config_file='TIL.yml', opts=['TEST.WEIGHT', './log/trial 1/transformer_1_map0.9286209637078827.pth', 'MODEL.SEMANTIC_WEIGHT', '0.2'])
-2023-05-21 16:48:34 transreid INFO: Loaded configuration file TIL.yml
-2023-05-21 16:48:34 transreid INFO: 
+2023-05-21 19:26:34 transreid INFO: Namespace(config_file='TIL.yml', opts=['TEST.WEIGHT', './log/trial 1/transformer_1_map0.9286209637078827.pth', 'MODEL.SEMANTIC_WEIGHT', '0.2'])
+2023-05-21 19:26:34 transreid INFO: Loaded configuration file TIL.yml
+2023-05-21 19:26:34 transreid INFO: 
 MODEL:
   PRETRAIN_HW_RATIO: 2
   METRIC_LOSS_TYPE: 'triplet'
@@ -55,7 +55,7 @@ TEST:
 
 OUTPUT_DIR: './log/'
 
-2023-05-21 16:48:34 transreid INFO: Running with config:
+2023-05-21 19:26:34 transreid INFO: Running with config:
 DATALOADER:
   NUM_INSTANCE: 4
   NUM_WORKERS: 8
@@ -146,4 +146,4 @@ TEST:
   RE_RANKING: True
   WEIGHT: ./log/trial 1/transformer_1_map0.9286209637078827.pth
 TEST_MODE: True
-2023-05-21 16:48:35 transreid.test INFO: Enter inferencing
+2023-05-21 19:26:36 transreid.test INFO: Enter inferencing

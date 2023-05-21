@@ -1,6 +1,5 @@
-import torch
 import numpy as np
-import os
+import torch
 from utils.reranking import re_ranking
 
 
@@ -86,7 +85,7 @@ def eval_func(distmat, q_pids, g_pids, q_camids, g_camids, max_rank=50):
     return all_cmc, mAP
 
 
-class R1_mAP_eval():
+class R1_mAP_eval:
     def __init__(self, num_query, max_rank=50, feat_norm=True, reranking=False):
         super(R1_mAP_eval, self).__init__()
         self.num_query = num_query
@@ -131,4 +130,40 @@ class R1_mAP_eval():
         return cmc, mAP, distmat, self.pids, self.camids, qf, gf
 
 
+class Postprocessor:
+    def __init__(self, num_query, max_rank=50, feat_norm=True, reranking=False):
+        super(Postprocessor, self).__init__()
+        self.num_query = num_query
+        self.max_rank = max_rank
+        self.feat_norm = feat_norm
+        self.reranking = reranking
+        self.feats = []
 
+    def reset(self):
+        self.feats = []
+
+    def update(self, output):  # called once for each batch
+        feat= output
+        self.feats.append(feat.cpu())
+
+    def compute(self):  # called after each epoch
+        feats = torch.cat(self.feats, dim=0)
+        if self.feat_norm:
+            print("The test feature is normalized")
+            feats = torch.nn.functional.normalize(feats, dim=1, p=2)  # along channel
+        # query
+        qf = feats[:self.num_query]
+        # gallery
+        gf = feats[self.num_query:]
+
+        if self.reranking:
+            print('=> Enter reranking')
+            distmat = re_ranking(qf, gf, k1=20, k2=6, lambda_value=0.3)
+
+        else:
+            print('=> Computing DistMat with euclidean_distance')
+            distmat = euclidean_distance(qf, gf)
+        return distmat
+        # cmc, mAP = eval_func(distmat, q_pids, g_pids, q_camids, g_camids)
+
+        # return cmc, mAP, distmat, self.pids, self.camids, qf, gf
