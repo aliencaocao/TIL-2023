@@ -87,44 +87,50 @@ def eval_func(distmat, q_pids, g_pids, q_camids, g_camids, max_rank=50):
 
 class R1_mAP_eval:
     def __init__(self, num_query, max_rank=50, feat_norm=True, reranking=False):
+        #nothing impt here
         super(R1_mAP_eval, self).__init__()
-        self.num_query = num_query
+        self.num_query = num_query # num query is the amount of query images. Now it is 1600. Later when we do single image query, num_query is 1.
         self.max_rank = max_rank
         self.feat_norm = feat_norm
         self.reranking = reranking
 
     def reset(self):
+        #nothing impt here
         self.feats = []
         self.pids = []
         self.camids = []
 
     def update(self, output):  # called once for each batch
-        feat, pid, camid = output
+        feat, pid, camid = output #in inference without GT, we dunnid pid and camid. So billy's version removes 
+        #pid and camid arent actually needed cos its distance comparison.
         self.feats.append(feat.cpu())
         self.pids.extend(np.asarray(pid))
         self.camids.extend(np.asarray(camid))
 
     def compute(self):  # called after each epoch
+        # this is the main method calculating the vector distance.
         feats = torch.cat(self.feats, dim=0)
         if self.feat_norm:
             print("The test feature is normalized")
             feats = torch.nn.functional.normalize(feats, dim=1, p=2)  # along channel
-        # query
-        qf = feats[:self.num_query]
+        # query = the folder with the suspect
+        qf = feats[:self.num_query] 
         q_pids = np.asarray(self.pids[:self.num_query])
         q_camids = np.asarray(self.camids[:self.num_query])
-        # gallery
+        # gallery = the folder with the cropped bboxes
         gf = feats[self.num_query:]
         g_pids = np.asarray(self.pids[self.num_query:])
 
         g_camids = np.asarray(self.camids[self.num_query:])
-        if self.reranking:
+        if self.reranking: # released in a research paper in 2017
             print('=> Enter reranking')
             distmat = re_ranking(qf, gf, k1=20, k2=6, lambda_value=0.3)
 
         else:
+            # This is the priority
+            # Go to TIL.yaml and turn off the reranking
             print('=> Computing DistMat with euclidean_distance')
-            distmat = euclidean_distance(qf, gf)
+            distmat = euclidean_distance(qf, gf) # Figure out what this is, and how do you decode it
         cmc, mAP = eval_func(distmat, q_pids, g_pids, q_camids, g_camids)
 
         return cmc, mAP, distmat, self.pids, self.camids, qf, gf
