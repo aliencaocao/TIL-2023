@@ -151,24 +151,27 @@ class Postprocessor:
     def update(self, output):  # called once for each batch
         feat= output
         self.feats.append(feat.cpu())
-
+        # feat.cpu() has shape (64, 1024)
     def compute(self):  # called after each epoch
         feats = torch.cat(self.feats, dim=0)
         if self.feat_norm:
             print("The test feature is normalized")
             feats = torch.nn.functional.normalize(feats, dim=1, p=2)  # along channel
         # query
-        qf = feats[:self.num_query]
+
+        # feats -> (64, 1024)
+
+        query_features = feats[:self.num_query]
         # gallery
-        gf = feats[self.num_query:]
+        gallery_features = feats[self.num_query:]
 
         if self.reranking:
-            print('=> Enter reranking')
-            distmat = re_ranking(qf, gf, k1=20, k2=6, lambda_value=0.3)
+            print('=> Computing DisMat with reranking')
+            distmat = re_ranking(query_features, gallery_features, k1=20, k2=6, lambda_value=0.3)
 
         else:
             print('=> Computing DistMat with euclidean_distance')
-            distmat = euclidean_distance(qf, gf)
+            distmat = euclidean_distance(query_features, gallery_features)
         return distmat
         # cmc, mAP = eval_func(distmat, q_pids, g_pids, q_camids, g_camids)
 

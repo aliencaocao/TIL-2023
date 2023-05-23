@@ -162,14 +162,17 @@ def do_inference(cfg,
     model.eval()
     img_path_list = []
 
+    breakpoint()
     for img, imgpath in test_loader:
+        # img shape: (num_query + num_gallery, 3, 384, 128) -> (num_query + num_gallery, channel, width, height)
+        # num_query is always 1 because there is only 1 suspect for each test set image.
+        # num_gallery is the number of cropped bboxes, which can be anywhere from 0 to 4.
         with torch.no_grad():
             img = img.to(device)
             feat , _ = model(img)
             postprocessor.update(feat)
-            print(feat.shape)  # (64, 1024), 64 is batch size, 1024 is feat dim
             img_path_list.extend(imgpath)
             dist_mat = postprocessor.compute()
-            print(dist_mat)  # not sure what this represents exactly... shape is (64, 0), batch size is 64 but 0 is caused by empty tensor which tbh is expected cuz i havent modify much yet so the compute dont work properly
-            exit()  # end the inference here for debugging, remove this line for actual
+            dist_mat = dist_mat.cpu().numpy()
+            # perform thresholding to determine which gallery image, if any, are matches with the query
 

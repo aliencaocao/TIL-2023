@@ -2,13 +2,14 @@ import csv
 import os
 import shutil
 from pathlib import Path
+
 from PIL import Image
 from tqdm import tqdm
 
-preds_csv_path = Path("../RT-DETR/submission.csv")
-test_imgs_path = Path("../RT-DETR/dataset/test/images")
-output_path = Path("../RT-DETR/dataset/reid/test")
-suspect_imgs_path = Path("/home/yip/Downloads/suspects/")
+preds_csv_path = Path("../RT-DETR/submissions/0.88x conf 0.8 no reid lb 0.305.csv/")
+test_imgs_path = Path("../RT-DETR/dataset/test/images/")
+output_path = Path("../RT-DETR/dataset/reid/test/")
+suspect_imgs_path = Path("../RT-DETR/dataset/reid/suspects/")
 
 os.makedirs(output_path, exist_ok=True)
 

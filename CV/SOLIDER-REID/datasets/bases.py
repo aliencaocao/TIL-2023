@@ -85,9 +85,9 @@ class ImageDataset(Dataset):
         return img, pid, camid, trackid, img_path
         #  return img, pid, camid, trackid,img_path.split('/')[-1]
 
-class TestImageDataset(ImageDataset):
+class InferenceImageDataset(ImageDataset):
     def __getitem__(self, index):
-        img_path = self.dataset[index]
+        img_path, _, _, _ = self.dataset[index]
         img = read_image(img_path)
 
         if self.transform is not None:

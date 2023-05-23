@@ -1,17 +1,20 @@
-from utils.logger import setup_logger
-from datasets import make_dataloader
-from model import make_model
-from solver import make_optimizer, WarmupMultiStepLR
-from solver.scheduler_factory import create_scheduler
-from loss import make_loss
-from processor import do_train
-import random
-import torch
-import numpy as np
-import os
 import argparse
-from config import cfg
+import os
+import random
+
+import numpy as np
+import torch
 import torch.distributed as dist
+
+from config import cfg
+from datasets import make_dataloader
+from loss import make_loss
+from model import make_model
+from processor import do_train
+from solver import WarmupMultiStepLR, make_optimizer
+from solver.scheduler_factory import create_scheduler
+from utils.logger import setup_logger
+
 
 def set_seed(seed):
     torch.manual_seed(seed)
@@ -37,7 +40,8 @@ if __name__ == '__main__':
     if args.config_file != "":
         cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
-    
+    cfg.TEST_MODE = False
+
     cfg.freeze()
     set_seed(cfg.SOLVER.SEED)
 

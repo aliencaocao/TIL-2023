@@ -1,1 +1,3 @@
-python test.py --config_file TIL.yml TEST.WEIGHT './log/trial 1/transformer_1_map0.9286209637078827.pth' MODEL.SEMANTIC_WEIGHT 0.2
+python infer.py --config_file TIL.yml TEST.WEIGHT './log/trial 1/transformer_1_map0.9286209637078827.pth' MODEL.SEMANTIC_WEIGHT 0.2
+
+python infer.py --config_file TIL_manual_test.yml TEST.WEIGHT './log/trial 1/transformer_1_map0.9286209637078827.pth' MODEL.SEMANTIC_WEIGHT 0.2

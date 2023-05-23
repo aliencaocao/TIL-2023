@@ -4,7 +4,8 @@ import torchvision.transforms as T
 from timm.data.random_erasing import RandomErasing
 from torch.utils.data import DataLoader
 
-from .bases import ImageDataset, TestImageDataset
+from .TILCustomDataset import TILCustomDataset
+from .bases import ImageDataset, InferenceImageDataset
 from .market1501 import Market1501
 from .mm import MM
 from .msmt17 import MSMT17
@@ -16,7 +17,7 @@ __factory = {
     'market1501': Market1501,
     'msmt17': MSMT17,
     'mm': MM,
-    'TIL': Market1501,
+    'TILCustomDataset': TILCustomDataset,
 }
 
 def train_collate_fn(batch):
@@ -36,7 +37,7 @@ def val_collate_fn(batch):
     return torch.stack(imgs, dim=0), pids, camids, camids_batch, viewids, img_paths
 
 
-def test_collate_fn(batch):
+def inference_collate_fn(batch):
     imgs, img_paths = zip(*batch)
     return torch.stack(imgs, dim=0), img_paths
 
@@ -64,20 +65,24 @@ def make_dataloader(cfg):
     if cfg.DATASETS.NAMES == 'ourapi':
         dataset = OURAPI(root_train=cfg.DATASETS.ROOT_TRAIN_DIR, root_val=cfg.DATASETS.ROOT_VAL_DIR, config=cfg)
     else:
-        dataset = __factory[cfg.DATASETS.NAMES](root=cfg.DATASETS.ROOT_DIR, TEST_MODE=cfg.TEST_MODE)
+        dataset = __factory[cfg.DATASETS.NAMES](root=cfg.DATASETS.ROOT_DIR, INFERENCE_MODE=cfg.INFERENCE_MODE)
 
-    if cfg.TEST_MODE:
-        test_set = TestImageDataset(dataset.test_query + dataset.test, val_transforms)
-        # test_query is the suspects folder containing the images of the suspects, 1 image per pic in the test set (dataset.test)
-        # test is the gallery folder containing cropped bboxes of each plushie.
-        # the dist_mat returned will give the distance between each suspect and each plushie?
-
-        test_loader = DataLoader(
-            test_set, batch_size=cfg.TEST.IMS_PER_BATCH, shuffle=False, num_workers=num_workers,
-            collate_fn=test_collate_fn
+    if cfg.INFERENCE_MODE:
+        # InferenceImageDataset is a custom ImageDataset that does not care about the personID, cameraID, etc.
+        # We pass in dataset.query_dir + dataset.gallery_dir because the inference set is the combination of the query and gallery set.
+        # We need the query to come first, then the gallery, because there will be slicing performed later which expects query to come first.
+        inference_set = InferenceImageDataset(dataset.query + dataset.gallery, val_transforms)
+        inference_loader = DataLoader(
+            inference_set,
+            batch_size=cfg.TEST.IMS_PER_BATCH,
+            shuffle=False,
+            num_workers=num_workers,
+            collate_fn=inference_collate_fn
         )
+        # The return format is as such.
+        # inference_loader, num_classes, camera_num, view_num, num_query.
 
-        return test_loader, dataset.num_train_pids, dataset.num_train_cams, dataset.num_train_vids, dataset.num_test_query
+        return inference_loader
 
     train_set = ImageDataset(dataset.train, train_transforms)
     train_set_normal = ImageDataset(dataset.train, val_transforms)

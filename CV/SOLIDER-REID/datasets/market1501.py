@@ -25,6 +25,7 @@ class Market1501(BaseImageDataset):
     dataset_dir = ''
 
     def __init__(self, root='', verbose=True, pid_begin = 0, TEST_MODE=False, **kwargs):
+        breakpoint()
         super(Market1501, self).__init__()
         self.TEST_MODE = TEST_MODE
         self.dataset_dir = osp.join(root, self.dataset_dir)
@@ -34,6 +35,7 @@ class Market1501(BaseImageDataset):
         if TEST_MODE:
             self.test_dir = osp.join(self.dataset_dir, 'test')
             self.test_query_dir = osp.join(self.dataset_dir, 'suspects')
+
 
         self._check_before_run()
         self.pid_begin = pid_begin
@@ -76,7 +78,7 @@ class Market1501(BaseImageDataset):
 
     def _process_dir(self, dir_path, relabel=False):
         img_paths = glob.glob(osp.join(dir_path, '*.jpg')) + glob.glob(osp.join(dir_path, '*.png'))
-        TEST_PATH = dir_path == self.test_dir or dir_path == self.test_query_dir
+        # TEST_PATH = dir_path == self.test_dir or dir_path == self.test_query_dir
         if not TEST_PATH:
             pattern = re.compile(r'([-\d]+)_c(\d)')
             pid_container = set()
