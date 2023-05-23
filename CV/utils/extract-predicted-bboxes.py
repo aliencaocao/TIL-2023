@@ -1,14 +1,14 @@
 import csv
 import os
+import shutil
 from pathlib import Path
-
 from PIL import Image
 from tqdm import tqdm
 
 preds_csv_path = Path("../RT-DETR/submission.csv")
 test_imgs_path = Path("../RT-DETR/dataset/test/images")
 output_path = Path("../RT-DETR/dataset/reid/test")
-
+suspect_imgs_path = Path("/home/yip/Downloads/suspects/")
 
 os.makedirs(output_path, exist_ok=True)
 
@@ -36,4 +36,11 @@ with open(preds_csv_path) as preds_file:
       y2 * img.height,
     ))
 
-    img_cropped.save(output_path / f"-1_c{cam_id}s1_1_{num_dets[cam_id]}.png")
+    curr_img_path = output_path / filename
+    gallery_dir = curr_img_path / "bounding_box_test"
+    query_dir = curr_img_path / "query"
+    os.makedirs(gallery_dir, exist_ok=True)
+    os.makedirs(query_dir, exist_ok=True)
+
+    img_cropped.save(gallery_dir / f"-1_c{cam_id}s1_1_{num_dets[cam_id]}.png")
+    shutil.copy(suspect_imgs_path / (filename + ".png"), query_dir)
