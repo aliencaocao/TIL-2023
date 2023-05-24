@@ -173,6 +173,3 @@ class Postprocessor:
             print('=> Computing DistMat with euclidean_distance')
             distmat = euclidean_distance(query_features, gallery_features)
         return distmat
-        # cmc, mAP = eval_func(distmat, q_pids, g_pids, q_camids, g_camids)
-
-        # return cmc, mAP, distmat, self.pids, self.camids, qf, gf

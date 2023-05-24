@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+import warnings
 
 import torch
 import torch.distributed as dist
@@ -9,6 +10,7 @@ from torch.cuda import amp
 from utils.meter import AverageMeter
 from utils.metrics import Postprocessor, R1_mAP_eval
 
+warnings.filterwarnings('ignore')
 
 def do_train(cfg,
              model,
@@ -162,7 +164,7 @@ def do_inference(cfg,
     model.eval()
     img_path_list = []
 
-    breakpoint()
+    #breakpoint()
     for img, imgpath in test_loader:
         # img shape: (num_query + num_gallery, 3, 384, 128) -> (num_query + num_gallery, channel, width, height)
         # num_query is always 1 because there is only 1 suspect for each test set image.
@@ -173,6 +175,6 @@ def do_inference(cfg,
             postprocessor.update(feat)
             img_path_list.extend(imgpath)
             dist_mat = postprocessor.compute()
-            dist_mat = dist_mat.cpu().numpy()
+            print(dist_mat)
             # perform thresholding to determine which gallery image, if any, are matches with the query
 
