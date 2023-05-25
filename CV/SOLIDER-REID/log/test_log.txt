@@ -1,6 +1,6 @@
-2023-05-24 22:41:23 reid INFO: Namespace(config_file='TIL_manual_test.yml', opts=['TEST.WEIGHT', './log/trial 1/transformer_1_map0.9286209637078827.pth', 'MODEL.SEMANTIC_WEIGHT', '0.2'])
-2023-05-24 22:41:23 reid INFO: Loaded configuration file TIL_manual_test.yml
-2023-05-24 22:41:23 reid INFO: 
+2023-05-25 13:18:22 reid INFO: Namespace(config_file='TIL.yml', opts=['TEST.WEIGHT', './log/trial 1/transformer_1_map0.9286209637078827.pth', 'MODEL.SEMANTIC_WEIGHT', '0.2'])
+2023-05-25 13:18:22 reid INFO: Loaded configuration file TIL.yml
+2023-05-25 13:18:22 reid INFO: 
 MODEL:
   PRETRAIN_HW_RATIO: 2
   METRIC_LOSS_TYPE: 'triplet'
@@ -11,6 +11,7 @@ MODEL:
   DEVICE_ID: ('0')
   TRANSFORMER_TYPE: 'swin_base_patch4_window7_224'
   STRIDE_SIZE: [16, 16]
+  SIE_CAMERA: True
 
 INPUT:
   SIZE_TRAIN: [384, 128]
@@ -22,7 +23,7 @@ INPUT:
   PIXEL_STD: [0.5, 0.5, 0.5]
 
 DATASETS:
-  NAMES: ('TILCustomDataset')  # modified from market1501
+  NAMES: ('TILCustomDataset')  # follow the market1501.py filename since TIL custom mods are all in that file
   ROOT_DIR: ('../RT-DETR/dataset/reid/')
 
 DATALOADER:
@@ -32,9 +33,9 @@ DATALOADER:
 
 SOLVER:
   OPTIMIZER_NAME: 'AdamW'  # SGD
-  MAX_EPOCHS: 20
+  MAX_EPOCHS: 15
   BASE_LR: 0.0008
-  WARMUP_EPOCHS: 4
+  WARMUP_EPOCHS: 3
   IMS_PER_BATCH: 32
   WARMUP_METHOD: 'cosine'
   LARGE_FC_LR: False
@@ -48,14 +49,14 @@ SOLVER:
 TEST:
   EVAL: True
   IMS_PER_BATCH: 64
-  RE_RANKING: False
+  RE_RANKING: False 
   WEIGHT: ''
   NECK_FEAT: 'before'
   FEAT_NORM: 'yes'
 
 OUTPUT_DIR: './log/'
 
-2023-05-24 22:41:23 reid INFO: Running with config:
+2023-05-25 13:18:22 reid INFO: Running with config:
 DATALOADER:
   NUM_INSTANCE: 4
   NUM_WORKERS: 8
@@ -66,7 +67,7 @@ DATASETS:
   ROOT_DIR: ../RT-DETR/dataset/reid/
   ROOT_TRAIN_DIR: ../data
   ROOT_VAL_DIR: ../data
-INFERENCE_MODE: False
+EXECUTION_MODE: plotting
 INPUT:
   PADDING: 10
   PIXEL_MEAN: [0.5, 0.5, 0.5]
@@ -105,7 +106,7 @@ MODEL:
   SEMANTIC_WEIGHT: 0.2
   SHIFT_NUM: 5
   SHUFFLE_GROUP: 2
-  SIE_CAMERA: False
+  SIE_CAMERA: True
   SIE_COE: 3.0
   SIE_VIEW: False
   STEM_CONV: False
@@ -127,13 +128,13 @@ SOLVER:
   LARGE_FC_LR: False
   LOG_PERIOD: 20
   MARGIN: 0.3
-  MAX_EPOCHS: 20
+  MAX_EPOCHS: 15
   MOMENTUM: 0.9
   OPTIMIZER_NAME: AdamW
   SEED: 1234
   STEPS: (40, 70)
   TRP_L2: False
-  WARMUP_EPOCHS: 4
+  WARMUP_EPOCHS: 3
   WARMUP_FACTOR: 0.01
   WARMUP_METHOD: cosine
   WEIGHT_DECAY: 0.0001

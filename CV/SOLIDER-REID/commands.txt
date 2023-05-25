@@ -4,7 +4,7 @@ python train.py --config_file TIL.yml MODEL.PRETRAIN_CHOICE 'self' MODEL.PRETRAI
 # PLOTTING THE SEPARATION CHART
 
 python plot_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log/trial 1/transformer_1_map0.9286209637078827.pth' MODEL.SEMANTIC_WEIGHT 0.2
-python plot_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log250523/transformer_15_map0.8028466587605_acc0.3688333332538605.pth' MODEL.SEMANTIC_WEIGHT 0.2 OUTPUT_DIR './log250523/'
+
 # INFERENCE
 python infer.py --config_file TIL.yml TEST.WEIGHT './log/trial 1/transformer_1_map0.9286209637078827.pth' MODEL.SEMANTIC_WEIGHT 0.2
 
