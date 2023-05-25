@@ -18,6 +18,7 @@ sns.set_theme(style='whitegrid')
 # It is largely similar to infer.py.
 # However, instead of inferring on the test set, we infer on the train + val set.
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='ReID Inference')
     parser.add_argument('--config_file', default="", help='Path to YAML config file.', type=str)
@@ -66,24 +67,47 @@ if __name__ == '__main__':
         model.load_param(cfg.TEST.WEIGHT)
 
     inter_class_distances, intra_class_distances = get_distance_distributions(cfg, model, val_loader, num_query)
+
     # Plot the histogram for inter_class_distances (Dissimilar) with orange color
     sns.histplot(inter_class_distances, color='orange', label='Inter Class Distances')
     # Plot the histogram for intra_class_distances (Similar) with blue color
     sns.histplot(intra_class_distances, color='blue', label='Intra Class Distances')
 
-    # # Calculate the intersection point of the two KDEs
-    # kde1 = stats.gaussian_kde(inter_class_distances)
-    # kde2 = stats.gaussian_kde(intra_class_distances)
-    # x = np.linspace(min(min(inter_class_distances), min(intra_class_distances)), max(max(inter_class_distances), max(intra_class_distances)), 1000)
-    # intersection_point = x[np.argmax(kde1(x) - kde2(x) < 0)]
+    # Calculate the frequency table of the two distance arrays
+    max_value_of_both = max(max(inter_class_distances), max(intra_class_distances))
+    min_value_of_both = min(min(inter_class_distances), min(intra_class_distances))
+    bin_size = 1e-6
+    # Format of frequency table is as such
+    # { bin: { 'inter': count, 'intra': count } }
+    print('Calculating frequency table...')
+    frequency_table = {}
+    # init the frequency table
+    for i in range(int(min_value_of_both / bin_size), int(max_value_of_both / bin_size) + 1):
+        frequency_table[i * bin_size] = {
+            'inter': 0,
+            'intra': 0
+        }
+    # now fill in the frequency table
+    for distance in inter_class_distances:
+        frequency_table[int(distance / bin_size) * bin_size]['inter'] += 1
+    for distance in intra_class_distances:
+        frequency_table[int(distance / bin_size) * bin_size]['intra'] += 1
+
+    # calculate the intersection area
+    intersection_area_dict = {}
+    for frequency_bin in frequency_table:
+        intersection_area_dict[frequency_bin] = min(frequency_table[frequency_bin]['inter'], frequency_table[frequency_bin]['intra'])
+    intersection_area = sum(intersection_area_dict.values())
+    intersection_point = max(intersection_area_dict, key=intersection_area_dict.get)
 
     # Set labels and title
     plt.xlabel('Distances')
     plt.ylabel('Count')
 
-    # # Draw a vertical line at the intersection point
-    # plt.axvline(x=intersection_point, color='black', linestyle='--', label='Intersection Point')
-    # plt.text(intersection_point, plt.ylim()[1] * 0.9, f'Intersection: {intersection_point:.2f}', color='black', ha='center')
+    # Draw a vertical line at the intersection point and annotate
+    plt.axvline(x=intersection_point, color='black', linestyle='--', label='Intersection Point')
+    plt.text(intersection_point, plt.ylim()[1] * 0.9, f'Intersection: {intersection_point:.7e}', color='black', ha='center')
+    plt.text(intersection_point, plt.ylim()[1] * 0.8, f'IntersectionArea: {intersection_area}', color='black', ha='center')
 
     # Add a legend
     plt.legend()
