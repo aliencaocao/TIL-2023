@@ -243,9 +243,6 @@ class build_transformer(nn.Module):
         #if pretrain_choice == 'self':
         #    self.load_param(model_path)
 
-
-    # need to find the shape of x
-    # is x a query or gallery bbox???
     def forward(self, x, label=None, cam_label= None, view_label=None):
         global_feat, featmaps = self.base(x)
         if self.reduce_feat_dim: # False by default

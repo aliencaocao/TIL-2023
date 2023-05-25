@@ -1,11 +1,18 @@
 import argparse
 import os
 
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 from config import cfg
 from datasets import make_dataloader
 from model import make_model
-from processor import do_inference
+from processor import get_distance_distributions
 from utils.logger import setup_logger
+
+matplotlib.use('Agg')
+sns.set_theme(style='whitegrid')
 
 # This file is used to plot the separation chart to find an optimal threshold for ReID.
 # It is largely similar to infer.py.
@@ -23,7 +30,7 @@ if __name__ == '__main__':
     if args.config_file != "":
         cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
-    cfg.INFERENCE_MODE = False
+    cfg.EXECUTION_MODE = 'plotting'
     cfg.freeze()
 
     output_dir = cfg.OUTPUT_DIR
@@ -42,12 +49,12 @@ if __name__ == '__main__':
 
     os.environ['CUDA_VISIBLE_DEVICES'] = cfg.MODEL.DEVICE_ID
 
-    inference_loader = make_dataloader(cfg)
+    val_loader, num_query = make_dataloader(cfg)
     model = make_model(
         cfg,
-        num_class=2, # because we have two classes: non-suspect (0) and suspect (1).
-        camera_num=1, # because we instantiate a TILCustomDataset for each test set image.
-        view_num=1, # because we are working with single images, not videos. It is not applicable to us.
+        num_class=1, # Unused, can put any arbitrary value
+        camera_num=1, # Unused, can put any arbitrary value
+        view_num=1, # Unused, can put any arbitrary value
         semantic_weight=cfg.MODEL.SEMANTIC_WEIGHT
     )
     # Semantic weight is the ratio of (Semantic Info) / (Visual Info).
@@ -57,6 +64,37 @@ if __name__ == '__main__':
     # Load the model weights.
     if cfg.TEST.WEIGHT != '':
         model.load_param(cfg.TEST.WEIGHT)
-    # Perform inference.
-    # The last parameter, num_query, is 1 because there is only 1 suspect per test set image.
-    do_inference(cfg, model, inference_loader, 1)
+
+    inter_class_distances, intra_class_distances = get_distance_distributions(cfg, model, val_loader, num_query)
+    # Plot the histogram for inter_class_distances (Dissimilar) with orange color
+    sns.histplot(inter_class_distances, color='orange', label='Inter Class Distances')
+    # Plot the histogram for intra_class_distances (Similar) with blue color
+    sns.histplot(intra_class_distances, color='blue', label='Intra Class Distances')
+
+    # # Calculate the intersection point of the two KDEs
+    # kde1 = stats.gaussian_kde(inter_class_distances)
+    # kde2 = stats.gaussian_kde(intra_class_distances)
+    # x = np.linspace(min(min(inter_class_distances), min(intra_class_distances)), max(max(inter_class_distances), max(intra_class_distances)), 1000)
+    # intersection_point = x[np.argmax(kde1(x) - kde2(x) < 0)]
+
+    # Set labels and title
+    plt.xlabel('Distances')
+    plt.ylabel('Count')
+
+    # # Draw a vertical line at the intersection point
+    # plt.axvline(x=intersection_point, color='black', linestyle='--', label='Intersection Point')
+    # plt.text(intersection_point, plt.ylim()[1] * 0.9, f'Intersection: {intersection_point:.2f}', color='black', ha='center')
+
+    # Add a legend
+    plt.legend()
+
+    # Add a title
+    if cfg.TEST.RE_RANKING:
+        distance_type = 'reranking'
+    else:
+        distance_type = 'euclidean'
+
+    plt.title(f'Separation Chart [{distance_type} Distance]\nModel: {cfg.TEST.WEIGHT}')
+
+    # Save the plot
+    plt.savefig(os.path.join(output_dir, f'{distance_type}_separation_chart.png'))

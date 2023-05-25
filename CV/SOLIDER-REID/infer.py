@@ -19,7 +19,7 @@ if __name__ == '__main__':
     if args.config_file != "":
         cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
-    cfg.INFERENCE_MODE = True
+    cfg.EXECUTION_MODE = 'inference'
     cfg.freeze()
 
     output_dir = cfg.OUTPUT_DIR
@@ -44,6 +44,11 @@ if __name__ == '__main__':
     # so on and so forth
 
     inference_loader = make_dataloader(cfg)
+    # NOTE: ALL THREE PARAMS, num_class, camera_num, view_num, ARE UNUSED.
+    # YOU CAN PUT 999 FOR ALL OF THEM AND THE MODEL WILL STILL PRODUCE THE SAME RESULTS.
+    # num_class is only used in training to determine the size of the classifier head.
+    # camera_num and view_num are ignored in the build_transformer function!,
+    # Nevertheless, I have put sensible values for all of them.
     model = make_model(
         cfg,
         num_class=2, # because we have two classes: non-suspect (0) and suspect (1).

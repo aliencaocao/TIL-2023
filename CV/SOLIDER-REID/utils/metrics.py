@@ -160,9 +160,7 @@ class Postprocessor:
             print("The test feature is normalized")
             feats = torch.nn.functional.normalize(feats, dim=1, p=2)  # along channel
         # query
-
         # feats -> (64, 1024)
-
         query_features = feats[:self.num_query]
         # gallery
         gallery_features = feats[self.num_query:]

@@ -21,7 +21,7 @@ INPUT:
 
 DATASETS:
   NAMES: ('TILCustomDataset')  # follow the market1501.py filename since TIL custom mods are all in that file
-  ROOT_DIR: ('../RT-DETR/dataset/reid')
+  ROOT_DIR: ('../RT-DETR/dataset/reid/')
 
 DATALOADER:
   SAMPLER: 'softmax_triplet'
@@ -46,7 +46,7 @@ SOLVER:
 TEST:
   EVAL: True
   IMS_PER_BATCH: 64
-  RE_RANKING: False 
+  RE_RANKING: True
   WEIGHT: ''
   NECK_FEAT: 'before'
   FEAT_NORM: 'yes'

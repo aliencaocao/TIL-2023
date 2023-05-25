@@ -3,10 +3,12 @@ import os
 import time
 import warnings
 
+import numpy as np
 import torch
 import torch.distributed as dist
 import torch.nn as nn
 from torch.cuda import amp
+from tqdm import tqdm
 from utils.meter import AverageMeter
 from utils.metrics import Postprocessor, R1_mAP_eval
 
@@ -125,13 +127,14 @@ def do_train(cfg,
                         logger.info("CMC curve, Rank-{:<3}:{:.1%}".format(r, cmc[r - 1]))
             else:
                 model.eval()
-                for n_iter, (img, vid, camid, camids, target_view, _) in enumerate(val_loader):
+                for n_iter, (img, pid, camid, camids, target_view, _) in enumerate(val_loader):
                     with torch.no_grad():
                         img = img.to(device)
                         camids = camids.to(device)
                         target_view = target_view.to(device)
+                        # cam_label and view_label are not even used as parameters
                         feat, _ = model(img, cam_label=camids, view_label=target_view)
-                        evaluator.update((feat, vid, camid))
+                        evaluator.update((feat, pid, camid))
                 cmc, mAP, _, _, _, _, _ = evaluator.compute()
                 logger.info("Validation Results - Epoch: {}".format(epoch))
                 logger.info("mAP: {:.1%}".format(mAP))
@@ -155,7 +158,7 @@ def do_inference(cfg,
     device = "cuda"
     logger = logging.getLogger("transreid.test")
     logger.info("Enter inferencing")
-    postprocessor  = Postprocessor(num_query, max_rank=50, feat_norm=cfg.TEST.FEAT_NORM, reranking=cfg.TEST.RE_RANKING)
+    postprocessor = Postprocessor(num_query, max_rank=50, feat_norm=cfg.TEST.FEAT_NORM, reranking=cfg.TEST.RE_RANKING)
 
     if device:
         if torch.cuda.device_count() > 1:
@@ -175,7 +178,59 @@ def do_inference(cfg,
             feat , _ = model(img)
             postprocessor.update(feat)
             img_path_list.extend(imgpath)
-            dist_mat = postprocessor.compute()
-            print(dist_mat)
-            # perform thresholding to determine which gallery image, if any, are matches with the query
 
+    # perform thresholding to determine which gallery image, if any, are matches with the query
+    dist_mat = postprocessor.compute()
+    breakpoint()
+    print(dist_mat)
+
+def get_distance_distributions(cfg,
+                               model,
+                               val_loader,
+                               num_query):
+    postprocessor = Postprocessor(num_query, max_rank=50, feat_norm=cfg.TEST.FEAT_NORM, reranking=cfg.TEST.RE_RANKING)
+    device = 'cuda'
+    model.to(device)
+    model.eval()
+
+    pids_running_list = []
+    camids_running_list = []
+
+    print('Inferring the validation set...')
+    for imgs, pids, camids, camids_batch, viewids, img_paths in tqdm(val_loader):
+        with torch.no_grad():
+            imgs = imgs.to(device)
+            feats, _ = model(imgs)
+            postprocessor.update(feats)
+            pids_running_list.extend(pids)
+            camids_running_list.extend(camids)
+
+    dist_mat = postprocessor.compute()
+
+    q_pids, q_camids = np.asarray(pids_running_list[:num_query]), np.asarray(camids_running_list[:num_query])
+    g_pids, g_camids = np.asarray(pids_running_list[num_query:]), np.asarray(camids_running_list[num_query:])
+
+    # in dist_mat, query images are the rows, while gallery images are the columns
+    # however in this case the query and gallery set are identical
+
+    inter_class_distances = []
+    intra_class_distances = []
+    # iterate only through the lower triangle of the matrix
+    for r in range(dist_mat.shape[0]):
+        for c in range(r):
+            if q_pids[r] == g_pids[c]:
+                # means the query and gallery image are the same identity
+                if q_camids[r] == g_camids[c]:
+                    # means the query and gallery image are the same identity and camera
+                    # this is a perfect match and we should ignore
+                    continue
+                else:
+                    # means the query and gallery image are the same identity but different cameras
+                    # this is an intra-class distance
+                    intra_class_distances.append(dist_mat[r][c])
+            else:
+                # means the query and gallery image are different identities
+                # this is an inter-class distance
+                inter_class_distances.append(dist_mat[r][c])
+
+    return inter_class_distances, intra_class_distances
