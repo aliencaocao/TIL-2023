@@ -175,7 +175,7 @@ class build_transformer(nn.Module):
         self.cos_layer = cfg.MODEL.COS_LAYER
         self.neck = cfg.MODEL.NECK
         self.neck_feat = cfg.TEST.NECK_FEAT
-        self.reduce_feat_dim = cfg.MODEL.REDUCE_FEAT_DIM
+        self.reduce_feat_dim = cfg.MODEL.REDUCE_FEAT_DIM # which by default is False
         self.feat_dim = cfg.MODEL.FEAT_DIM
         self.dropout_rate = cfg.MODEL.DROPOUT_RATE
 
@@ -196,6 +196,9 @@ class build_transformer(nn.Module):
 
         self.num_classes = num_classes
         self.ID_LOSS_TYPE = cfg.MODEL.ID_LOSS_TYPE
+
+        # BY DEFAULT IT IS SET TO 'softmax'
+
         if self.ID_LOSS_TYPE == 'arcface':
             print('using {} with s:{}, m: {}'.format(self.ID_LOSS_TYPE,cfg.SOLVER.COSINE_SCALE,cfg.SOLVER.COSINE_MARGIN))
             self.classifier = Arcface(self.in_planes, self.num_classes,
@@ -213,11 +216,15 @@ class build_transformer(nn.Module):
             self.classifier = CircleLoss(self.in_planes, self.num_classes,
                                         s=cfg.SOLVER.COSINE_SCALE, m=cfg.SOLVER.COSINE_MARGIN)
         else:
-            if self.reduce_feat_dim:
+            if self.reduce_feat_dim: # False by default
                 self.fcneck = nn.Linear(self.in_planes, self.feat_dim, bias=False)
                 self.fcneck.apply(weights_init_xavier)
                 self.in_planes = cfg.MODEL.FEAT_DIM
+
+            # you step down from the transformer's last layer to just this small linear layer to do the classification of the ReID
             self.classifier = nn.Linear(self.in_planes, self.num_classes, bias=False)
+
+            # init the weights
             self.classifier.apply(weights_init_classifier)
 
         self.bottleneck = nn.BatchNorm1d(self.in_planes)
@@ -236,21 +243,27 @@ class build_transformer(nn.Module):
         #if pretrain_choice == 'self':
         #    self.load_param(model_path)
 
+
+    # need to find the shape of x
+    # is x a query or gallery bbox???
     def forward(self, x, label=None, cam_label= None, view_label=None):
         global_feat, featmaps = self.base(x)
-        if self.reduce_feat_dim:
+        if self.reduce_feat_dim: # False by default
             global_feat = self.fcneck(global_feat)
         feat = self.bottleneck(global_feat)
         feat_cls = self.dropout(feat)
 
         if self.training:
+            # means we are TRAINING
             if self.ID_LOSS_TYPE in ('arcface', 'cosface', 'amsoftmax', 'circle'):
+                # doesnt apply to us because our ID_LOSS_TYPE is softmax
                 cls_score = self.classifier(feat_cls, label)
             else:
                 cls_score = self.classifier(feat_cls)
 
             return cls_score, global_feat, featmaps  # global feature for triplet loss
         else:
+            # means we are in INFERENCE MODE
             if self.neck_feat == 'after':
                 # print("Test with feature after BN")
                 return feat, featmaps

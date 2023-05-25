@@ -81,7 +81,7 @@ class TILCustomDataset(BaseImageDataset):
         img_paths = glob.glob(osp.join(dir_path, '*.jpg')) + glob.glob(osp.join(dir_path, '*.png'))
         if not self.INFERENCE_MODE:
             # If we are in training mode, then we need to relabel the personID and cameraID from 1-indexed to 0-indexed.
-            pattern = re.compile(r'([-\d]+)_c(\d)')
+            pattern = re.compile(r'([-\d]+)_c(\d+)')
             pid_container = set()
             for img_path in sorted(img_paths):
                 pid, _ = map(int, pattern.search(img_path).groups())
@@ -109,5 +109,5 @@ class TILCustomDataset(BaseImageDataset):
                 # The cameraID is also irrelevant as a TILCustomDataset is instantiated for each test set image.
                 dataset = []
                 for img_path in sorted(img_paths):
-                    dataset.append((img_path, -1, 0, -1))
+                    dataset.append((img_path, -1, 0, 1))
                 return dataset

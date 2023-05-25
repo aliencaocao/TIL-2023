@@ -51,14 +51,17 @@ def do_train(cfg,
         acc_meter.reset()
         evaluator.reset()
         model.train()
-        for n_iter, (img, vid, target_cam, target_view) in enumerate(train_loader):
+        for n_iter, (img, pid, target_cam, target_view) in enumerate(train_loader):
             optimizer.zero_grad()
             optimizer_center.zero_grad()
             img = img.to(device)
-            target = vid.to(device)
+            target = pid.to(device)
             target_cam = target_cam.to(device)
             target_view = target_view.to(device)
             with amp.autocast(enabled=True):
+                # the model outputs 3 things
+                # cls_score, global_feat, featmaps
+                # featmaps is unused
                 score, feat, _ = model(img, label=target, cam_label=target_cam, view_label=target_view )
                 loss = loss_fn(score, feat, target, target_cam)
 
@@ -104,7 +107,6 @@ def do_train(cfg,
         else:
             logger.info("Epoch {} done. Time per epoch: {:.3f}[s] Speed: {:.1f}[samples/s]"
                     .format(epoch, time_per_batch * (n_iter + 1), train_loader.batch_size / time_per_batch))
-
         if epoch % eval_period == 0:
             if cfg.MODEL.DIST_TRAIN:
                 if dist.get_rank() == 0:
@@ -164,7 +166,6 @@ def do_inference(cfg,
     model.eval()
     img_path_list = []
 
-    #breakpoint()
     for img, imgpath in test_loader:
         # img shape: (num_query + num_gallery, 3, 384, 128) -> (num_query + num_gallery, channel, width, height)
         # num_query is always 1 because there is only 1 suspect for each test set image.

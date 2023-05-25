@@ -1,6 +1,6 @@
-2023-05-24 21:04:46 reid INFO: Namespace(config_file='TIL_manual_test.yml', opts=['TEST.WEIGHT', './log/trial 1/transformer_1_map0.9286209637078827.pth', 'MODEL.SEMANTIC_WEIGHT', '0.2'])
-2023-05-24 21:04:46 reid INFO: Loaded configuration file TIL_manual_test.yml
-2023-05-24 21:04:46 reid INFO: 
+2023-05-24 22:41:23 reid INFO: Namespace(config_file='TIL_manual_test.yml', opts=['TEST.WEIGHT', './log/trial 1/transformer_1_map0.9286209637078827.pth', 'MODEL.SEMANTIC_WEIGHT', '0.2'])
+2023-05-24 22:41:23 reid INFO: Loaded configuration file TIL_manual_test.yml
+2023-05-24 22:41:23 reid INFO: 
 MODEL:
   PRETRAIN_HW_RATIO: 2
   METRIC_LOSS_TYPE: 'triplet'
@@ -23,7 +23,7 @@ INPUT:
 
 DATASETS:
   NAMES: ('TILCustomDataset')  # modified from market1501
-  ROOT_DIR: ('../RT-DETR/dataset/reid/test/image_0005/')
+  ROOT_DIR: ('../RT-DETR/dataset/reid/')
 
 DATALOADER:
   SAMPLER: 'softmax_triplet'
@@ -55,7 +55,7 @@ TEST:
 
 OUTPUT_DIR: './log/'
 
-2023-05-24 21:04:46 reid INFO: Running with config:
+2023-05-24 22:41:23 reid INFO: Running with config:
 DATALOADER:
   NUM_INSTANCE: 4
   NUM_WORKERS: 8
@@ -63,10 +63,10 @@ DATALOADER:
   SAMPLER: softmax_triplet
 DATASETS:
   NAMES: TILCustomDataset
-  ROOT_DIR: ../RT-DETR/dataset/reid/test/image_0005/
+  ROOT_DIR: ../RT-DETR/dataset/reid/
   ROOT_TRAIN_DIR: ../data
   ROOT_VAL_DIR: ../data
-INFERENCE_MODE: True
+INFERENCE_MODE: False
 INPUT:
   PADDING: 10
   PIXEL_MEAN: [0.5, 0.5, 0.5]

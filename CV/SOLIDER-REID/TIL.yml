@@ -8,6 +8,7 @@ MODEL:
   DEVICE_ID: ('0')
   TRANSFORMER_TYPE: 'swin_base_patch4_window7_224'
   STRIDE_SIZE: [16, 16]
+  SIE_CAMERA: True
 
 INPUT:
   SIZE_TRAIN: [384, 128]
@@ -19,7 +20,7 @@ INPUT:
   PIXEL_STD: [0.5, 0.5, 0.5]
 
 DATASETS:
-  NAMES: ('market1501')  # follow the market1501.py filename since TIL custom mods are all in that file
+  NAMES: ('TILCustomDataset')  # follow the market1501.py filename since TIL custom mods are all in that file
   ROOT_DIR: ('../RT-DETR/dataset/reid')
 
 DATALOADER:

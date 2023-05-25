@@ -110,6 +110,8 @@ class R1_mAP_eval:
     def compute(self):  # called after each epoch
         # this is the main method calculating the vector distance.
         feats = torch.cat(self.feats, dim=0)
+        # at the end of the epoch, feats is (query+gallery,1024)
+
         if self.feat_norm:
             print("The test feature is normalized")
             feats = torch.nn.functional.normalize(feats, dim=1, p=2)  # along channel

@@ -7,6 +7,10 @@ from model import make_model
 from processor import do_inference
 from utils.logger import setup_logger
 
+# This file is used to plot the separation chart to find an optimal threshold for ReID.
+# It is largely similar to infer.py.
+# However, instead of inferring on the test set, we infer on the train + val set.
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='ReID Inference')
     parser.add_argument('--config_file', default="", help='Path to YAML config file.', type=str)
@@ -19,7 +23,7 @@ if __name__ == '__main__':
     if args.config_file != "":
         cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
-    cfg.INFERENCE_MODE = True
+    cfg.INFERENCE_MODE = False
     cfg.freeze()
 
     output_dir = cfg.OUTPUT_DIR
@@ -37,11 +41,6 @@ if __name__ == '__main__':
     logger.info('Running with config:\n{}'.format(cfg))
 
     os.environ['CUDA_VISIBLE_DEVICES'] = cfg.MODEL.DEVICE_ID
-
-    # we should be calling make_dataloader on each FOLDER FOR EACH TEST SET IMAGE
-    # so, you call it one time for image_0000/
-    # call it another time for image_0001/
-    # so on and so forth
 
     inference_loader = make_dataloader(cfg)
     model = make_model(

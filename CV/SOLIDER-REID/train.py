@@ -40,7 +40,7 @@ if __name__ == '__main__':
     if args.config_file != "":
         cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
-    cfg.TEST_MODE = False
+    cfg.INFERENCE_MODE = False
 
     cfg.freeze()
     set_seed(cfg.SOLVER.SEED)
