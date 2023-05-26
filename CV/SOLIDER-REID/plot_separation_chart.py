@@ -68,14 +68,15 @@ if __name__ == '__main__':
 
     inter_class_distances, intra_class_distances = get_distance_distributions(cfg, model, val_loader, num_query)
 
-    # Plot the histogram for inter_class_distances (Dissimilar) with orange color
-    sns.histplot(inter_class_distances, color='orange', label='Inter Class Distances')
-    # Plot the histogram for intra_class_distances (Similar) with blue color
-    sns.histplot(intra_class_distances, color='blue', label='Intra Class Distances')
-
-    # Calculate the frequency table of the two distance arrays
     max_value_of_both = max(max(inter_class_distances), max(intra_class_distances))
     min_value_of_both = min(min(inter_class_distances), min(intra_class_distances))
+
+    # Plot the histogram for inter_class_distances (Dissimilar) with orange color
+    sns.histplot(inter_class_distances, color='orange', label='Inter Class Distances', binwidth=1e-6, binrange=(min_value_of_both, max_value_of_both))
+    # Plot the histogram for intra_class_distances (Similar) with blue color
+    sns.histplot(intra_class_distances, color='blue', label='Intra Class Distances', binwidth=1e-6, binrange=(min_value_of_both, max_value_of_both))
+
+    # Calculate the frequency table of the two distance arrays
     bin_size = 1e-6
     # Format of frequency table is as such
     # { bin: { 'inter': count, 'intra': count } }
