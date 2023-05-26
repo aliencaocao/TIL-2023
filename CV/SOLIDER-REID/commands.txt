@@ -1,5 +1,5 @@
 # TRAINING
-python train.py --config_file TIL.yml MODEL.PRETRAIN_CHOICE 'self' MODEL.PRETRAIN_PATH 'swin_base_msmt17.pth' OUTPUT_DIR './log' MODEL.SEMANTIC_WEIGHT 0.2
+python train.py --config_file TIL.yml MODEL.PRETRAIN_CHOICE 'self' MODEL.PRETRAIN_PATH 'swin_base_msmt17.pth' MODEL.SEMANTIC_WEIGHT 0.1
 
 # PLOTTING THE SEPARATION CHART
 
@@ -7,6 +7,7 @@ python plot_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log/trial 1
 
 # INFERENCE
 python infer.py --config_file TIL.yml TEST.WEIGHT './log/trial 1/transformer_1_map0.9286209637078827.pth' MODEL.SEMANTIC_WEIGHT 0.2
+python infer.py --config_file TIL.yml TEST.WEIGHT './checkpoints/transformer_1_map0.9286209637078827.pth' MODEL.SEMANTIC_WEIGHT 0.2 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test/' 
 
-python infer.py --config_file TIL_manual_test.yml TEST.WEIGHT './log/trial 1/transformer_1_map0.9286209637078827.pth' MODEL.SEMANTIC_WEIGHT 0.2
+python infer.py --config_file TIL_manual_test.yml TEST.WEIGHT './log/trial 1/transformer_1_map0.9286209637078827.pth' MODEL.SEMANTIC_WEIGHT 0.2 
 
