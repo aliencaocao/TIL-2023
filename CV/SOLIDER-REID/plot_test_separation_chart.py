@@ -5,6 +5,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib
 import pickle
+import numpy as np
+from scipy.stats import gaussian_kde
 from tqdm import tqdm
 from copy import deepcopy
 from config import cfg
@@ -76,21 +78,40 @@ if __name__ == '__main__':
         curr_dist_mat = do_inference(cfg, model, inference_loader, 1, None, output_dist_mat=True)
         collated_distances.extend(curr_dist_mat)
 
+    # Cache the collated distances
     with open(os.path.join(output_dir, 'collated_test_set_distances.pkl'), 'wb') as f:
         pickle.dump(collated_distances, f)
 
     max_distance = max(collated_distances)
     min_distance = min(collated_distances)
 
+    # find the minimum stationary point of the kde plot of the collated distances
+    kde = gaussian_kde(collated_distances)
+    x = np.linspace(np.min(collated_distances), np.max(collated_distances), num=10000)
+    kde_plot = kde(x)
+    gradient = np.gradient(kde_plot)
+    # Find the indices where the gradient changes sign (stationary points)
+    stationary_indices = np.where(np.diff(np.sign(gradient)))[0]
+    x_minpt = x[stationary_indices][1]
+
+    # Plot the histogram of collated distances
+    sns.histplot(collated_distances, binrange=(min_distance, max_distance))
+
+    # Draw a vertical line at the minimum stationary point
+    plt.axvline(x_minpt, color='red', linestyle='--')
+    plt.text(x_minpt, 0, f'{x_minpt:.15e}', rotation=90, verticalalignment='bottom', horizontalalignment='center')
+
     if cfg.TEST.RE_RANKING:
         distance_type = 'reranking'
     else:
         distance_type = 'euclidean'
 
-    # Plot the histogram of distances
-    sns.histplot(collated_distances, binrange=(min_distance, max_distance))
-
     plt.title(f'Test Set Separation Chart [{distance_type} Distance]\nModel: {cfg.TEST.WEIGHT}')
 
     # Save the plot
+    plt.tight_layout()
     plt.savefig(os.path.join(output_dir, f'{distance_type}_test_set_separation_chart.png'))
+
+    # Write the minimum stationary point info to a txt file
+    with open(os.path.join(output_dir, f'{distance_type}_test_set_separation_chart.txt'), 'w') as f:
+        f.write(f'Test min point: {x_minpt:.15e}')
