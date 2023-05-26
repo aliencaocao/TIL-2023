@@ -1,6 +1,6 @@
 import argparse
 import os
-
+import pickle
 import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -67,6 +67,9 @@ if __name__ == '__main__':
         model.load_param(cfg.TEST.WEIGHT)
 
     inter_class_distances, intra_class_distances = get_distance_distributions(cfg, model, val_loader, num_query)
+
+    with open(os.path.join(output_dir, 'val_set_distances.pkl'), 'wb') as f:
+        pickle.dump((inter_class_distances, intra_class_distances), f)
 
     max_value_of_both = max(max(inter_class_distances), max(intra_class_distances))
     min_value_of_both = min(min(inter_class_distances), min(intra_class_distances))

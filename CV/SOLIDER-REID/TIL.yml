@@ -50,6 +50,6 @@ TEST:
   WEIGHT: ''
   NECK_FEAT: 'before'
   FEAT_NORM: 'yes'
-  THRESHOLD: 0.02105
+  THRESHOLD: 0.001
 
-OUTPUT_DIR: './log_SGD_300epoch_5e-3LR/'
+OUTPUT_DIR: './log_SGD_continue_1e-4/'
