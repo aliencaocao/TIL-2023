@@ -4,7 +4,8 @@ import pickle
 import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+import numpy as np
+from scipy.stats import gaussian_kde
 from config import cfg
 from datasets import make_dataloader
 from model import make_model
@@ -67,51 +68,84 @@ if __name__ == '__main__':
         model.load_param(cfg.TEST.WEIGHT)
 
     inter_class_distances, intra_class_distances = get_distance_distributions(cfg, model, val_loader, num_query)
+    added_distances = intra_class_distances + inter_class_distances 
 
+    # cache the distances for later use
     with open(os.path.join(output_dir, 'val_set_distances.pkl'), 'wb') as f:
         pickle.dump((inter_class_distances, intra_class_distances), f)
 
+    # build the histogram for both inter_class_distances and intra_class_distances
+    print('Building histogram for inter_class_distances and intra_class_distances')
     max_value_of_both = max(max(inter_class_distances), max(intra_class_distances))
     min_value_of_both = min(min(inter_class_distances), min(intra_class_distances))
+    bin_size = 1e-7
+    bins = np.arange(min_value_of_both, max_value_of_both + bin_size, bin_size)
+    intra_hist, _ = np.histogram(intra_class_distances, bins=bins)
+    inter_hist, _ = np.histogram(inter_class_distances, bins=bins)
+    
+    # calculate the optimal val set threshold that gives highest 'accuracy'
+    tp = 0
+    tn = np.sum(inter_hist)
+    total = np.sum(intra_hist) + tn
+    accs = np.array([]) 
+    for i, bin in enumerate(bins[:-1]):
+        num_intra = intra_hist[i]
+        num_inter = inter_hist[i]
+        tp += num_intra
+        tn -= num_inter
+        acc = (tp + tn) / total
+        accs = np.append(accs, acc)
+    # find the index with the highest accuracy
+    max_acc_index = np.argmax(accs)
+    optimal_thresh = bins[max_acc_index] + bin_size
 
+    # find the intersection area of the intra and inter histograms
+    # find the sum of intra_hist from max_acc_index to the end
+    fn = np.sum(intra_hist[max_acc_index+1:])
+    # find the sum of inter_hist from the beginning to max_acc_index
+    fp = np.sum(inter_hist[:max_acc_index])
+    intersection_area = fn + fp
+
+    # find the minimum stationary point of the kde plot of added_distances
+    # this is because the test set will see the two distributions (intra and inter) as one distribution (added)
+    kde = gaussian_kde(added_distances)
+    x = np.linspace(np.min(added_distances), np.max(added_distances), num=2000)
+    kde_plot = kde(x)
+    gradient = np.gradient(kde_plot)
+    # Find the indices where the gradient changes sign (stationary points)
+    stationary_indices = np.where(np.diff(np.sign(gradient)))[0]
+    # Find the minimum stationary point
+    x_minpt = x[stationary_indices][1]
+
+    # calculate the difference between the optimal val set threshold and the minimum stationary point
+    delta = optimal_thresh - x_minpt
+
+    print('Plotting the histograms')
+    # Plot the histogram for added_distances (All) with green color
+    sns.histplot(added_distances, color='green', label='Added Distances', binrange=(min_value_of_both, max_value_of_both))
     # Plot the histogram for inter_class_distances (Dissimilar) with orange color
-    sns.histplot(inter_class_distances, color='orange', label='Inter Class Distances', binwidth=1e-6, binrange=(min_value_of_both, max_value_of_both))
+    sns.histplot(inter_class_distances, color='orange', label='Inter Class Distances', binrange=(min_value_of_both, max_value_of_both))
     # Plot the histogram for intra_class_distances (Similar) with blue color
-    sns.histplot(intra_class_distances, color='blue', label='Intra Class Distances', binwidth=1e-6, binrange=(min_value_of_both, max_value_of_both))
-
-    # Calculate the frequency table of the two distance arrays
-    bin_size = 1e-6
-    # Format of frequency table is as such
-    # { bin: { 'inter': count, 'intra': count } }
-    print('Calculating frequency table...')
-    frequency_table = {}
-    # init the frequency table
-    for i in range(int(min_value_of_both / bin_size), int(max_value_of_both / bin_size) + 1):
-        frequency_table[i * bin_size] = {
-            'inter': 0,
-            'intra': 0
-        }
-    # now fill in the frequency table
-    for distance in inter_class_distances:
-        frequency_table[int(distance / bin_size) * bin_size]['inter'] += 1
-    for distance in intra_class_distances:
-        frequency_table[int(distance / bin_size) * bin_size]['intra'] += 1
-
-    # calculate the intersection area
-    intersection_area_dict = {}
-    for frequency_bin in frequency_table:
-        intersection_area_dict[frequency_bin] = min(frequency_table[frequency_bin]['inter'], frequency_table[frequency_bin]['intra'])
-    intersection_area = sum(intersection_area_dict.values())
-    intersection_point = max(intersection_area_dict, key=intersection_area_dict.get)
+    sns.histplot(intra_class_distances, color='blue', label='Intra Class Distances', binrange=(min_value_of_both, max_value_of_both))
 
     # Set labels and title
     plt.xlabel('Distances')
     plt.ylabel('Count')
 
-    # Draw a vertical line at the intersection point and annotate
-    plt.axvline(x=intersection_point, color='black', linestyle='--', label='Intersection Point')
-    plt.text(intersection_point, plt.ylim()[1] * 0.9, f'Intersection: {intersection_point:.7e}', color='black', ha='center')
-    plt.text(intersection_point, plt.ylim()[1] * 0.8, f'IntersectionArea: {intersection_area}', color='black', ha='center')
+    # draw a vertical line at the optimal val set threshold
+    plt.axvline(x=optimal_thresh, color='black', linestyle='--', label='Intersection Point')
+    plt.text(optimal_thresh, 0, f'{optimal_thresh:.15e}', color='black', rotation=90, verticalalignment='bottom', horizontalalignment='center')
+    plt.text(optimal_thresh, plt.ylim()[1] * 0.9, 'O', color='black', ha='center')
+
+    # draw a vertical line at the minimum stationary point
+    plt.axvline(x_minpt, color='red', linestyle='--')
+    plt.text(x_minpt, 0, f'{x_minpt:.15e}', rotation=90, verticalalignment='bottom', horizontalalignment='center')
+    plt.text(x_minpt, plt.ylim()[1] * 0.9, 'S', color='black', ha='center')
+
+    # annotate the other metrics
+    plt.text(plt.xlim()[1], plt.ylim()[1] * 0.6, f'Accuracy@O: {accs[max_acc_index]}', color='black', ha='center')
+    plt.text(plt.xlim()[1], plt.ylim()[1] * 0.5, f'Intersection Area@O: {intersection_area}', color='black', ha='center')
+    plt.text(plt.xlim()[1], plt.ylim()[1] * 0.4, f'O-S Delta: {delta}', color='black', ha='center')
 
     # Add a legend
     plt.legend()
@@ -122,7 +156,16 @@ if __name__ == '__main__':
     else:
         distance_type = 'euclidean'
 
-    plt.title(f'Separation Chart [{distance_type} Distance]\nModel: {cfg.TEST.WEIGHT}')
+    plt.title(f'Val Set Separation Chart [{distance_type} distance]\nModel: {cfg.TEST.WEIGHT}')
 
     # Save the plot
+    plt.tight_layout()
     plt.savefig(os.path.join(output_dir, f'{distance_type}_separation_chart.png'))
+
+    # Save the metrics to a text file
+    with open(os.path.join(output_dir, f'{distance_type}_separation_chart.txt'), 'w') as f:
+        f.write(f'Val optimal threshold: {optimal_thresh}\n')
+        f.write(f'Val optimal threshold acc: {accs[max_acc_index]}\n\n')
+        f.write(f'Val added_distance min point: {x_minpt}\n')
+        f.write(f'Val added_distance delta: {delta}\n')
+        f.write(f'Val Intersection Area: {intersection_area}\n')
