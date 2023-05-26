@@ -147,9 +147,9 @@ class Backbone(nn.Module):
         if 'state_dict' in param_dict:
             param_dict = param_dict['state_dict']
         for i in param_dict:
-            if 'classifier' in i:
-                continue
-            elif 'module' in i:
+            #if 'classifier' in i:
+                #continue
+            if 'module' in i:
                 self.state_dict()[i.replace('module.', '')].copy_(param_dict[i])
             else:
                 self.state_dict()[i].copy_(param_dict[i])

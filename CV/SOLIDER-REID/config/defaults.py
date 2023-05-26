@@ -197,6 +197,10 @@ _C.TEST.FEAT_NORM = 'yes'
 _C.TEST.DIST_MAT = "dist_mat.npy"
 # Whether calculate the eval score option: 'True', 'False'
 _C.TEST.EVAL = False
+
+# Threshold for the distance matrix to determine if suspect or not suspect
+_C.TEST.THRESHOLD = 0.0
+
 # ---------------------------------------------------------------------------- #
 # Misc options
 # ---------------------------------------------------------------------------- #

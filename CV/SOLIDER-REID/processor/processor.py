@@ -154,7 +154,8 @@ def do_train(cfg,
 def do_inference(cfg,
                  model,
                  test_loader,
-                 num_query):
+                 num_query,
+                 threshold):
     device = "cuda"
     logger = logging.getLogger("transreid.test")
     logger.info("Enter inferencing")
@@ -181,8 +182,11 @@ def do_inference(cfg,
 
     # perform thresholding to determine which gallery image, if any, are matches with the query
     dist_mat = postprocessor.compute()
-    breakpoint()
-    print(dist_mat)
+    dist_mat = (dist_mat < threshold).astype(int)
+    results = []
+    for i, test_set_bbox_path in enumerate(imgpath[1:]):
+        results.append((test_set_bbox_path, dist_mat[0][i]))
+    return results
 
 def get_distance_distributions(cfg,
                                model,
