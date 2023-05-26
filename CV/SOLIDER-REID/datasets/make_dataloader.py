@@ -141,5 +141,5 @@ def make_dataloader(cfg):
 
     if cfg.EXECUTION_MODE == 'training':
         return train_loader, train_loader_normal, val_loader, len(dataset.query), num_classes, cam_num, view_num
-    elif cfg.EXECUTION_MODE == 'plotting':
+    elif cfg.EXECUTION_MODE == 'plot_val':
         return val_loader, len(dataset.query)

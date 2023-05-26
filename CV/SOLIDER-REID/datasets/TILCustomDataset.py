@@ -79,7 +79,7 @@ class TILCustomDataset(BaseImageDataset):
     def _process_dir(self, dir_path, relabel=False):
         # Find the paths of all images in the directory.
         img_paths = glob.glob(osp.join(dir_path, '*.jpg')) + glob.glob(osp.join(dir_path, '*.png'))
-        if self.EXECUTION_MODE == 'training' or self.EXECUTION_MODE == 'plotting':
+        if self.EXECUTION_MODE == 'training' or self.EXECUTION_MODE == 'plot_val':
             # If we are in training mode, then we need to relabel the personID and cameraID from 1-indexed to 0-indexed.
             pattern = re.compile(r'([-\d]+)_c(\d+)')
             pid_container = set()
