@@ -7,6 +7,7 @@
 *.trt
 *.safetensors
 *.zip
+*.pyc
 CV/RT-DETR/checkpoints
 CV/RT-DETR/dataset
 CV/RT-DETR/output_inference
@@ -19,7 +20,9 @@ ASR/musan_noise
 ASR/IMDA
 ASR/IMDA_TIL
 ASR/imda_truncated
+!ASR/imda_truncated/*.csv
 ASR/imda_truncated_edited/
+!ASR/imda_truncated_edited/*.csv
 ASR/audio
 ASR/train_augmented
 ASR/train_augmented_without_musan
