@@ -1,13 +1,20 @@
 import argparse
 import os
+import warnings
+from copy import deepcopy
+
 import pandas as pd
 from tqdm import tqdm
-from copy import deepcopy
+
 from config import cfg
 from datasets import make_dataloader
 from model import make_model
 from processor import do_inference
 from utils.logger import setup_logger
+
+warnings.filterwarnings('ignore')
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='ReID Inference')

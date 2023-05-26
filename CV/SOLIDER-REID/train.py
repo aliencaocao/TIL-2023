@@ -1,6 +1,7 @@
 import argparse
 import os
 import random
+import warnings
 
 import numpy as np
 import torch
@@ -14,6 +15,9 @@ from processor import do_train
 from solver import WarmupMultiStepLR, make_optimizer
 from solver.scheduler_factory import create_scheduler
 from utils.logger import setup_logger
+
+warnings.filterwarnings('ignore')
+
 
 
 def set_seed(seed):

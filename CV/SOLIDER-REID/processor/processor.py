@@ -1,7 +1,6 @@
 import logging
 import os
 import time
-import warnings
 
 import numpy as np
 import torch
@@ -12,7 +11,6 @@ from tqdm import tqdm
 from utils.meter import AverageMeter
 from utils.metrics import Postprocessor, R1_mAP_eval
 
-warnings.filterwarnings('ignore')
 
 def do_train(cfg,
              model,
