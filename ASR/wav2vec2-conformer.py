@@ -3,7 +3,7 @@ os.environ['HF_HOME'] = 'huggingface'
 os.environ['HF_HUB_DISABLE_TELEMETRY'] = '1'
 os.environ['HF_HUB_ENABLE_HF_TRANSFER'] = 'True'
 import math
-from datasets import  load_dataset
+from datasets import load_dataset
 from transformers import Wav2Vec2Processor, Wav2Vec2ConformerForCTC, TrainingArguments, Trainer
 import torch
 from dataclasses import dataclass, field
@@ -11,26 +11,29 @@ from typing import Any, Dict, List, Union
 import numpy as np
 import evaluate
 
-model_name= 'facebook/wav2vec2-conformer-rel-pos-large-960h-ft'
-checkpoint_name= 'wav2vec2-checkpoints/checkpoint-4125/'
+model_name = 'facebook/wav2vec2-conformer-rel-pos-large-960h-ft'
+checkpoint_name = 'checkpoints/checkpoint-750/'
 
 processor = Wav2Vec2Processor.from_pretrained(model_name)
 
-ds = load_dataset('audiofolder', data_dir='train', split='train')  # specify split to return a Dataset object instead of a DatasetDict
-ds = ds.train_test_split(test_size=0.2)
+ds = load_dataset('audiofolder', data_dir='imda_truncated_edited', split='train')
+ds = ds.train_test_split(test_size=0.2, shuffle=True)
 
 def prepare_dataset(batch):
     model_name = 'facebook/wav2vec2-conformer-rel-pos-large-960h-ft'
+
+    # separate import for each process
     from transformers import Wav2Vec2Processor
     processor = Wav2Vec2Processor.from_pretrained(model_name)
+
     batch["input_values"] = [processor(audio["array"], sampling_rate=16000).input_values for audio in batch["audio"]]
-    batch["input_length"] = [len(b) for b in batch["input_values"]]
+    batch["input_length"] = [len(b[0]) for b in batch["input_values"]]
     batch['length'] = batch["input_length"]
     batch["labels"] = processor(text=batch["annotation"]).input_ids
+
     return batch
 
-
-ds = ds.map(prepare_dataset, num_proc=8, batched=True, batch_size=512)
+ds = ds.map(prepare_dataset, num_proc=8, batched=True, batch_size=256)
 
 @dataclass
 class DataCollatorCTCWithPadding:
@@ -72,22 +75,21 @@ model = Wav2Vec2ConformerForCTC.from_pretrained(
     model_name,
     ctc_loss_reduction="mean",
     pad_token_id=processor.tokenizer.pad_token_id,
-    mask_time_prob=0.7,
-    mask_time_length=10,
-    mask_feature_prob=0.7,
-    mask_feature_length=10)
-
-# model.freeze_feature_encoder()
+    mask_time_prob=0.7,  # 0.05
+    mask_time_length=10, # 10
+    mask_feature_prob=0.7, # 0
+    mask_feature_length=10, # 10
+)
 
 per_gpu_bs = 4
-effective_bs = 32
+effective_bs = 384
 training_args = TrainingArguments(
-    output_dir="wav2vec2-checkpoints",
+    output_dir="wav2vec2-checkpoints-imda-bs=384-lr=1e-5",
     overwrite_output_dir =True,
     per_device_train_batch_size=per_gpu_bs,
     gradient_accumulation_steps=math.ceil(effective_bs/per_gpu_bs),
-    learning_rate=1e-4,
-    num_train_epochs=20,
+    learning_rate=1e-5,
+    num_train_epochs=60,
     gradient_checkpointing=False,
     fp16=True,
     # bf16=True,  # for A100
@@ -100,18 +102,21 @@ training_args = TrainingArguments(
     per_device_eval_batch_size=4,
     save_steps=1,
     eval_steps=1,
-    logging_steps=100,
+    logging_steps=1,
     save_total_limit=3,
     lr_scheduler_type='cosine',
     load_best_model_at_end=True,  # True
     adam_beta1=0.9,
     adam_beta2=0.98,  # follow fairseq fintuning config
-    warmup_ratio=0.22, # follow Ranger21
+
+    warmup_ratio=0., # check whether IMDA data works first
+
+#    warmup_ratio=0.22, # follow Ranger21
     weight_decay=1e-4,  # follow Ranger21
     metric_for_best_model="wer",
     greater_is_better=False,
     report_to=['tensorboard'],
-    dataloader_num_workers=24 if os.name != 'nt' else 1)
+    dataloader_num_workers=8 if os.name != 'nt' else 1) # since num threads is 16
 
 class CTCTrainer(Trainer):
     def training_step(self, model: torch.nn.Module, inputs: Dict[str, Union[torch.Tensor, Any]]) -> torch.Tensor:
@@ -151,19 +156,6 @@ if os.name != 'nt':
     from accelerate import Accelerator
     accelerator = Accelerator(mixed_precision='fp16', dynamo_backend='eager')  # FP8 needs transformer_engine package which is only on Linux with Hopper GPUs
 
-def tri_stage_schedule(epoch: int, max_epoch = training_args.num_train_epochs, stage_ratio = [0.1, 0.4, 0.5], peak_lr = training_args.learning_rate, initial_lr_scale=0.01, final_lr_scale=0.05):
-    """https://github.com/facebookresearch/fairseq/blob/5ecbbf58d6e80b917340bcbf9d7bdbb539f0f92b/fairseq/optim/lr_scheduler/tri_stage_lr_scheduler.py#L51"""
-    assert sum(stage_ratio) == 1
-    current_ratio = epoch / max_epoch
-    if current_ratio < stage_ratio[0]:  # linear warmup
-        lrs = torch.linspace(initial_lr_scale * peak_lr, peak_lr, int(stage_ratio[0] * max_epoch))
-        return lrs[epoch]
-    elif stage_ratio[0] <= current_ratio <= stage_ratio[1]:  # constant
-        return peak_lr
-    else:  # exponential decay
-        decay_factor = -math.log(final_lr_scale) / (stage_ratio[2] * max_epoch)
-        return peak_lr * math.exp(-decay_factor * stage_ratio[2] * max_epoch)
-    
 # max_steps = math.ceil(training_args.num_train_epochs * len(ds['train']) / training_args.gradient_accumulation_steps / min(training_args.per_device_train_batch_size, len(ds['train'])))
 # optimizer = Ranger21(model.parameters(), num_iterations=max_steps, lr=1e-4)
 # optimizer = torch.optim.Adam(model.parameters(), lr=1e-4, betas=(0.9, 0.98), eps=1e-8, foreach=False)  # https://github.com/facebookresearch/fairseq/blob/main/examples/wav2vec/config/finetuning/base_960h.yaml
