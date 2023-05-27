@@ -91,7 +91,11 @@ def main():
     # Initialize planner
     map_: SignedDistanceGrid = loc_service.get_map()
     map_ = map_.dilated(1.5 * ROBOT_RADIUS_M / map_.scale)
-    planner = MyPlanner(map_, waypoint_sparsity=0.4, optimize_threshold=3, consider=4, biggrid_size=0.8)
+    planner = MyPlanner(map_,
+                        waypoint_sparsity=0.4,
+                        path_opt_min_straight_deg=165,
+                        explore_consider_nearest=4,
+                        biggrid_size=0.8)
 
     # Initialize variables
     seen_clues = set()
@@ -198,7 +202,7 @@ def main():
                         print("Spin direction lock, modifying ang_diff -360")
                         ang_diff -= 360
 
-                logging.getLogger('Navigation').info('ang_to_wp: {}, hdg: {}, ang_diff: {}'.format(ang_to_wp, pose[2], ang_diff))
+                # logging.getLogger('Navigation').info('ang_to_wp: {}, hdg: {}, ang_diff: {}'.format(ang_to_wp, pose[2], ang_diff))
                 # logging.getLogger('Navigation').info('Pose: {}'.format(pose))
 
                 # Consider waypoint reached if within a threshold distance
