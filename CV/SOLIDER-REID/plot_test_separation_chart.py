@@ -71,7 +71,7 @@ if __name__ == '__main__':
     collated_distances = []
     inference_loader = make_dataloader(cfg)
     # no threshold as we want the raw distance matrix
-    curr_dist_mat = do_batch_inference(cfg, model, inference_loader, 1, None, output_dist_mat=True)
+    collated_distances = do_batch_inference(cfg, model, inference_loader, len(os.listdir(os.path.join(cfg.DATASETS.ROOT_DIR, 'query'))), None, output_dist_mat=True)
 
     # Cache the collated distances
     with open(os.path.join(output_dir, 'collated_test_set_distances.pkl'), 'wb') as f:

@@ -212,8 +212,8 @@ def do_batch_inference(cfg,
     for img, imgpath, camid in tqdm(test_loader):
         # img shape: (num_query + num_gallery, 3, 224, 224) -> (num_query + num_gallery, channel, width, height)
         # num_query total no of suspects, 1600
-        # num_gallery is the number of cropped bboxes, for qualifiers is 3407.
-        # len(camid_list) and len(imgpath_list) would be num_query + num_gallery which is 1600 + 3407 = 5007.
+        # num_gallery is the number of cropped bboxes, for qualifiers is about 3.5k.
+        # len(camid_list) and len(imgpath_list) would be num_query + num_gallery which is 1600 + ~3.5k = ~5.1k.
         with torch.no_grad():
             img = img.to(device)
             feat, _ = model(img)
@@ -221,14 +221,13 @@ def do_batch_inference(cfg,
             imgpath_list.extend(imgpath)
             camid_list.extend(camid)
     camid_list_np_excl_query = np.array(camid_list[num_query:])  # for later vectorized np.where instead of linear search on list
-    dist_mat = postprocessor.compute()  # (1600, 3407)
+    dist_mat = postprocessor.compute()  # (1600, ~3.5k)
 
-    # perform thresholding to determine which gallery image, if any, are matches with the query
-    if not output_dist_mat:
-        dist_mat_bool = (dist_mat < threshold).astype(int)  # boolean array
     results = []
     if output_dist_mat:
         relevant_distances = []  # used for plotting
+    else:  # perform thresholding to determine which gallery image, if any, are matches with the query
+        dist_mat_bool = (dist_mat < threshold).astype(int)  # boolean array
     prev_camid = None
     same_camid_counter = 0
     for camid, test_set_bbox_path in zip(camid_list[num_query:], imgpath_list[num_query:]):  # skip the first len(query) items as they are suspect images
