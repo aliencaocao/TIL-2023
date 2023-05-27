@@ -1,0 +1,802 @@
+/home/aistudio/work/PaddleDetection-develop
+/opt/conda/envs/python35-paddle120-env/lib/python3.9/site-packages/matplotlib/__init__.py:107: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
+  from collections import MutableMapping
+/opt/conda/envs/python35-paddle120-env/lib/python3.9/site-packages/matplotlib/rcsetup.py:20: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
+  from collections import Iterable, Mapping
+/opt/conda/envs/python35-paddle120-env/lib/python3.9/site-packages/matplotlib/colors.py:53: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
+  from collections import Sized
+Warning: import ppdet from source directory without installing, run 'python setup.py install' to install ppdet firstly
+loading annotations into memory...
+Done (t=0.05s)
+creating index...
+index created!
+[05/27 20:57:12] ppdet.data.source.coco INFO: Load [5664 samples valid, 0 samples invalid] in file ../dataset/train/train.json.
+W0527 20:57:12.298995  5618 gpu_resources.cc:61] Please NOTE: device: 0, GPU Compute Capability: 8.0, Driver API Version: 11.2, Runtime API Version: 11.2
+W0527 20:57:12.302120  5618 gpu_resources.cc:91] device: 0, cuDNN Version: 8.2.
+[05/27 20:57:18] ppdet.utils.checkpoint INFO: ['fc.bias', 'fc.weight', 'last_conv.weight'] in pretrained weight is not used in the model, and its will not be loaded
+[05/27 20:57:18] ppdet.utils.checkpoint INFO: Finish loading model weights: /home/aistudio/.cache/paddle/weights/PPHGNetV2_X_ssld_pretrained.pdparams
+[05/27 20:57:22] ppdet.engine INFO: Epoch: [0] [  0/283] learning_rate: 0.000000 loss_class: 0.685187 loss_bbox: 0.903370 loss_giou: 1.490588 loss_class_aux: 3.498541 loss_bbox_aux: 5.432394 loss_giou_aux: 8.949120 loss_class_dn: 0.930088 loss_bbox_dn: 0.817060 loss_giou_dn: 1.367284 loss_class_aux_dn: 3.982612 loss_bbox_aux_dn: 4.085301 loss_giou_aux_dn: 6.836419 loss: 38.977962 eta: 21:06:54 batch_cost: 3.7306 data_cost: 0.0008 ips: 5.3611 images/s
+[05/27 21:00:12] ppdet.engine INFO: Epoch: [0] [200/283] learning_rate: 0.000010 loss_class: 0.540154 loss_bbox: 0.910603 loss_giou: 1.230379 loss_class_aux: 3.091672 loss_bbox_aux: 5.514122 loss_giou_aux: 7.551228 loss_class_dn: 0.418122 loss_bbox_dn: 0.885024 loss_giou_dn: 1.357116 loss_class_aux_dn: 2.043291 loss_bbox_aux_dn: 4.367476 loss_giou_aux_dn: 6.808442 loss: 34.612717 eta: 4:24:17 batch_cost: 0.7712 data_cost: 0.0005 ips: 25.9323 images/s
+[05/27 21:01:20] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 21:01:20] ppdet.data.source.coco INFO: Load [800 samples valid, 0 samples invalid] in file ../dataset/val/val.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 21:01:23] ppdet.engine INFO: Eval iter: 0
+[05/27 21:01:42] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 21:01:42] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.06s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=4.51s).
+Accumulating evaluation results...
+DONE (t=0.56s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.112
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.231
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.086
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.350
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.113
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.240
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.464
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.596
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.422
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.605
+[05/27 21:01:49] ppdet.engine INFO: Total sample number: 800, average FPS: 47.542810507061056
+[05/27 21:01:49] ppdet.engine INFO: Best test bbox ap is 0.112.
+[05/27 21:01:51] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:01:52] ppdet.engine INFO: Epoch: [1] [  0/283] learning_rate: 0.000014 loss_class: 0.681367 loss_bbox: 0.611248 loss_giou: 0.922099 loss_class_aux: 3.513511 loss_bbox_aux: 4.171208 loss_giou_aux: 6.244844 loss_class_dn: 0.415238 loss_bbox_dn: 0.866917 loss_giou_dn: 1.283754 loss_class_aux_dn: 1.921456 loss_bbox_aux_dn: 4.248053 loss_giou_aux_dn: 6.604853 loss: 31.330893 eta: 4:15:36 batch_cost: 0.7558 data_cost: 0.0005 ips: 26.4619 images/s
+[05/27 21:04:38] ppdet.engine INFO: Epoch: [1] [200/283] learning_rate: 0.000024 loss_class: 0.880691 loss_bbox: 0.207271 loss_giou: 0.393271 loss_class_aux: 4.343762 loss_bbox_aux: 1.802793 loss_giou_aux: 3.157787 loss_class_dn: 0.498522 loss_bbox_dn: 0.337518 loss_giou_dn: 0.581269 loss_class_aux_dn: 2.105271 loss_bbox_aux_dn: 2.470294 loss_giou_aux_dn: 4.177514 loss: 20.816200 eta: 4:11:07 batch_cost: 0.7492 data_cost: 0.0011 ips: 26.6969 images/s
+[05/27 21:05:47] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:05:47] ppdet.engine INFO: Eval iter: 0
+[05/27 21:06:07] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.25s)
+creating index...
+index created!
+[05/27 21:06:07] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=1.79s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.53s).
+Accumulating evaluation results...
+DONE (t=0.54s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.631
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.918
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.834
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.599
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.636
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.351
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.749
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.754
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.729
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.755
+[05/27 21:06:13] ppdet.engine INFO: Total sample number: 800, average FPS: 53.71307457754844
+[05/27 21:06:13] ppdet.engine INFO: Best test bbox ap is 0.631.
+[05/27 21:06:16] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:06:17] ppdet.engine INFO: Epoch: [2] [  0/283] learning_rate: 0.000028 loss_class: 0.669724 loss_bbox: 0.192435 loss_giou: 0.364152 loss_class_aux: 3.908898 loss_bbox_aux: 1.557174 loss_giou_aux: 2.811880 loss_class_dn: 0.421409 loss_bbox_dn: 0.253042 loss_giou_dn: 0.431122 loss_class_aux_dn: 2.060047 loss_bbox_aux_dn: 1.863608 loss_giou_aux_dn: 3.153832 loss: 17.772129 eta: 4:08:07 batch_cost: 0.7372 data_cost: 0.0011 ips: 27.1301 images/s
+[05/27 21:08:57] ppdet.engine INFO: Epoch: [2] [200/283] learning_rate: 0.000038 loss_class: 0.555556 loss_bbox: 0.151536 loss_giou: 0.288544 loss_class_aux: 3.561347 loss_bbox_aux: 1.205147 loss_giou_aux: 2.253929 loss_class_dn: 0.378905 loss_bbox_dn: 0.177052 loss_giou_dn: 0.318760 loss_class_aux_dn: 1.984202 loss_bbox_aux_dn: 1.289668 loss_giou_aux_dn: 2.322871 loss: 14.459063 eta: 4:03:58 batch_cost: 0.7321 data_cost: 0.0012 ips: 27.3185 images/s
+[05/27 21:10:08] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:10:08] ppdet.engine INFO: Eval iter: 0
+[05/27 21:10:27] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 21:10:27] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=1.91s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.58s).
+Accumulating evaluation results...
+DONE (t=0.57s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.746
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.972
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.930
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.628
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.753
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.382
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.836
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.866
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.812
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.869
+[05/27 21:10:33] ppdet.engine INFO: Total sample number: 800, average FPS: 56.9733689010742
+[05/27 21:10:34] ppdet.engine INFO: Best test bbox ap is 0.746.
+[05/27 21:10:36] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:10:37] ppdet.engine INFO: Epoch: [3] [  0/283] learning_rate: 0.000043 loss_class: 0.531628 loss_bbox: 0.146129 loss_giou: 0.278504 loss_class_aux: 3.429332 loss_bbox_aux: 1.154355 loss_giou_aux: 2.164035 loss_class_dn: 0.370658 loss_bbox_dn: 0.168984 loss_giou_dn: 0.298922 loss_class_aux_dn: 1.959414 loss_bbox_aux_dn: 1.232036 loss_giou_aux_dn: 2.166903 loss: 13.963482 eta: 4:02:49 batch_cost: 0.7425 data_cost: 0.0012 ips: 26.9358 images/s
+[05/27 21:13:22] ppdet.engine INFO: Epoch: [3] [200/283] learning_rate: 0.000052 loss_class: 0.466721 loss_bbox: 0.131606 loss_giou: 0.254473 loss_class_aux: 3.145177 loss_bbox_aux: 1.012520 loss_giou_aux: 1.901874 loss_class_dn: 0.348209 loss_bbox_dn: 0.148078 loss_giou_dn: 0.267442 loss_class_aux_dn: 1.883016 loss_bbox_aux_dn: 1.066262 loss_giou_aux_dn: 1.946149 loss: 12.627518 eta: 4:00:26 batch_cost: 0.7478 data_cost: 0.0005 ips: 26.7449 images/s
+[05/27 21:14:30] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:14:32] ppdet.engine INFO: Eval iter: 0
+[05/27 21:14:52] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 21:14:52] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.16s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.41s).
+Accumulating evaluation results...
+DONE (t=0.55s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.816
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.982
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.969
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.759
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.820
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.413
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.876
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.886
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.844
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.888
+[05/27 21:14:58] ppdet.engine INFO: Total sample number: 800, average FPS: 49.32648183199435
+[05/27 21:14:58] ppdet.engine INFO: Best test bbox ap is 0.816.
+[05/27 21:15:01] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:15:02] ppdet.engine INFO: Epoch: [4] [  0/283] learning_rate: 0.000057 loss_class: 0.430572 loss_bbox: 0.124762 loss_giou: 0.235856 loss_class_aux: 2.998818 loss_bbox_aux: 0.979374 loss_giou_aux: 1.862283 loss_class_dn: 0.333383 loss_bbox_dn: 0.138034 loss_giou_dn: 0.250507 loss_class_aux_dn: 1.847021 loss_bbox_aux_dn: 1.032410 loss_giou_aux_dn: 1.863688 loss: 12.137316 eta: 3:59:02 batch_cost: 0.7416 data_cost: 0.0004 ips: 26.9684 images/s
+[05/27 21:17:49] ppdet.engine INFO: Epoch: [4] [200/283] learning_rate: 0.000067 loss_class: 0.403214 loss_bbox: 0.108987 loss_giou: 0.210788 loss_class_aux: 2.766330 loss_bbox_aux: 0.872759 loss_giou_aux: 1.662162 loss_class_dn: 0.306150 loss_bbox_dn: 0.120095 loss_giou_dn: 0.223143 loss_class_aux_dn: 1.764312 loss_bbox_aux_dn: 0.897840 loss_giou_aux_dn: 1.668880 loss: 10.973194 eta: 3:57:30 batch_cost: 0.7652 data_cost: 0.0005 ips: 26.1359 images/s
+[05/27 21:19:02] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:19:02] ppdet.engine INFO: Eval iter: 0
+[05/27 21:19:21] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 21:19:21] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.10s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.52s).
+Accumulating evaluation results...
+DONE (t=0.54s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.825
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.989
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.978
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.761
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.829
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.414
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.884
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.892
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.835
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.896
+[05/27 21:19:27] ppdet.engine INFO: Total sample number: 800, average FPS: 57.67268332446271
+[05/27 21:19:27] ppdet.engine INFO: Best test bbox ap is 0.825.
+[05/27 21:19:30] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:19:31] ppdet.engine INFO: Epoch: [5] [  0/283] learning_rate: 0.000071 loss_class: 0.391011 loss_bbox: 0.106269 loss_giou: 0.198710 loss_class_aux: 2.694019 loss_bbox_aux: 0.842653 loss_giou_aux: 1.594900 loss_class_dn: 0.298343 loss_bbox_dn: 0.116424 loss_giou_dn: 0.212435 loss_class_aux_dn: 1.734043 loss_bbox_aux_dn: 0.872424 loss_giou_aux_dn: 1.612086 loss: 10.736842 eta: 3:56:55 batch_cost: 0.7715 data_cost: 0.0005 ips: 25.9251 images/s
+[05/27 21:22:20] ppdet.engine INFO: Epoch: [5] [200/283] learning_rate: 0.000081 loss_class: 0.352591 loss_bbox: 0.097814 loss_giou: 0.189038 loss_class_aux: 2.496881 loss_bbox_aux: 0.780630 loss_giou_aux: 1.507514 loss_class_dn: 0.285701 loss_bbox_dn: 0.105473 loss_giou_dn: 0.199579 loss_class_aux_dn: 1.671265 loss_bbox_aux_dn: 0.792412 loss_giou_aux_dn: 1.487795 loss: 10.036276 eta: 3:55:15 batch_cost: 0.7711 data_cost: 0.0010 ips: 25.9383 images/s
+[05/27 21:23:34] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:23:34] ppdet.engine INFO: Eval iter: 0
+[05/27 21:23:54] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.29s)
+creating index...
+index created!
+[05/27 21:23:55] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=1.91s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.43s).
+Accumulating evaluation results...
+DONE (t=0.53s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.851
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.994
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.977
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.788
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.854
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.425
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.891
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.895
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.848
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.898
+[05/27 21:24:01] ppdet.engine INFO: Total sample number: 800, average FPS: 52.06368793196971
+[05/27 21:24:01] ppdet.engine INFO: Best test bbox ap is 0.851.
+[05/27 21:24:04] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:24:05] ppdet.engine INFO: Epoch: [6] [  0/283] learning_rate: 0.000085 loss_class: 0.337590 loss_bbox: 0.095389 loss_giou: 0.188103 loss_class_aux: 2.402244 loss_bbox_aux: 0.765090 loss_giou_aux: 1.492874 loss_class_dn: 0.282789 loss_bbox_dn: 0.103706 loss_giou_dn: 0.198590 loss_class_aux_dn: 1.645707 loss_bbox_aux_dn: 0.762667 loss_giou_aux_dn: 1.449972 loss: 9.767860 eta: 3:54:29 batch_cost: 0.7518 data_cost: 0.0005 ips: 26.6026 images/s
+[05/27 21:26:54] ppdet.engine INFO: Epoch: [6] [200/283] learning_rate: 0.000095 loss_class: 0.318545 loss_bbox: 0.087881 loss_giou: 0.175519 loss_class_aux: 2.261791 loss_bbox_aux: 0.704751 loss_giou_aux: 1.378654 loss_class_dn: 0.267584 loss_bbox_dn: 0.093294 loss_giou_dn: 0.183145 loss_class_aux_dn: 1.587474 loss_bbox_aux_dn: 0.688910 loss_giou_aux_dn: 1.332669 loss: 9.131811 eta: 3:52:36 batch_cost: 0.7728 data_cost: 0.0005 ips: 25.8808 images/s
+[05/27 21:28:05] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:28:06] ppdet.engine INFO: Eval iter: 0
+[05/27 21:28:25] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 21:28:25] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=1.84s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.55s).
+Accumulating evaluation results...
+DONE (t=0.55s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.855
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.995
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.983
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.791
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.860
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.428
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.892
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.905
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.852
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.908
+[05/27 21:28:31] ppdet.engine INFO: Total sample number: 800, average FPS: 53.32661014125124
+[05/27 21:28:31] ppdet.engine INFO: Best test bbox ap is 0.855.
+[05/27 21:28:34] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:28:35] ppdet.engine INFO: Epoch: [7] [  0/283] learning_rate: 0.000099 loss_class: 0.310938 loss_bbox: 0.086894 loss_giou: 0.170741 loss_class_aux: 2.222754 loss_bbox_aux: 0.680749 loss_giou_aux: 1.343372 loss_class_dn: 0.263083 loss_bbox_dn: 0.094301 loss_giou_dn: 0.180116 loss_class_aux_dn: 1.570153 loss_bbox_aux_dn: 0.690939 loss_giou_aux_dn: 1.322094 loss: 8.985113 eta: 3:51:20 batch_cost: 0.7585 data_cost: 0.0005 ips: 26.3696 images/s
+[05/27 21:31:25] ppdet.engine INFO: Epoch: [7] [200/283] learning_rate: 0.000100 loss_class: 0.308063 loss_bbox: 0.080083 loss_giou: 0.161828 loss_class_aux: 2.162683 loss_bbox_aux: 0.627482 loss_giou_aux: 1.265564 loss_class_dn: 0.257526 loss_bbox_dn: 0.088109 loss_giou_dn: 0.167362 loss_class_aux_dn: 1.509073 loss_bbox_aux_dn: 0.624334 loss_giou_aux_dn: 1.204460 loss: 8.510914 eta: 3:49:13 batch_cost: 0.7693 data_cost: 0.0006 ips: 25.9968 images/s
+[05/27 21:32:38] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:32:38] ppdet.engine INFO: Eval iter: 0
+[05/27 21:32:58] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 21:32:58] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=1.84s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=4.06s).
+Accumulating evaluation results...
+DONE (t=0.56s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.862
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.999
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.979
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.796
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.867
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.430
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.899
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.908
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.866
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.911
+[05/27 21:33:04] ppdet.engine INFO: Total sample number: 800, average FPS: 53.82908198308765
+[05/27 21:33:04] ppdet.engine INFO: Best test bbox ap is 0.862.
+[05/27 21:33:07] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:33:08] ppdet.engine INFO: Epoch: [8] [  0/283] learning_rate: 0.000100 loss_class: 0.295808 loss_bbox: 0.078430 loss_giou: 0.159118 loss_class_aux: 2.094554 loss_bbox_aux: 0.614735 loss_giou_aux: 1.257642 loss_class_dn: 0.253836 loss_bbox_dn: 0.084964 loss_giou_dn: 0.164194 loss_class_aux_dn: 1.501289 loss_bbox_aux_dn: 0.605479 loss_giou_aux_dn: 1.202156 loss: 8.444688 eta: 3:48:11 batch_cost: 0.7616 data_cost: 0.0005 ips: 26.2598 images/s
+[05/27 21:35:56] ppdet.engine INFO: Epoch: [8] [200/283] learning_rate: 0.000100 loss_class: 0.267516 loss_bbox: 0.072920 loss_giou: 0.147943 loss_class_aux: 1.972840 loss_bbox_aux: 0.564508 loss_giou_aux: 1.144728 loss_class_dn: 0.247124 loss_bbox_dn: 0.078714 loss_giou_dn: 0.152338 loss_class_aux_dn: 1.446452 loss_bbox_aux_dn: 0.545368 loss_giou_aux_dn: 1.085777 loss: 7.732708 eta: 3:45:48 batch_cost: 0.7615 data_cost: 0.0005 ips: 26.2629 images/s
+[05/27 21:37:11] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:37:11] ppdet.engine INFO: Eval iter: 0
+[05/27 21:37:30] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 21:37:30] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.22s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.54s).
+Accumulating evaluation results...
+DONE (t=0.57s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.861
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.993
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.979
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.791
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.866
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.431
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.894
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.905
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.864
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.907
+[05/27 21:37:37] ppdet.engine INFO: Total sample number: 800, average FPS: 55.46644866079609
+[05/27 21:37:37] ppdet.engine INFO: Best test bbox ap is 0.862.
+[05/27 21:37:38] ppdet.engine INFO: Epoch: [9] [  0/283] learning_rate: 0.000100 loss_class: 0.274558 loss_bbox: 0.073048 loss_giou: 0.143713 loss_class_aux: 1.986610 loss_bbox_aux: 0.565151 loss_giou_aux: 1.161190 loss_class_dn: 0.244312 loss_bbox_dn: 0.075767 loss_giou_dn: 0.148688 loss_class_aux_dn: 1.439365 loss_bbox_aux_dn: 0.536365 loss_giou_aux_dn: 1.080531 loss: 7.733784 eta: 3:45:00 batch_cost: 0.7685 data_cost: 0.0005 ips: 26.0231 images/s
+[05/27 21:40:24] ppdet.engine INFO: Epoch: [9] [200/283] learning_rate: 0.000100 loss_class: 0.269310 loss_bbox: 0.072085 loss_giou: 0.143491 loss_class_aux: 1.944729 loss_bbox_aux: 0.558135 loss_giou_aux: 1.095500 loss_class_dn: 0.241708 loss_bbox_dn: 0.078176 loss_giou_dn: 0.147777 loss_class_aux_dn: 1.414865 loss_bbox_aux_dn: 0.530386 loss_giou_aux_dn: 1.040944 loss: 7.545551 eta: 3:42:30 batch_cost: 0.7586 data_cost: 0.0005 ips: 26.3656 images/s
+[05/27 21:41:37] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:41:39] ppdet.engine INFO: Eval iter: 0
+[05/27 21:41:57] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 21:41:57] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.16s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.50s).
+Accumulating evaluation results...
+DONE (t=0.57s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.866
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.997
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.985
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.804
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.870
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.431
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.900
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.914
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.861
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.917
+[05/27 21:42:03] ppdet.engine INFO: Total sample number: 800, average FPS: 53.733565145560135
+[05/27 21:42:04] ppdet.engine INFO: Best test bbox ap is 0.866.
+[05/27 21:42:06] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:42:07] ppdet.engine INFO: Epoch: [10] [  0/283] learning_rate: 0.000100 loss_class: 0.263847 loss_bbox: 0.071186 loss_giou: 0.144972 loss_class_aux: 1.913201 loss_bbox_aux: 0.542529 loss_giou_aux: 1.089431 loss_class_dn: 0.238945 loss_bbox_dn: 0.074238 loss_giou_dn: 0.147617 loss_class_aux_dn: 1.393491 loss_bbox_aux_dn: 0.514984 loss_giou_aux_dn: 1.018278 loss: 7.437159 eta: 3:41:30 batch_cost: 0.7577 data_cost: 0.0005 ips: 26.3946 images/s
+[05/27 21:44:52] ppdet.engine INFO: Epoch: [10] [200/283] learning_rate: 0.000100 loss_class: 0.256928 loss_bbox: 0.069896 loss_giou: 0.141464 loss_class_aux: 1.883696 loss_bbox_aux: 0.530509 loss_giou_aux: 1.072527 loss_class_dn: 0.235072 loss_bbox_dn: 0.073163 loss_giou_dn: 0.144657 loss_class_aux_dn: 1.379243 loss_bbox_aux_dn: 0.499289 loss_giou_aux_dn: 0.992706 loss: 7.344327 eta: 3:38:47 batch_cost: 0.7473 data_cost: 0.0005 ips: 26.7640 images/s
+[05/27 21:46:03] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:46:03] ppdet.engine INFO: Eval iter: 0
+[05/27 21:46:23] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.23s)
+creating index...
+index created!
+[05/27 21:46:23] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=1.78s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.34s).
+Accumulating evaluation results...
+DONE (t=0.54s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.868
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.999
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.981
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.789
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.872
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.430
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.903
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.915
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.867
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.917
+[05/27 21:46:29] ppdet.engine INFO: Total sample number: 800, average FPS: 54.67444875963402
+[05/27 21:46:29] ppdet.engine INFO: Best test bbox ap is 0.868.
+[05/27 21:46:31] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:46:32] ppdet.engine INFO: Epoch: [11] [  0/283] learning_rate: 0.000100 loss_class: 0.263340 loss_bbox: 0.067977 loss_giou: 0.139640 loss_class_aux: 1.895941 loss_bbox_aux: 0.520548 loss_giou_aux: 1.053230 loss_class_dn: 0.238478 loss_bbox_dn: 0.072864 loss_giou_dn: 0.144906 loss_class_aux_dn: 1.382363 loss_bbox_aux_dn: 0.503120 loss_giou_aux_dn: 1.002451 loss: 7.329138 eta: 3:37:43 batch_cost: 0.7420 data_cost: 0.0005 ips: 26.9541 images/s
+Found inf or nan, current scale is: 8192.0, decrease to: 8192.0*0.5
+[05/27 21:49:21] ppdet.engine INFO: Epoch: [11] [200/283] learning_rate: 0.000100 loss_class: 0.245833 loss_bbox: 0.068691 loss_giou: 0.136884 loss_class_aux: 1.806167 loss_bbox_aux: 0.507776 loss_giou_aux: 1.031402 loss_class_dn: 0.231892 loss_bbox_dn: 0.071552 loss_giou_dn: 0.140385 loss_class_aux_dn: 1.354368 loss_bbox_aux_dn: 0.476566 loss_giou_aux_dn: 0.955035 loss: 7.068967 eta: 3:35:26 batch_cost: 0.7703 data_cost: 0.0005 ips: 25.9642 images/s
+[05/27 21:50:31] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:50:31] ppdet.engine INFO: Eval iter: 0
+[05/27 21:50:50] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 21:50:50] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=1.80s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.88s).
+Accumulating evaluation results...
+DONE (t=0.54s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.878
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.998
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.980
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.800
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.882
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.435
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.915
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.925
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.879
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.927
+[05/27 21:50:56] ppdet.engine INFO: Total sample number: 800, average FPS: 55.710758195991524
+[05/27 21:50:57] ppdet.engine INFO: Best test bbox ap is 0.878.
+[05/27 21:50:59] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:51:00] ppdet.engine INFO: Epoch: [12] [  0/283] learning_rate: 0.000100 loss_class: 0.243232 loss_bbox: 0.068342 loss_giou: 0.136277 loss_class_aux: 1.802847 loss_bbox_aux: 0.507382 loss_giou_aux: 1.028780 loss_class_dn: 0.231672 loss_bbox_dn: 0.071523 loss_giou_dn: 0.141290 loss_class_aux_dn: 1.338844 loss_bbox_aux_dn: 0.476566 loss_giou_aux_dn: 0.949412 loss: 7.067112 eta: 3:33:58 batch_cost: 0.7352 data_cost: 0.0005 ips: 27.2020 images/s
+[05/27 21:53:49] ppdet.engine INFO: Epoch: [12] [200/283] learning_rate: 0.000100 loss_class: 0.247811 loss_bbox: 0.066008 loss_giou: 0.136558 loss_class_aux: 1.819122 loss_bbox_aux: 0.494682 loss_giou_aux: 0.993091 loss_class_dn: 0.227516 loss_bbox_dn: 0.070074 loss_giou_dn: 0.139499 loss_class_aux_dn: 1.318309 loss_bbox_aux_dn: 0.463836 loss_giou_aux_dn: 0.928390 loss: 6.913956 eta: 3:31:37 batch_cost: 0.7679 data_cost: 0.0005 ips: 26.0460 images/s
+[05/27 21:55:04] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:55:04] ppdet.engine INFO: Eval iter: 0
+[05/27 21:55:24] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 21:55:24] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.30s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.70s).
+Accumulating evaluation results...
+DONE (t=0.58s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.868
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.997
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.981
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.797
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.873
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.431
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.902
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.914
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.862
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.917
+[05/27 21:55:30] ppdet.engine INFO: Total sample number: 800, average FPS: 55.33174361743181
+[05/27 21:55:30] ppdet.engine INFO: Best test bbox ap is 0.878.
+[05/27 21:55:32] ppdet.engine INFO: Epoch: [13] [  0/283] learning_rate: 0.000100 loss_class: 0.241622 loss_bbox: 0.066008 loss_giou: 0.134879 loss_class_aux: 1.756509 loss_bbox_aux: 0.487253 loss_giou_aux: 0.989150 loss_class_dn: 0.227085 loss_bbox_dn: 0.070204 loss_giou_dn: 0.137891 loss_class_aux_dn: 1.311327 loss_bbox_aux_dn: 0.460492 loss_giou_aux_dn: 0.914199 loss: 6.842877 eta: 3:30:47 batch_cost: 0.7739 data_cost: 0.0005 ips: 25.8419 images/s
+[05/27 21:58:25] ppdet.engine INFO: Epoch: [13] [200/283] learning_rate: 0.000100 loss_class: 0.228324 loss_bbox: 0.062157 loss_giou: 0.128537 loss_class_aux: 1.690758 loss_bbox_aux: 0.457093 loss_giou_aux: 0.948290 loss_class_dn: 0.222208 loss_bbox_dn: 0.064522 loss_giou_dn: 0.132254 loss_class_aux_dn: 1.294119 loss_bbox_aux_dn: 0.428741 loss_giou_aux_dn: 0.876356 loss: 6.527010 eta: 3:28:45 batch_cost: 0.7928 data_cost: 0.0006 ips: 25.2263 images/s
+[05/27 21:59:37] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 21:59:37] ppdet.engine INFO: Eval iter: 0
+[05/27 21:59:57] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 21:59:57] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.63s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.77s).
+Accumulating evaluation results...
+DONE (t=0.59s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.876
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.998
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.980
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.801
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.880
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.435
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.912
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.923
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.874
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.926
+[05/27 22:00:04] ppdet.engine INFO: Total sample number: 800, average FPS: 52.00981300966082
+[05/27 22:00:04] ppdet.engine INFO: Best test bbox ap is 0.878.
+[05/27 22:00:05] ppdet.engine INFO: Epoch: [14] [  0/283] learning_rate: 0.000100 loss_class: 0.227000 loss_bbox: 0.061368 loss_giou: 0.127026 loss_class_aux: 1.663127 loss_bbox_aux: 0.453281 loss_giou_aux: 0.934110 loss_class_dn: 0.221579 loss_bbox_dn: 0.064780 loss_giou_dn: 0.131076 loss_class_aux_dn: 1.284810 loss_bbox_aux_dn: 0.428741 loss_giou_aux_dn: 0.873605 loss: 6.464528 eta: 3:27:38 batch_cost: 0.7650 data_cost: 0.0009 ips: 26.1425 images/s
+[05/27 22:02:50] ppdet.engine INFO: Epoch: [14] [200/283] learning_rate: 0.000100 loss_class: 0.230901 loss_bbox: 0.059438 loss_giou: 0.128573 loss_class_aux: 1.684932 loss_bbox_aux: 0.440917 loss_giou_aux: 0.939528 loss_class_dn: 0.220058 loss_bbox_dn: 0.062807 loss_giou_dn: 0.131035 loss_class_aux_dn: 1.272105 loss_bbox_aux_dn: 0.417758 loss_giou_aux_dn: 0.859486 loss: 6.474145 eta: 3:25:01 batch_cost: 0.7518 data_cost: 0.0005 ips: 26.6020 images/s
+Found inf or nan, current scale is: 8192.0, decrease to: 8192.0*0.5
+[05/27 22:04:01] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 22:04:01] ppdet.engine INFO: Eval iter: 0
+[05/27 22:04:23] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 22:04:23] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=1.93s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.70s).
+Accumulating evaluation results...
+DONE (t=0.56s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.873
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.982
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.811
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.877
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.434
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.903
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.917
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.867
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.920
+[05/27 22:04:29] ppdet.engine INFO: Total sample number: 800, average FPS: 47.66285079468336
+[05/27 22:04:29] ppdet.engine INFO: Best test bbox ap is 0.878.
+[05/27 22:04:30] ppdet.engine INFO: Epoch: [15] [  0/283] learning_rate: 0.000100 loss_class: 0.230545 loss_bbox: 0.060843 loss_giou: 0.128813 loss_class_aux: 1.691102 loss_bbox_aux: 0.453201 loss_giou_aux: 0.946867 loss_class_dn: 0.220020 loss_bbox_dn: 0.063341 loss_giou_dn: 0.130444 loss_class_aux_dn: 1.271497 loss_bbox_aux_dn: 0.416303 loss_giou_aux_dn: 0.859640 loss: 6.511178 eta: 3:23:47 batch_cost: 0.7307 data_cost: 0.0005 ips: 27.3692 images/s
+[05/27 22:07:23] ppdet.engine INFO: Epoch: [15] [200/283] learning_rate: 0.000100 loss_class: 0.221721 loss_bbox: 0.058573 loss_giou: 0.122554 loss_class_aux: 1.644928 loss_bbox_aux: 0.440922 loss_giou_aux: 0.911824 loss_class_dn: 0.212494 loss_bbox_dn: 0.060865 loss_giou_dn: 0.125881 loss_class_aux_dn: 1.236025 loss_bbox_aux_dn: 0.402866 loss_giou_aux_dn: 0.819321 loss: 6.292901 eta: 3:21:38 batch_cost: 0.7888 data_cost: 0.0005 ips: 25.3552 images/s
+[05/27 22:08:37] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 22:08:38] ppdet.engine INFO: Eval iter: 0
+[05/27 22:08:58] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 22:08:58] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=1.84s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.95s).
+Accumulating evaluation results...
+DONE (t=0.56s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.869
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.977
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.802
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.873
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.433
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.899
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.913
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.853
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.917
+[05/27 22:09:05] ppdet.engine INFO: Total sample number: 800, average FPS: 50.432447332483434
+[05/27 22:09:05] ppdet.engine INFO: Best test bbox ap is 0.878.
+[05/27 22:09:06] ppdet.engine INFO: Epoch: [16] [  0/283] learning_rate: 0.000100 loss_class: 0.218941 loss_bbox: 0.058703 loss_giou: 0.121637 loss_class_aux: 1.636346 loss_bbox_aux: 0.438644 loss_giou_aux: 0.899427 loss_class_dn: 0.212320 loss_bbox_dn: 0.061968 loss_giou_dn: 0.125543 loss_class_aux_dn: 1.239668 loss_bbox_aux_dn: 0.404551 loss_giou_aux_dn: 0.816156 loss: 6.259126 eta: 3:20:42 batch_cost: 0.7686 data_cost: 0.0005 ips: 26.0222 images/s
+[05/27 22:11:51] ppdet.engine INFO: Epoch: [16] [200/283] learning_rate: 0.000100 loss_class: 0.222151 loss_bbox: 0.058881 loss_giou: 0.122201 loss_class_aux: 1.619587 loss_bbox_aux: 0.432408 loss_giou_aux: 0.895450 loss_class_dn: 0.212836 loss_bbox_dn: 0.061702 loss_giou_dn: 0.126199 loss_class_aux_dn: 1.219900 loss_bbox_aux_dn: 0.399554 loss_giou_aux_dn: 0.812007 loss: 6.178660 eta: 3:18:04 batch_cost: 0.7514 data_cost: 0.0005 ips: 26.6171 images/s
+[05/27 22:13:04] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 22:13:04] ppdet.engine INFO: Eval iter: 0
+[05/27 22:13:23] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 22:13:23] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.34s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.55s).
+Accumulating evaluation results...
+DONE (t=0.62s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.874
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.979
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.806
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.878
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.435
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.906
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.916
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.862
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.919
+[05/27 22:13:30] ppdet.engine INFO: Total sample number: 800, average FPS: 55.57898932547315
+[05/27 22:13:30] ppdet.engine INFO: Best test bbox ap is 0.878.
+[05/27 22:13:31] ppdet.engine INFO: Epoch: [17] [  0/283] learning_rate: 0.000100 loss_class: 0.216161 loss_bbox: 0.057778 loss_giou: 0.121862 loss_class_aux: 1.590616 loss_bbox_aux: 0.425612 loss_giou_aux: 0.888362 loss_class_dn: 0.213213 loss_bbox_dn: 0.060870 loss_giou_dn: 0.124744 loss_class_aux_dn: 1.219305 loss_bbox_aux_dn: 0.394201 loss_giou_aux_dn: 0.807831 loss: 6.153811 eta: 3:17:00 batch_cost: 0.7462 data_cost: 0.0005 ips: 26.8015 images/s
+[05/27 22:16:22] ppdet.engine INFO: Epoch: [17] [200/283] learning_rate: 0.000100 loss_class: 0.214045 loss_bbox: 0.058339 loss_giou: 0.121650 loss_class_aux: 1.573135 loss_bbox_aux: 0.427964 loss_giou_aux: 0.888241 loss_class_dn: 0.210248 loss_bbox_dn: 0.059892 loss_giou_dn: 0.123322 loss_class_aux_dn: 1.210742 loss_bbox_aux_dn: 0.382436 loss_giou_aux_dn: 0.787085 loss: 6.110025 eta: 3:14:36 batch_cost: 0.7722 data_cost: 0.0005 ips: 25.8988 images/s
+[05/27 22:17:37] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 22:17:38] ppdet.engine INFO: Eval iter: 0
+[05/27 22:17:56] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 22:17:56] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.13s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.61s).
+Accumulating evaluation results...
+DONE (t=0.56s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.871
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.978
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.808
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.875
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.434
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.902
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.910
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.861
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.912
+[05/27 22:18:03] ppdet.engine INFO: Total sample number: 800, average FPS: 57.52250993087959
+[05/27 22:18:03] ppdet.engine INFO: Best test bbox ap is 0.878.
+[05/27 22:18:04] ppdet.engine INFO: Epoch: [18] [  0/283] learning_rate: 0.000100 loss_class: 0.217028 loss_bbox: 0.058306 loss_giou: 0.122583 loss_class_aux: 1.608277 loss_bbox_aux: 0.425240 loss_giou_aux: 0.888241 loss_class_dn: 0.210700 loss_bbox_dn: 0.059822 loss_giou_dn: 0.123322 loss_class_aux_dn: 1.202501 loss_bbox_aux_dn: 0.379786 loss_giou_aux_dn: 0.780490 loss: 6.128991 eta: 3:13:37 batch_cost: 0.7745 data_cost: 0.0006 ips: 25.8243 images/s
+[05/27 22:20:54] ppdet.engine INFO: Epoch: [18] [200/283] learning_rate: 0.000100 loss_class: 0.213203 loss_bbox: 0.056067 loss_giou: 0.116613 loss_class_aux: 1.557369 loss_bbox_aux: 0.415207 loss_giou_aux: 0.860056 loss_class_dn: 0.206036 loss_bbox_dn: 0.058180 loss_giou_dn: 0.120196 loss_class_aux_dn: 1.199090 loss_bbox_aux_dn: 0.375748 loss_giou_aux_dn: 0.768042 loss: 5.969604 eta: 3:11:15 batch_cost: 0.7771 data_cost: 0.0010 ips: 25.7364 images/s
+Found inf or nan, current scale is: 8192.0, decrease to: 8192.0*0.5
+[05/27 22:22:06] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 22:22:06] ppdet.engine INFO: Eval iter: 0
+[05/27 22:22:26] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 22:22:26] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.32s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.48s).
+Accumulating evaluation results...
+DONE (t=0.54s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.872
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.979
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.811
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.877
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.434
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.903
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.917
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.875
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.919
+[05/27 22:22:33] ppdet.engine INFO: Total sample number: 800, average FPS: 51.98648114803959
+[05/27 22:22:33] ppdet.engine INFO: Best test bbox ap is 0.878.
+[05/27 22:22:34] ppdet.engine INFO: Epoch: [19] [  0/283] learning_rate: 0.000100 loss_class: 0.212782 loss_bbox: 0.056741 loss_giou: 0.115126 loss_class_aux: 1.529940 loss_bbox_aux: 0.411353 loss_giou_aux: 0.829216 loss_class_dn: 0.204314 loss_bbox_dn: 0.058160 loss_giou_dn: 0.117726 loss_class_aux_dn: 1.180565 loss_bbox_aux_dn: 0.375445 loss_giou_aux_dn: 0.758625 loss: 5.882922 eta: 3:10:04 batch_cost: 0.7538 data_cost: 0.0005 ips: 26.5330 images/s
+[05/27 22:25:18] ppdet.engine INFO: Epoch: [19] [200/283] learning_rate: 0.000100 loss_class: 0.202184 loss_bbox: 0.053325 loss_giou: 0.113180 loss_class_aux: 1.516334 loss_bbox_aux: 0.396987 loss_giou_aux: 0.838517 loss_class_dn: 0.199705 loss_bbox_dn: 0.056272 loss_giou_dn: 0.115605 loss_class_aux_dn: 1.169025 loss_bbox_aux_dn: 0.361126 loss_giou_aux_dn: 0.748232 loss: 5.834574 eta: 3:07:26 batch_cost: 0.7486 data_cost: 0.0005 ips: 26.7178 images/s
+[05/27 22:26:35] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 22:26:35] ppdet.engine INFO: Eval iter: 0
+[05/27 22:26:56] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.29s)
+creating index...
+index created!
+[05/27 22:26:57] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.17s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.67s).
+Accumulating evaluation results...
+DONE (t=0.63s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.871
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.999
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.978
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.810
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.874
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.434
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.903
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.914
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.871
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.916
+[05/27 22:27:03] ppdet.engine INFO: Total sample number: 800, average FPS: 48.400401322640704
+[05/27 22:27:03] ppdet.engine INFO: Best test bbox ap is 0.878.
+[05/27 22:27:05] ppdet.engine INFO: Epoch: [20] [  0/283] learning_rate: 0.000100 loss_class: 0.206300 loss_bbox: 0.054335 loss_giou: 0.113786 loss_class_aux: 1.503326 loss_bbox_aux: 0.398268 loss_giou_aux: 0.840262 loss_class_dn: 0.202459 loss_bbox_dn: 0.056464 loss_giou_dn: 0.116977 loss_class_aux_dn: 1.166805 loss_bbox_aux_dn: 0.359270 loss_giou_aux_dn: 0.749767 loss: 5.814345 eta: 3:06:34 batch_cost: 0.7762 data_cost: 0.0005 ips: 25.7675 images/s
+[05/27 22:29:55] ppdet.engine INFO: Epoch: [20] [200/283] learning_rate: 0.000100 loss_class: 0.205218 loss_bbox: 0.054420 loss_giou: 0.114250 loss_class_aux: 1.488297 loss_bbox_aux: 0.404910 loss_giou_aux: 0.833985 loss_class_dn: 0.201377 loss_bbox_dn: 0.056718 loss_giou_dn: 0.115454 loss_class_aux_dn: 1.156884 loss_bbox_aux_dn: 0.360174 loss_giou_aux_dn: 0.738110 loss: 5.767186 eta: 3:04:14 batch_cost: 0.7858 data_cost: 0.0005 ips: 25.4516 images/s
+[05/27 22:31:10] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 22:31:10] ppdet.engine INFO: Eval iter: 0
+[05/27 22:31:30] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 22:31:30] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.35s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.66s).
+Accumulating evaluation results...
+DONE (t=0.61s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.878
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.981
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.818
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.882
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.437
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.909
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.917
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.887
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.919
+[05/27 22:31:37] ppdet.engine INFO: Total sample number: 800, average FPS: 50.95477857310052
+[05/27 22:31:37] ppdet.engine INFO: Best test bbox ap is 0.878.
+[05/27 22:31:40] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 22:31:41] ppdet.engine INFO: Epoch: [21] [  0/283] learning_rate: 0.000100 loss_class: 0.203159 loss_bbox: 0.055312 loss_giou: 0.114748 loss_class_aux: 1.477225 loss_bbox_aux: 0.403506 loss_giou_aux: 0.833482 loss_class_dn: 0.200732 loss_bbox_dn: 0.057814 loss_giou_dn: 0.117246 loss_class_aux_dn: 1.150941 loss_bbox_aux_dn: 0.360869 loss_giou_aux_dn: 0.735217 loss: 5.747706 eta: 3:03:15 batch_cost: 0.7740 data_cost: 0.0005 ips: 25.8386 images/s
+[05/27 22:34:25] ppdet.engine INFO: Epoch: [21] [200/283] learning_rate: 0.000100 loss_class: 0.197757 loss_bbox: 0.053497 loss_giou: 0.109112 loss_class_aux: 1.420692 loss_bbox_aux: 0.396427 loss_giou_aux: 0.809626 loss_class_dn: 0.198037 loss_bbox_dn: 0.054909 loss_giou_dn: 0.112740 loss_class_aux_dn: 1.137496 loss_bbox_aux_dn: 0.344747 loss_giou_aux_dn: 0.707352 loss: 5.550280 eta: 3:00:39 batch_cost: 0.7536 data_cost: 0.0010 ips: 26.5376 images/s
+[05/27 22:35:33] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 22:35:34] ppdet.engine INFO: Eval iter: 0
+[05/27 22:35:55] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 22:35:55] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.20s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.39s).
+Accumulating evaluation results...
+DONE (t=0.53s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.870
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.979
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.805
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.874
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.434
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.899
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.904
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.845
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.907
+[05/27 22:36:01] ppdet.engine INFO: Total sample number: 800, average FPS: 48.15814890002515
+[05/27 22:36:01] ppdet.engine INFO: Best test bbox ap is 0.878.
+[05/27 22:36:02] ppdet.engine INFO: Epoch: [22] [  0/283] learning_rate: 0.000100 loss_class: 0.199676 loss_bbox: 0.053799 loss_giou: 0.113051 loss_class_aux: 1.417810 loss_bbox_aux: 0.396689 loss_giou_aux: 0.812188 loss_class_dn: 0.199636 loss_bbox_dn: 0.056731 loss_giou_dn: 0.115625 loss_class_aux_dn: 1.142669 loss_bbox_aux_dn: 0.361421 loss_giou_aux_dn: 0.719939 loss: 5.592579 eta: 2:59:24 batch_cost: 0.7333 data_cost: 0.0009 ips: 27.2727 images/s
+[05/27 22:38:50] ppdet.engine INFO: Epoch: [22] [200/283] learning_rate: 0.000100 loss_class: 0.196075 loss_bbox: 0.053493 loss_giou: 0.110807 loss_class_aux: 1.422751 loss_bbox_aux: 0.388473 loss_giou_aux: 0.807722 loss_class_dn: 0.196608 loss_bbox_dn: 0.055496 loss_giou_dn: 0.112942 loss_class_aux_dn: 1.135332 loss_bbox_aux_dn: 0.346837 loss_giou_aux_dn: 0.715518 loss: 5.551291 eta: 2:56:53 batch_cost: 0.7613 data_cost: 0.0009 ips: 26.2692 images/s
+[05/27 22:40:00] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 22:40:01] ppdet.engine INFO: Eval iter: 0
+[05/27 22:40:20] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 22:40:20] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.13s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.33s).
+Accumulating evaluation results...
+DONE (t=0.53s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.874
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.982
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.811
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.879
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.434
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.908
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.918
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.874
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.920
+[05/27 22:40:26] ppdet.engine INFO: Total sample number: 800, average FPS: 54.485690139806756
+[05/27 22:40:26] ppdet.engine INFO: Best test bbox ap is 0.878.
+[05/27 22:40:27] ppdet.engine INFO: Epoch: [23] [  0/283] learning_rate: 0.000100 loss_class: 0.199007 loss_bbox: 0.052297 loss_giou: 0.111365 loss_class_aux: 1.427642 loss_bbox_aux: 0.382326 loss_giou_aux: 0.809186 loss_class_dn: 0.197835 loss_bbox_dn: 0.054128 loss_giou_dn: 0.113560 loss_class_aux_dn: 1.144016 loss_bbox_aux_dn: 0.343120 loss_giou_aux_dn: 0.729843 loss: 5.578722 eta: 2:55:40 batch_cost: 0.7341 data_cost: 0.0009 ips: 27.2436 images/s
+Found inf or nan, current scale is: 8192.0, decrease to: 8192.0*0.5

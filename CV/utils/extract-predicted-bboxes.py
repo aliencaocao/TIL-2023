@@ -1,15 +1,14 @@
 import csv
-import os
-import shutil
-from pathlib import Path
-import pandas as pd
 import json
+import os
+from pathlib import Path
+
 from PIL import Image
 from tqdm import tqdm
 
-preds_csv_path = Path("../RT-DETR/submissions/0.880 noise aug epoch22 conf 0.8 no reid lb 0.305.csv")
+preds_csv_path = Path("../RT-DETR/submissions/0.878 autoaug best conf 0.7 no reid lb 0.2968.csv")
 test_imgs_path = Path("../RT-DETR/dataset/test/images/")
-output_path = Path("../RT-DETR/dataset/reid/test/")
+output_path = Path("../RT-DETR/dataset/reid/test_old/")
 suspect_imgs_path = Path("../RT-DETR/dataset/reid/suspects/")
 
 os.makedirs(output_path, exist_ok=True)
@@ -40,14 +39,13 @@ with open(preds_csv_path) as preds_file:
       y2 * img.height,
     ))
 
-    curr_img_path = output_path / filename
-    gallery_dir = curr_img_path / "bounding_box_test"
-    query_dir = curr_img_path / "query"
+    gallery_dir = output_path / "bounding_box_test"
+    query_dir = output_path / "query"
     os.makedirs(gallery_dir, exist_ok=True)
     os.makedirs(query_dir, exist_ok=True)
 
     img_save_path = gallery_dir / f"-1_c{cam_id}s1_1_{num_dets[cam_id]}.png"
-    # img_cropped.save(img_save_path)
+    img_cropped.save(img_save_path)
     # shutil.copy(suspect_imgs_path / (filename + ".png"), query_dir)
 
     mapping_dict[str(img_save_path)] = {
@@ -58,5 +56,5 @@ with open(preds_csv_path) as preds_file:
       'xmax': x2
     }
 
-with open('test_set_bbox_mapping_odnoise.json', 'w') as f:
+with open('test_set_bbox_mapping_autoaug.json', 'w') as f:
   json.dump(mapping_dict, f)
