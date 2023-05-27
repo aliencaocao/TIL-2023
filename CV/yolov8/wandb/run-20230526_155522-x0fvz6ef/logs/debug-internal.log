@@ -1,0 +1,110 @@
+2023-05-26 15:55:22,037 INFO    StreamThr :41960 [internal.py:wandb_internal():86] W&B internal server running at pid: 41960, started at: 2023-05-26 15:55:22.037618
+2023-05-26 15:55:22,038 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status
+2023-05-26 15:55:22,051 INFO    WriterThread:41960 [datastore.py:open_for_write():85] open: C:\Users\alien\Documents\PyCharm-Projects\TIL-2023\CV\yolov8\wandb\run-20230526_155522-x0fvz6ef\run-x0fvz6ef.wandb
+2023-05-26 15:55:22,052 DEBUG   SenderThread:41960 [sender.py:send():375] send: header
+2023-05-26 15:55:22,109 DEBUG   SenderThread:41960 [sender.py:send():375] send: run
+2023-05-26 15:55:22,668 ERROR   SenderThread:41960 [internal_api.py:execute():288] 401 response executing GraphQL.
+2023-05-26 15:55:22,668 ERROR   SenderThread:41960 [internal_api.py:execute():289] {"errors":[{"message":"user is not logged in","path":["upsertBucket"],"extensions":{"code":"PERMISSION_ERROR"}}],"data":{"upsertBucket":null}}
+2023-05-26 15:55:22,669 ERROR   SenderThread:41960 [sender.py:send_run():979] The API key is either invalid or missing, or the host is incorrect. To resolve this issue, you may try running the 'wandb login --host [hostname]' command. The host defaults to 'https://api.wandb.ai' if not specified. (Error 401: Unauthorized)
+Traceback (most recent call last):
+  File "C:\Program Files\Python39\lib\site-packages\wandb\sdk\lib\retry.py", line 131, in __call__
+  File "C:\Program Files\Python39\lib\site-packages\wandb\sdk\internal\internal_api.py", line 285, in execute
+  File "C:\Program Files\Python39\lib\site-packages\wandb\vendor\gql-0.2.0\wandb_gql\client.py", line 52, in execute
+  File "C:\Program Files\Python39\lib\site-packages\wandb\vendor\gql-0.2.0\wandb_gql\client.py", line 60, in _get_result
+  File "C:\Program Files\Python39\lib\site-packages\wandb\sdk\lib\gql_request.py", line 56, in execute
+  File "C:\Program Files\Python39\lib\site-packages\requests\models.py", line 1021, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://api.wandb.ai/graphql
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Program Files\Python39\lib\site-packages\wandb\sdk\internal\sender.py", line 977, in send_run
+  File "C:\Program Files\Python39\lib\site-packages\wandb\sdk\internal\sender.py", line 1015, in _init_run
+  File "C:\Program Files\Python39\lib\site-packages\wandb\apis\normalize.py", line 73, in wrapper
+  File "C:\Program Files\Python39\lib\site-packages\wandb\apis\normalize.py", line 41, in wrapper
+  File "C:\Program Files\Python39\lib\site-packages\wandb\sdk\internal\internal_api.py", line 1690, in upsert_run
+  File "C:\Program Files\Python39\lib\site-packages\wandb\sdk\internal\internal_api.py", line 257, in gql
+  File "C:\Program Files\Python39\lib\site-packages\wandb\sdk\lib\retry.py", line 147, in __call__
+  File "C:\Program Files\Python39\lib\site-packages\wandb\util.py", line 950, in check_retry_fn
+  File "C:\Program Files\Python39\lib\site-packages\wandb\util.py", line 883, in no_retry_auth
+wandb.errors.AuthenticationError: The API key is either invalid or missing, or the host is incorrect. To resolve this issue, you may try running the 'wandb login --host [hostname]' command. The host defaults to 'https://api.wandb.ai' if not specified. (Error 401: Unauthorized)
+2023-05-26 15:55:26,889 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:55:27,172 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: keepalive
+2023-05-26 15:55:27,713 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:55:31,924 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:55:32,230 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: keepalive
+2023-05-26 15:55:32,753 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:55:36,952 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:55:37,257 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: keepalive
+2023-05-26 15:55:37,782 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:55:41,988 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:55:42,293 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: keepalive
+2023-05-26 15:55:42,827 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:55:47,028 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:55:47,339 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: keepalive
+2023-05-26 15:55:47,865 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:55:52,059 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:55:52,399 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: keepalive
+2023-05-26 15:55:52,920 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:55:57,094 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:55:57,432 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: keepalive
+2023-05-26 15:55:57,975 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:02,134 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:02,448 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: keepalive
+2023-05-26 15:56:03,022 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:07,183 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:07,494 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: keepalive
+2023-05-26 15:56:08,057 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:12,242 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:12,541 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: keepalive
+2023-05-26 15:56:13,096 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:17,302 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:17,580 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: keepalive
+2023-05-26 15:56:18,125 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:22,351 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:22,632 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: cancel
+2023-05-26 15:56:22,632 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: cancel
+2023-05-26 15:56:23,170 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:27,396 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:28,195 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:32,437 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:33,240 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:37,464 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:38,276 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:38,404 INFO    StreamThr :41960 [internal.py:wandb_internal():86] W&B internal server running at pid: 41960, started at: 2023-05-26 15:56:38.404207
+2023-05-26 15:56:38,406 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status
+2023-05-26 15:56:38,417 INFO    WriterThread:41960 [datastore.py:open_for_write():85] open: C:\Users\alien\Documents\PyCharm-Projects\TIL-2023\CV\yolov8\wandb\run-20230526_155638-mowvp3gx\run-mowvp3gx.wandb
+2023-05-26 15:56:38,418 DEBUG   SenderThread:41960 [sender.py:send():375] send: header
+2023-05-26 15:56:38,468 DEBUG   SenderThread:41960 [sender.py:send():375] send: run
+2023-05-26 15:56:39,005 ERROR   SenderThread:41960 [internal_api.py:execute():288] 401 response executing GraphQL.
+2023-05-26 15:56:39,006 ERROR   SenderThread:41960 [internal_api.py:execute():289] {"errors":[{"message":"user is not logged in","path":["upsertBucket"],"extensions":{"code":"PERMISSION_ERROR"}}],"data":{"upsertBucket":null}}
+2023-05-26 15:56:39,006 ERROR   SenderThread:41960 [sender.py:send_run():979] The API key is either invalid or missing, or the host is incorrect. To resolve this issue, you may try running the 'wandb login --host [hostname]' command. The host defaults to 'https://api.wandb.ai' if not specified. (Error 401: Unauthorized)
+Traceback (most recent call last):
+  File "C:\Program Files\Python39\lib\site-packages\wandb\sdk\lib\retry.py", line 131, in __call__
+  File "C:\Program Files\Python39\lib\site-packages\wandb\sdk\internal\internal_api.py", line 285, in execute
+  File "C:\Program Files\Python39\lib\site-packages\wandb\vendor\gql-0.2.0\wandb_gql\client.py", line 52, in execute
+  File "C:\Program Files\Python39\lib\site-packages\wandb\vendor\gql-0.2.0\wandb_gql\client.py", line 60, in _get_result
+  File "C:\Program Files\Python39\lib\site-packages\wandb\sdk\lib\gql_request.py", line 56, in execute
+  File "C:\Program Files\Python39\lib\site-packages\requests\models.py", line 1021, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://api.wandb.ai/graphql
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Program Files\Python39\lib\site-packages\wandb\sdk\internal\sender.py", line 977, in send_run
+  File "C:\Program Files\Python39\lib\site-packages\wandb\sdk\internal\sender.py", line 1015, in _init_run
+  File "C:\Program Files\Python39\lib\site-packages\wandb\apis\normalize.py", line 73, in wrapper
+  File "C:\Program Files\Python39\lib\site-packages\wandb\apis\normalize.py", line 41, in wrapper
+  File "C:\Program Files\Python39\lib\site-packages\wandb\sdk\internal\internal_api.py", line 1690, in upsert_run
+  File "C:\Program Files\Python39\lib\site-packages\wandb\sdk\internal\internal_api.py", line 257, in gql
+  File "C:\Program Files\Python39\lib\site-packages\wandb\sdk\lib\retry.py", line 147, in __call__
+  File "C:\Program Files\Python39\lib\site-packages\wandb\util.py", line 950, in check_retry_fn
+  File "C:\Program Files\Python39\lib\site-packages\wandb\util.py", line 883, in no_retry_auth
+wandb.errors.AuthenticationError: The API key is either invalid or missing, or the host is incorrect. To resolve this issue, you may try running the 'wandb login --host [hostname]' command. The host defaults to 'https://api.wandb.ai' if not specified. (Error 401: Unauthorized)
+2023-05-26 15:56:42,513 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:43,320 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:44,059 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:47,548 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report
+2023-05-26 15:56:48,346 DEBUG   HandlerThread:41960 [handler.py:handle_request():144] handle_request: status_report

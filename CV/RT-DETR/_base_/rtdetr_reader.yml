@@ -8,6 +8,7 @@ TrainReader:
     - RandomFlip: {}
   batch_transforms:
     - BatchRandomResize: {target_size: [480, 512, 544, 576, 608, 640, 640, 640, 672, 704, 736, 768, 800], random_size: True, random_interp: True, keep_ratio: False}
+    - GaussianNoise: {prob: 0.5, noise_strength: 25} # apply BEFORE normalization
     - NormalizeImage: {mean: [0., 0., 0.], std: [1., 1., 1.], norm_type: none}
     - NormalizeBox: {}
     - BboxXYXY2XYWH: {}
@@ -38,6 +39,6 @@ TestReader:
     - Resize: {target_size: [640, 640], keep_ratio: False, interp: 2}
     - NormalizeImage: {mean: [0., 0., 0.], std: [1., 1., 1.], norm_type: none}
     - Permute: {}
-  batch_size: 1
+  batch_size: 4
   shuffle: false
   drop_last: false

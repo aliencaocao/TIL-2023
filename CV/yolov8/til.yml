@@ -1,0 +1,9 @@
+train: "D:\\TIL YOLOv8\\dataset\\train\\images"
+val: "D:\\TIL YOLOv8\\dataset\\val\\images"
+test: "D:\\TIL YOLOv8\\dataset\\test\\images"
+
+# number of classes
+nc: 1
+
+# class names
+names: [ 'plushie' ]

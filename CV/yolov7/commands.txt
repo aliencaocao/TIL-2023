@@ -1,0 +1,12 @@
+For p6 models (anything whose name ends with a 6):
+python train_aux.py \
+  --workers 0 \
+  --device 0 \
+  --batch-size 12 \
+  --data data/til.yaml \
+  --img 1280 1280 \
+  --cfg cfg/training/yolov7-w6.yaml \
+  --weights yolov7-w6.pt \
+  --name yolov7-w6 \
+  --hyp data/hyp.scratch.p6.yaml
+CUDA OOM will occur if --workers is not set to 0. (Why? No clue.)

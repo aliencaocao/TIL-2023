@@ -2,6 +2,8 @@ numpy
 pandas
 tensorrt
 torch
+torchvision
+torchaudio
 pycuda
 pyctcdecode
 transformers
@@ -12,7 +14,6 @@ kenlm @ git+https://github.com/kpu/kenlm
 jiwer
 accelerate
 # transformer_engine @ git+https://github.com/NVIDIA/TransformerEngine.git@stable
-scikit-learn
 pytorch_optimizer
 librosa
 soundfile
@@ -27,3 +28,6 @@ orjson
 imagesize
 textgrids @ git+https://github.com/Legisign/Praat-textgrids
 pydub
+timm
+mmcv-full
+yacs

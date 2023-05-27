@@ -1,0 +1,312 @@
+wandb_version: 1
+
+task:
+  desc: null
+  value: detect
+mode:
+  desc: null
+  value: train
+model:
+  desc: null
+  value: yolov8x.pt
+data:
+  desc: null
+  value: til.yml
+epochs:
+  desc: null
+  value: 300
+patience:
+  desc: null
+  value: 50
+batch:
+  desc: null
+  value: 16
+imgsz:
+  desc: null
+  value: 1280
+save:
+  desc: null
+  value: true
+save_period:
+  desc: null
+  value: 1
+cache:
+  desc: null
+  value: ram
+device:
+  desc: null
+  value: 0
+workers:
+  desc: null
+  value: 16
+project:
+  desc: null
+  value: yolov8x
+name:
+  desc: null
+  value: null
+exist_ok:
+  desc: null
+  value: false
+pretrained:
+  desc: null
+  value: true
+optimizer:
+  desc: null
+  value: SGD
+verbose:
+  desc: null
+  value: true
+seed:
+  desc: null
+  value: 0
+deterministic:
+  desc: null
+  value: true
+single_cls:
+  desc: null
+  value: false
+rect:
+  desc: null
+  value: false
+cos_lr:
+  desc: null
+  value: false
+close_mosaic:
+  desc: null
+  value: 0
+resume:
+  desc: null
+  value: false
+amp:
+  desc: null
+  value: true
+overlap_mask:
+  desc: null
+  value: true
+mask_ratio:
+  desc: null
+  value: 4
+dropout:
+  desc: null
+  value: 0.0
+val:
+  desc: null
+  value: true
+split:
+  desc: null
+  value: val
+save_json:
+  desc: null
+  value: false
+save_hybrid:
+  desc: null
+  value: false
+conf:
+  desc: null
+  value: null
+iou:
+  desc: null
+  value: 0.7
+max_det:
+  desc: null
+  value: 300
+half:
+  desc: null
+  value: false
+dnn:
+  desc: null
+  value: false
+plots:
+  desc: null
+  value: true
+source:
+  desc: null
+  value: null
+show:
+  desc: null
+  value: false
+save_txt:
+  desc: null
+  value: false
+save_conf:
+  desc: null
+  value: false
+save_crop:
+  desc: null
+  value: false
+show_labels:
+  desc: null
+  value: true
+show_conf:
+  desc: null
+  value: true
+vid_stride:
+  desc: null
+  value: 1
+line_width:
+  desc: null
+  value: null
+visualize:
+  desc: null
+  value: false
+augment:
+  desc: null
+  value: false
+agnostic_nms:
+  desc: null
+  value: false
+classes:
+  desc: null
+  value: null
+retina_masks:
+  desc: null
+  value: false
+boxes:
+  desc: null
+  value: true
+format:
+  desc: null
+  value: torchscript
+keras:
+  desc: null
+  value: false
+optimize:
+  desc: null
+  value: false
+int8:
+  desc: null
+  value: false
+dynamic:
+  desc: null
+  value: false
+simplify:
+  desc: null
+  value: false
+opset:
+  desc: null
+  value: null
+workspace:
+  desc: null
+  value: 4
+nms:
+  desc: null
+  value: false
+lr0:
+  desc: null
+  value: 0.01
+lrf:
+  desc: null
+  value: 0.01
+momentum:
+  desc: null
+  value: 0.937
+weight_decay:
+  desc: null
+  value: 0.0005
+warmup_epochs:
+  desc: null
+  value: 3.0
+warmup_momentum:
+  desc: null
+  value: 0.8
+warmup_bias_lr:
+  desc: null
+  value: 0.1
+box:
+  desc: null
+  value: 7.5
+cls:
+  desc: null
+  value: 0.5
+dfl:
+  desc: null
+  value: 1.5
+pose:
+  desc: null
+  value: 12.0
+kobj:
+  desc: null
+  value: 1.0
+label_smoothing:
+  desc: null
+  value: 0.0
+nbs:
+  desc: null
+  value: 64
+hsv_h:
+  desc: null
+  value: 0.015
+hsv_s:
+  desc: null
+  value: 0.7
+hsv_v:
+  desc: null
+  value: 0.4
+degrees:
+  desc: null
+  value: 0.0
+translate:
+  desc: null
+  value: 0.1
+scale:
+  desc: null
+  value: 0.5
+shear:
+  desc: null
+  value: 0.0
+perspective:
+  desc: null
+  value: 0.0
+flipud:
+  desc: null
+  value: 0.0
+fliplr:
+  desc: null
+  value: 0.5
+mosaic:
+  desc: null
+  value: 1.0
+mixup:
+  desc: null
+  value: 0.0
+copy_paste:
+  desc: null
+  value: 0.0
+cfg:
+  desc: null
+  value: null
+v5loader:
+  desc: null
+  value: false
+tracker:
+  desc: null
+  value: botsort.yaml
+save_dir:
+  desc: null
+  value: yolov8x\train4
+_wandb:
+  desc: null
+  value:
+    python_version: 3.9.13
+    cli_version: 0.14.2
+    framework: torch
+    is_jupyter_run: true
+    is_kaggle_kernel: false
+    start_time: 1685087798.406207
+    t:
+      1:
+      - 1
+      - 2
+      - 3
+      - 41
+      - 55
+      3:
+      - 16
+      - 23
+      4: 3.9.13
+      5: 0.14.2
+      8:
+      - 1
+      - 3
+      - 5

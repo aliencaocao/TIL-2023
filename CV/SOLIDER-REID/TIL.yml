@@ -8,10 +8,11 @@ MODEL:
   DEVICE_ID: ('0')
   TRANSFORMER_TYPE: 'swin_base_patch4_window7_224'
   STRIDE_SIZE: [16, 16]
+  SIE_CAMERA: True
 
 INPUT:
-  SIZE_TRAIN: [384, 128]
-  SIZE_TEST: [384, 128]
+  SIZE_TRAIN: [224, 224]
+  SIZE_TEST: [224, 224]
   PROB: 0.5 # random horizontal flip
   RE_PROB: 0.5 # random erasing
   PADDING: 10
@@ -19,20 +20,20 @@ INPUT:
   PIXEL_STD: [0.5, 0.5, 0.5]
 
 DATASETS:
-  NAMES: ('TIL')
-  ROOT_DIR: ('../RT-DETR/dataset/reid')
+  NAMES: ('TILCustomDataset')  # follow the market1501.py filename since TIL custom mods are all in that file
+  ROOT_DIR: ('../RT-DETR/dataset/reid/')
 
 DATALOADER:
   SAMPLER: 'softmax_triplet'
-  NUM_INSTANCE: 3
-  NUM_WORKERS: 6
+  NUM_INSTANCE: 4
+  NUM_WORKERS: 8
 
 SOLVER:
-  OPTIMIZER_NAME: 'AdamW'  # SGD
-  MAX_EPOCHS: 15
-  BASE_LR: 0.0008
+  OPTIMIZER_NAME: 'SGD'  # SGD
+  MAX_EPOCHS: 300
+  BASE_LR: 0.0001
   WARMUP_EPOCHS: 3
-  IMS_PER_BATCH: 24
+  IMS_PER_BATCH: 76
   WARMUP_METHOD: 'cosine'
   LARGE_FC_LR: False
   CHECKPOINT_PERIOD: 1
@@ -44,10 +45,11 @@ SOLVER:
 
 TEST:
   EVAL: True
-  IMS_PER_BATCH: 256
+  IMS_PER_BATCH: 64
   RE_RANKING: True
   WEIGHT: ''
   NECK_FEAT: 'before'
   FEAT_NORM: 'yes'
+  THRESHOLD: 0.001
 
-OUTPUT_DIR: './log/'
+OUTPUT_DIR: './log_SGD_continue_1e-4/'

@@ -2,12 +2,14 @@ import logging
 import os
 import time
 
+import numpy as np
 import torch
 import torch.distributed as dist
 import torch.nn as nn
 from torch.cuda import amp
+from tqdm import tqdm
 from utils.meter import AverageMeter
-from utils.metrics import R1_mAP_eval
+from utils.metrics import Postprocessor, R1_mAP_eval
 
 
 def do_train(cfg,
@@ -49,14 +51,17 @@ def do_train(cfg,
         acc_meter.reset()
         evaluator.reset()
         model.train()
-        for n_iter, (img, vid, target_cam, target_view) in enumerate(train_loader):
+        for n_iter, (img, pid, target_cam, target_view) in enumerate(train_loader):
             optimizer.zero_grad()
             optimizer_center.zero_grad()
             img = img.to(device)
-            target = vid.to(device)
+            target = pid.to(device)
             target_cam = target_cam.to(device)
             target_view = target_view.to(device)
             with amp.autocast(enabled=True):
+                # the model outputs 3 things
+                # cls_score, global_feat, featmaps
+                # featmaps is unused
                 score, feat, _ = model(img, label=target, cam_label=target_cam, view_label=target_view )
                 loss = loss_fn(score, feat, target, target_cam)
 
@@ -102,7 +107,6 @@ def do_train(cfg,
         else:
             logger.info("Epoch {} done. Time per epoch: {:.3f}[s] Speed: {:.1f}[samples/s]"
                     .format(epoch, time_per_batch * (n_iter + 1), train_loader.batch_size / time_per_batch))
-
         if epoch % eval_period == 0:
             if cfg.MODEL.DIST_TRAIN:
                 if dist.get_rank() == 0:
@@ -119,43 +123,42 @@ def do_train(cfg,
                     logger.info("mAP: {:.1%}".format(mAP))
                     for r in [1, 5, 10]:
                         logger.info("CMC curve, Rank-{:<3}:{:.1%}".format(r, cmc[r - 1]))
-                    if epoch % checkpoint_period == 0 and mAP > best_map:
-                        best_map = mAP
-                        if cfg.MODEL.DIST_TRAIN:
-                            if dist.get_rank() == 0:
-                                torch.save(model.state_dict(),
-                                           os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.NAME + '_{}.pth'.format(epoch)))
-                        else:
-                            torch.save(model.state_dict(),
-                                       os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.NAME + '_{}.pth'.format(epoch)))
-                    torch.cuda.empty_cache()
             else:
                 model.eval()
-                for n_iter, (img, vid, camid, camids, target_view, _) in enumerate(val_loader):
+                for n_iter, (img, pid, camid, camids, target_view, _) in enumerate(val_loader):
                     with torch.no_grad():
                         img = img.to(device)
                         camids = camids.to(device)
                         target_view = target_view.to(device)
+                        # cam_label and view_label are not even used as parameters
                         feat, _ = model(img, cam_label=camids, view_label=target_view)
-                        evaluator.update((feat, vid, camid))
+                        evaluator.update((feat, pid, camid))
                 cmc, mAP, _, _, _, _, _ = evaluator.compute()
                 logger.info("Validation Results - Epoch: {}".format(epoch))
                 logger.info("mAP: {:.1%}".format(mAP))
                 for r in [1, 5, 10]:
                     logger.info("CMC curve, Rank-{:<3}:{:.1%}".format(r, cmc[r - 1]))
-                torch.cuda.empty_cache()
+        if epoch % checkpoint_period == 0:
+            best_map = mAP
+            if cfg.MODEL.DIST_TRAIN:
+                if dist.get_rank() == 0:
+                    torch.save(model.state_dict(),
+                               os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.NAME + '_{}_map{}_acc{}.pth'.format(epoch, mAP, acc_meter.avg)))
+            else:
+                torch.save(model.state_dict(),
+                           os.path.join(cfg.OUTPUT_DIR, cfg.MODEL.NAME + '_{}_map{}_acc{}.pth'.format(epoch, mAP, acc_meter.avg)))
+        torch.cuda.empty_cache()
 
 def do_inference(cfg,
                  model,
-                 val_loader,
-                 num_query):
+                 test_loader,
+                 num_query,
+                 threshold,
+                 output_dist_mat=False):
     device = "cuda"
     logger = logging.getLogger("transreid.test")
     logger.info("Enter inferencing")
-
-    evaluator = R1_mAP_eval(num_query, max_rank=50, feat_norm=cfg.TEST.FEAT_NORM, reranking=cfg.TEST.RE_RANKING)
-
-    evaluator.reset()
+    postprocessor = Postprocessor(num_query, max_rank=50, feat_norm=cfg.TEST.FEAT_NORM, reranking=cfg.TEST.RE_RANKING)
 
     if device:
         if torch.cuda.device_count() > 1:
@@ -166,20 +169,74 @@ def do_inference(cfg,
     model.eval()
     img_path_list = []
 
-    for n_iter, (img, pid, camid, camids, target_view, imgpath) in enumerate(val_loader):
+    for img, imgpath in test_loader:
+        # img shape: (num_query + num_gallery, 3, 384, 128) -> (num_query + num_gallery, channel, width, height)
+        # num_query is always 1 because there is only 1 suspect for each test set image.
+        # num_gallery is the number of cropped bboxes, which can be anywhere from 0 to 4.
         with torch.no_grad():
             img = img.to(device)
-            camids = camids.to(device)
-            target_view = target_view.to(device)
-            feat , _ = model(img, cam_label=camids, view_label=target_view)
-            evaluator.update((feat, pid, camid))
+            feat , _ = model(img)
+            postprocessor.update(feat)
             img_path_list.extend(imgpath)
 
-    cmc, mAP, _, _, _, _, _ = evaluator.compute()
-    logger.info("Validation Results ")
-    logger.info("mAP: {:.1%}".format(mAP))
-    for r in [1, 5, 10]:
-        logger.info("CMC curve, Rank-{:<3}:{:.1%}".format(r, cmc[r - 1]))
-    return cmc[0], cmc[4]
+    # perform thresholding to determine which gallery image, if any, are matches with the query
+    dist_mat = postprocessor.compute()
+    if output_dist_mat:
+        return list(dist_mat[0])
+    
+    dist_mat = (dist_mat < threshold).astype(int)
+    results = []
+    for i, test_set_bbox_path in enumerate(imgpath[1:]):
+        results.append((test_set_bbox_path, dist_mat[0][i]))
+    return results
 
+def get_distance_distributions(cfg,
+                               model,
+                               val_loader,
+                               num_query):
+    postprocessor = Postprocessor(num_query, max_rank=50, feat_norm=cfg.TEST.FEAT_NORM, reranking=cfg.TEST.RE_RANKING)
+    device = 'cuda'
+    model.to(device)
+    model.eval()
 
+    pids_running_list = []
+    camids_running_list = []
+
+    print('Inferring the validation set...')
+    for imgs, pids, camids, camids_batch, viewids, img_paths in tqdm(val_loader):
+        with torch.no_grad():
+            imgs = imgs.to(device)
+            feats, _ = model(imgs)
+            postprocessor.update(feats)
+            pids_running_list.extend(pids)
+            camids_running_list.extend(camids)
+
+    dist_mat = postprocessor.compute()
+
+    q_pids, q_camids = np.asarray(pids_running_list[:num_query]), np.asarray(camids_running_list[:num_query])
+    g_pids, g_camids = np.asarray(pids_running_list[num_query:]), np.asarray(camids_running_list[num_query:])
+
+    # in dist_mat, query images are the rows, while gallery images are the columns
+    # however in this case the query and gallery set are identical
+
+    inter_class_distances = []
+    intra_class_distances = []
+    # iterate only through the lower triangle of the matrix
+    for r in range(dist_mat.shape[0]):
+        for c in range(r):
+            if q_pids[r] == g_pids[c]:
+                # means the query and gallery image are the same identity
+                if q_camids[r] == g_camids[c]:
+                    # means the query and gallery image are the same identity and camera
+                    # this is a perfect match and we should ignore
+                    continue
+                else:
+                    # means the query and gallery image are the same identity but different cameras
+                    # this is an intra-class distance
+                    intra_class_distances.append(dist_mat[r][c])
+            else:
+                # means the query and gallery image are different identities
+                # this is an inter-class distance
+                inter_class_distances.append(dist_mat[r][c])
+
+    return inter_class_distances, intra_class_distances
