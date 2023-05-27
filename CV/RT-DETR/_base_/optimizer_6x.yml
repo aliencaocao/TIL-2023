@@ -1,4 +1,4 @@
-epoch: 72
+epoch: 20
 
 LearningRate:
   base_lr: 0.0001
@@ -9,7 +9,7 @@ LearningRate:
     use_warmup: true
   - !LinearWarmup
     start_factor: 0.001
-    steps: 2000
+    steps: 500
 
 OptimizerBuilder:
   clip_grad_by_norm: 0.1
