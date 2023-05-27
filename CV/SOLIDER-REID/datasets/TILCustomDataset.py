@@ -20,16 +20,13 @@ class TILCustomDataset(BaseImageDataset):
 
     dataset_dir = ''
 
-    def __init__(self, root='', EXECUTION_MODE=False, **kwargs):
+    def __init__(self, root='', EXECUTION_MODE='training', **kwargs):
         super(TILCustomDataset, self).__init__()
         self.dataset_dir = osp.join(root, self.dataset_dir)
         self.EXECUTION_MODE = EXECUTION_MODE
-
+        print(f'Loading TILCustomDataset in {EXECUTION_MODE} mode.')
         if EXECUTION_MODE == 'training':
-            print('Loading TILCustomDataset in training mode.')
             self.train_dir = osp.join(self.dataset_dir, 'bounding_box_train')
-        elif EXECUTION_MODE == 'inference':
-            print('Loading TILCustomDataset in testing mode.')
         self.query_dir = osp.join(self.dataset_dir, 'query')
         self.gallery_dir = osp.join(self.dataset_dir, 'bounding_box_test')
 
@@ -112,4 +109,24 @@ class TILCustomDataset(BaseImageDataset):
                 dataset = []
                 for img_path in sorted(img_paths):
                     dataset.append((img_path, -1, 0, 1))
+                return dataset
+        elif self.EXECUTION_MODE == 'batch_inference':
+            if dir_path == self.query_dir:
+                # If we are in inference mode and the directory is the query directory
+                # The personID is irrelevant as the identity of the suspect is unknown.
+                # The cameraID is relevant as we need that to differentiate different test images. Here is just 0 indexing on sorted query images.
+                # The last number, trackID, is set to an arbitrary value, in this case 1.
+                return [(p, -1, i, 1) for i, p in enumerate(sorted(img_paths))]
+            else:
+                # If we are in inference mode and the directory is the gallery directory
+                # then there are multiple images, which are the cropped-out bounding boxes from our model preds.
+                # The personID is irrelevant as the identity of the suspect is unknown.
+                # The cameraID is relevant as we need that to differentiate different test images.
+                # The last number, trackID, is set to an arbitrary value, in this case 1.
+                dataset = []
+                pattern = re.compile(r'([-\d]+)_c(\d+)')
+                for img_path in sorted(img_paths):
+                    _, camid = map(int, pattern.search(img_path).groups())
+                    # camid -= 1  # index starts from 0 but the preprocessing script already does it to 0-indexed
+                    dataset.append((img_path, -1, camid, 1))
                 return dataset

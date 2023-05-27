@@ -1,18 +1,18 @@
+import warnings
+warnings.filterwarnings(lineno=20, action='ignore', category=UserWarning)
+
 import argparse
 import os
-import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib
 import pickle
 import numpy as np
 from scipy.stats import gaussian_kde
-from tqdm import tqdm
-from copy import deepcopy
 from config import cfg
 from datasets import make_dataloader
 from model import make_model
-from processor import do_inference
+from processor import do_batch_inference
 from utils.logger import setup_logger
 
 matplotlib.use('Agg')
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     if args.config_file != "":
         cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
-    cfg.EXECUTION_MODE = 'inference'
+    cfg.EXECUTION_MODE = 'batch_inference'
 
     output_dir = cfg.OUTPUT_DIR
     if output_dir and not os.path.exists(output_dir):
@@ -69,14 +69,9 @@ if __name__ == '__main__':
         model.load_param(cfg.TEST.WEIGHT)
 
     collated_distances = []
-    for test_set_img_folder in tqdm(os.listdir(cfg.DATASETS.ROOT_DIR)):
-        subcfg = deepcopy(cfg)
-        subcfg.DATASETS.ROOT_DIR = os.path.join(cfg.DATASETS.ROOT_DIR, test_set_img_folder)
-
-        inference_loader = make_dataloader(subcfg)
-        # no threshold as we want the raw distance matrix
-        curr_dist_mat = do_inference(cfg, model, inference_loader, 1, None, output_dist_mat=True)
-        collated_distances.extend(curr_dist_mat)
+    inference_loader = make_dataloader(cfg)
+    # no threshold as we want the raw distance matrix
+    curr_dist_mat = do_batch_inference(cfg, model, inference_loader, 1, None, output_dist_mat=True)
 
     # Cache the collated distances
     with open(os.path.join(output_dir, 'collated_test_set_distances.pkl'), 'wb') as f:

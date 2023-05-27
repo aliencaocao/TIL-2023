@@ -5,18 +5,22 @@ python train.py --config_file TIL.yml MODEL.PRETRAIN_CHOICE 'self' MODEL.PRETRAI
 
 python plot_val_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log/trial 1/transformer_1_map0.9286209637078827.pth' MODEL.SEMANTIC_WEIGHT 0.2
 
-python plot_val_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log_SGD_continue_1e-4/transformer_29_map0.9159278553764464_acc0.5036038160324097.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR './log_SGD_continue_1e-4/' TEST.RE_RANKING False
+python plot_val_separation_chart.py --config_file TIL.yml TEST.WEIGHT 'log_SGD_continue_1e-4/transformer_61_map0.9101428766973926_acc0.5153370499610901.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR 'log_SGD_continue_1e-4'
 
 
 # PLOTTING THE TEST SET SEPARATION CHART
 
-python plot_test_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log_SGD_continue_1e-4/transformer_29_map0.9159278553764464_acc0.5036038160324097.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR './log_SGD_continue_1e-4/' TEST.RE_RANKING False DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test/'
+python plot_test_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log_SGD_continue_1e-4/transformer_29_map0.9159278553764464_acc0.5036038160324097.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR './log_SGD_continue_1e-4/' TEST.RE_RANKING False DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test_old/'
+
+python plot_test_separation_chart.py --config_file TIL.yml TEST.WEIGHT 'REID log swin L cont 1e-4\transformer_6_map0.9082040767652227_acc0.45811519026756287.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR 'REID log swin L cont 1e-4' TEST.RE_RANKING True DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test_old/'
 
 
 # INFERENCE
-python infer.py --config_file TIL.yml TEST.WEIGHT './log/trial 1/transformer_1_map0.9286209637078827.pth' MODEL.SEMANTIC_WEIGHT 0.2
-python infer.py --config_file TIL.yml TEST.WEIGHT './checkpoints/transformer_1_map0.9286209637078827.pth' MODEL.SEMANTIC_WEIGHT 0.2 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test/' 
-
-python infer.py --config_file TIL_manual_test.yml TEST.WEIGHT './log/trial 1/transformer_1_map0.9286209637078827.pth' MODEL.SEMANTIC_WEIGHT 0.2 
+python infer.py --config_file TIL.yml TEST.WEIGHT 'log\trial 1\transformer_1_map0.9286209637078827.pth' MODEL.SEMANTIC_WEIGHT 0.2 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test/'
 
 python infer.py --config_file TIL.yml TEST.WEIGHT './log_SGD_continue_1e-4/transformer_29_map0.9159278553764464_acc0.5036038160324097.pth' MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test/' OUTPUT_DIR './log_SGD_continue_1e-4/' TEST.RE_RANKING False
+
+python infer.py --config_file TIL.yml TEST.WEIGHT 'REID log swin L cont 1e-4\transformer_6_map0.9082040767652227_acc0.45811519026756287.pth' MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test/'
+
+# Batched Inferenece
+python infer.py --config_file TIL.yml --batched True TEST.WEIGHT 'REID log swin L cont 1e-4\transformer_6_map0.9082040767652227_acc0.45811519026756287.pth' MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test_old/'

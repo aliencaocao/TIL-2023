@@ -167,27 +167,83 @@ def do_inference(cfg,
         model.to(device)
 
     model.eval()
-    img_path_list = []
-
-    for img, imgpath in test_loader:
-        # img shape: (num_query + num_gallery, 3, 384, 128) -> (num_query + num_gallery, channel, width, height)
+    
+    for img, imgpath in tqdm(test_loader):
+        # img shape: (num_query + num_gallery, 3, 224, 224) -> (num_query + num_gallery, channel, width, height)
         # num_query is always 1 because there is only 1 suspect for each test set image.
         # num_gallery is the number of cropped bboxes, which can be anywhere from 0 to 4.
         with torch.no_grad():
             img = img.to(device)
             feat , _ = model(img)
             postprocessor.update(feat)
-            img_path_list.extend(imgpath)
 
-    # perform thresholding to determine which gallery image, if any, are matches with the query
     dist_mat = postprocessor.compute()
     if output_dist_mat:
         return list(dist_mat[0])
-    
-    dist_mat = (dist_mat < threshold).astype(int)
+
+    # perform thresholding to determine which gallery image, if any, are matches with the query
+    dist_mat = (dist_mat < threshold).astype(int)  # boolean array
     results = []
-    for i, test_set_bbox_path in enumerate(imgpath[1:]):
+    for i, test_set_bbox_path in enumerate(imgpath[num_query:]):
         results.append((test_set_bbox_path, dist_mat[0][i]))
+    return results
+
+
+def do_batch_inference(cfg,
+                 model,
+                 test_loader,
+                 num_query,
+                 threshold,
+                 output_dist_mat=False):
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    logger = logging.getLogger("transreid.test")
+    logger.info(f"Enter {cfg.EXECUTION_MODE}")
+    postprocessor = Postprocessor(num_query, max_rank=50, feat_norm=cfg.TEST.FEAT_NORM, reranking=cfg.TEST.RE_RANKING)
+
+    if device:
+        if torch.cuda.device_count() > 1:
+            print('Using {} GPUs for inference'.format(torch.cuda.device_count()))
+            model = nn.DataParallel(model)
+        model.to(device)
+
+    model.eval()
+    imgpath_list = []
+    camid_list = []
+    for img, imgpath, camid in tqdm(test_loader):
+        # img shape: (num_query + num_gallery, 3, 224, 224) -> (num_query + num_gallery, channel, width, height)
+        # num_query total no of suspects, 1600
+        # num_gallery is the number of cropped bboxes, for qualifiers is 3407.
+        # len(camid_list) and len(imgpath_list) would be num_query + num_gallery which is 1600 + 3407 = 5007.
+        with torch.no_grad():
+            img = img.to(device)
+            feat, _ = model(img)
+            postprocessor.update(feat)
+            imgpath_list.extend(imgpath)
+            camid_list.extend(camid)
+    camid_list_np_excl_query = np.array(camid_list[num_query:])  # for later vectorized np.where instead of linear search on list
+    dist_mat = postprocessor.compute()  # (1600, 3407)
+
+    # perform thresholding to determine which gallery image, if any, are matches with the query
+    if not output_dist_mat:
+        dist_mat_bool = (dist_mat < threshold).astype(int)  # boolean array
+    results = []
+    if output_dist_mat:
+        relevant_distances = []  # used for plotting
+    prev_camid = None
+    same_camid_counter = 0
+    for camid, test_set_bbox_path in zip(camid_list[num_query:], imgpath_list[num_query:]):  # skip the first len(query) items as they are suspect images
+        if prev_camid != camid:
+            same_camid_counter = 0
+            prev_camid = camid
+        idx = np.where(camid_list_np_excl_query == camid)[0]  # index of the gallery images in the dist_mat that correspond to a particular cam_id
+        # dist_mat axis 0 is query (camid) and axis 1 is gallery. Each camid can have multiple gallery images. The same camid counter will reset to 0 when moving onto the next camid. idx is a list of indexes of the same camid, so using the counter to access the correct index in the list.
+        if output_dist_mat:
+            relevant_distances.append(dist_mat[camid][idx[same_camid_counter]])
+        else:
+            results.append((test_set_bbox_path, dist_mat_bool[camid][idx[same_camid_counter]]))
+        same_camid_counter += 1
+    if output_dist_mat:
+        return relevant_distances
     return results
 
 def get_distance_distributions(cfg,
