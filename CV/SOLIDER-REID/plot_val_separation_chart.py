@@ -1,3 +1,6 @@
+import warnings
+warnings.filterwarnings(lineno=20, action='ignore', category=UserWarning)
+
 import argparse
 import os
 import pickle
@@ -5,6 +8,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import tqdm
 from scipy.stats import gaussian_kde
 from config import cfg
 from datasets import make_dataloader
@@ -78,7 +82,7 @@ if __name__ == '__main__':
     print('Building histogram for inter_class_distances and intra_class_distances')
     max_value_of_both = max(max(inter_class_distances), max(intra_class_distances))
     min_value_of_both = min(min(inter_class_distances), min(intra_class_distances))
-    bin_size = 1e-7
+    bin_size = 1e-5
     bins = np.arange(min_value_of_both, max_value_of_both + bin_size, bin_size)
     intra_hist, _ = np.histogram(intra_class_distances, bins=bins)
     inter_hist, _ = np.histogram(inter_class_distances, bins=bins)
@@ -87,8 +91,8 @@ if __name__ == '__main__':
     tp = 0
     tn = np.sum(inter_hist)
     total = np.sum(intra_hist) + tn
-    accs = np.array([]) 
-    for i, bin in enumerate(bins[:-1]):
+    accs = np.array([])
+    for i, bin in tqdm.tqdm(enumerate(bins[:-1]), total=len(bins[:-1])):
         num_intra = intra_hist[i]
         num_inter = inter_hist[i]
         tp += num_intra
@@ -108,6 +112,7 @@ if __name__ == '__main__':
 
     # find the minimum stationary point of the kde plot of added_distances
     # this is because the test set will see the two distributions (intra and inter) as one distribution (added)
+    print('gaussian_kde')
     kde = gaussian_kde(added_distances)
     x = np.linspace(np.min(added_distances), np.max(added_distances), num=2000)
     kde_plot = kde(x)
@@ -131,6 +136,7 @@ if __name__ == '__main__':
     # Set labels and title
     plt.xlabel('Distances')
     plt.ylabel('Count')
+    plt.ylim(0, 16000)
 
     # draw a vertical line at the optimal val set threshold
     plt.axvline(x=optimal_thresh, color='black', linestyle='--', label='Intersection Point')

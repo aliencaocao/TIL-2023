@@ -91,7 +91,15 @@ def main():
     # Initialize planner
     map_: SignedDistanceGrid = loc_service.get_map()
     map_ = map_.dilated(1.5 * ROBOT_RADIUS_M / map_.scale)
-    planner = MyPlanner(map_, waypoint_sparsity=0.4, optimize_threshold=3, consider=4, biggrid_size=0.8)
+
+    #Robot getting stuck? Besides tuning PID, consider decreasing waypoint_sparsity 
+    #and increasing the 29cm threshold in Planner.transform_for_astar()
+    planner = MyPlanner(map_,
+                        waypoint_sparsity_m=0.4,
+                        path_opt_min_straight_deg=160,
+                        path_opt_max_safe_dist_cm=24,
+                        explore_consider_nearest=4,
+                        biggrid_size_m=0.8)
 
     # Initialize variables
     seen_clues = set()
@@ -100,9 +108,20 @@ def main():
     lois: List[RealLocation] = []
     maybe_lois: List[RealLocation] = []
     curr_wp: RealLocation = None
+
+    #Prevent bug with endless spinning
     use_spin_direction_lock = False
     spin_direction_lock = False
     spin_sign = 0  # -1 or 1 when spin_direction_lock is active
+
+    #Detect stuck and unstuck. New, needs IRL testing 
+    use_stuck_detection = True
+    log_x = []
+    log_y = []
+    log_time = []
+    stuck_threshold_time_s = 15 #Minimum seconds to be considered stuck
+    stuck_threshold_area_m = 0.15 #Considered stuck if it stays within a 15cm*15cm square
+
 
     # Initialize pose filter
     pose_filter = SimpleMovingAverage(n=10)
@@ -111,7 +130,7 @@ def main():
     new_clues = lambda c: c.clue_id not in seen_clues
     # Main loop
     while True:
-        if path: planner.visualise_update()  # just for updating
+        if path: planner.visualise_update()  # just for visualisation
         # Get new data
         pose, clues = loc_service.get_pose()
         pose = pose_filter.update(pose)
@@ -177,6 +196,38 @@ def main():
                 if not curr_wp:
                     curr_wp = path.pop()
                     logging.getLogger('Navigation').info('New waypoint: {}'.format(curr_wp))
+                    if use_stuck_detection:
+                        log_x.clear()
+                        log_y.clear()
+                        log_time.clear()
+
+                #Log location (for stuck detection purpose), delete old logs
+                if use_stuck_detection:
+                    log_x.append(pose[0])
+                    log_y.append(pose[1])
+                    now = time.time()
+                    log_time.append(now)
+
+                    while len(log_time) and log_time[0] < now - (stuck_threshold_time_s + 5):
+                        log_time.pop(0) #Inefficient but shouldn't matter due to small n (<100)
+                        log_x.pop(0)
+                        log_y.pop(0)
+
+                    #assert len(log_time) == len(log_x) == len(log_y)
+                    #print(len(log_time))
+                    
+                    #Stuck detection
+                    if ((log_time[0] < now - stuck_threshold_time_s)
+                    and (max(log_x) - min(log_x) <= stuck_threshold_area_m) \
+                    and (max(log_y) - min(log_y) <= stuck_threshold_area_m)):
+                        #Stuck! Try to unstuck by driving backwards at 0.5m/s for 2s.
+                        #Then continue to next iteration for simplicity of code
+                        print("STUCK DETECTED, DRIVING BACKWARDS")
+                        robot.chassis.drive_speed(x=-0.5, z=0)
+                        time.sleep(2)
+                        robot.chassis.drive_speed(x=0, z=0)
+                        continue
+
 
                 # Calculate distance and heading to waypoint
                 dist_to_wp = euclidean_distance(pose, curr_wp)
@@ -198,7 +249,7 @@ def main():
                         print("Spin direction lock, modifying ang_diff -360")
                         ang_diff -= 360
 
-                logging.getLogger('Navigation').info('ang_to_wp: {}, hdg: {}, ang_diff: {}'.format(ang_to_wp, pose[2], ang_diff))
+                # logging.getLogger('Navigation').info('ang_to_wp: {}, hdg: {}, ang_diff: {}'.format(ang_to_wp, pose[2], ang_diff))
                 # logging.getLogger('Navigation').info('Pose: {}'.format(pose))
 
                 # Consider waypoint reached if within a threshold distance

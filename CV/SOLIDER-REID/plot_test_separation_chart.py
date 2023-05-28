@@ -1,18 +1,18 @@
+import warnings
+warnings.filterwarnings(lineno=20, action='ignore', category=UserWarning)
+
 import argparse
 import os
-import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib
 import pickle
 import numpy as np
 from scipy.stats import gaussian_kde
-from tqdm import tqdm
-from copy import deepcopy
 from config import cfg
 from datasets import make_dataloader
 from model import make_model
-from processor import do_inference
+from processor import do_batch_inference
 from utils.logger import setup_logger
 
 matplotlib.use('Agg')
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     if args.config_file != "":
         cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
-    cfg.EXECUTION_MODE = 'inference'
+    cfg.EXECUTION_MODE = 'batch_inference'
 
     output_dir = cfg.OUTPUT_DIR
     if output_dir and not os.path.exists(output_dir):
@@ -69,14 +69,9 @@ if __name__ == '__main__':
         model.load_param(cfg.TEST.WEIGHT)
 
     collated_distances = []
-    for test_set_img_folder in tqdm(os.listdir(cfg.DATASETS.ROOT_DIR)):
-        subcfg = deepcopy(cfg)
-        subcfg.DATASETS.ROOT_DIR = os.path.join(cfg.DATASETS.ROOT_DIR, test_set_img_folder)
-
-        inference_loader = make_dataloader(subcfg)
-        # no threshold as we want the raw distance matrix
-        curr_dist_mat = do_inference(cfg, model, inference_loader, 1, None, output_dist_mat=True)
-        collated_distances.extend(curr_dist_mat)
+    inference_loader = make_dataloader(cfg)
+    # no threshold as we want the raw distance matrix
+    collated_distances = do_batch_inference(cfg, model, inference_loader, len(os.listdir(os.path.join(cfg.DATASETS.ROOT_DIR, 'query'))), None, output_dist_mat=True)
 
     # Cache the collated distances
     with open(os.path.join(output_dir, 'collated_test_set_distances.pkl'), 'wb') as f:
@@ -86,20 +81,27 @@ if __name__ == '__main__':
     min_distance = min(collated_distances)
 
     # find the minimum stationary point of the kde plot of the collated distances
+    print('gaussian_kde')
     kde = gaussian_kde(collated_distances)
     x = np.linspace(np.min(collated_distances), np.max(collated_distances), num=10000)
     kde_plot = kde(x)
     gradient = np.gradient(kde_plot)
     # Find the indices where the gradient changes sign (stationary points)
-    stationary_indices = np.where(np.diff(np.sign(gradient)))[0]
-    x_minpt = x[stationary_indices][1]
+    # stationary_indices = np.where(np.diff(np.sign(gradient)))[0]
+    stationary_indices = np.where(np.abs(gradient) < 2e-3)[0]  # find places with small gradient
+    x_minpts = x[stationary_indices]
+    x_minpts_filtered_idx = np.where((x_minpts > 0.79) & (x_minpts < 0.82))[0]  # only select x between a range
+    # find the x_minpts with the smallest gradient
+    x_minpts = x_minpts[x_minpts_filtered_idx][np.argmin(np.abs(gradient[stationary_indices][x_minpts_filtered_idx]))]
+    x_minpts = np.array([x_minpts]) if not isinstance(x_minpts, np.ndarray) else x_minpts
 
     # Plot the histogram of collated distances
     sns.histplot(collated_distances, binrange=(min_distance, max_distance))
 
-    # Draw a vertical line at the minimum stationary point
-    plt.axvline(x_minpt, color='red', linestyle='--')
-    plt.text(x_minpt, 0, f'{x_minpt:.15e}', rotation=90, verticalalignment='bottom', horizontalalignment='center')
+    for x_minpt in x_minpts:
+        # Draw a vertical line at the minimum stationary point
+        plt.axvline(x_minpt, color='red', linestyle='--')
+        plt.text(x_minpt, 0, f'{x_minpt:.15}', rotation=90, verticalalignment='bottom', horizontalalignment='center')
 
     if cfg.TEST.RE_RANKING:
         distance_type = 'reranking'
@@ -114,4 +116,4 @@ if __name__ == '__main__':
 
     # Write the minimum stationary point info to a txt file
     with open(os.path.join(output_dir, f'{distance_type}_test_set_separation_chart.txt'), 'w') as f:
-        f.write(f'Test min point: {x_minpt:.15e}')
+        f.write('\n'.join([f'Test min point: {x_minpt:.15e}' for x_minpt in x_minpts]))

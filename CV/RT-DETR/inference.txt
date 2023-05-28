@@ -1,7 +1,7 @@
 !!! BEFORE RUNNING, PATCH PADDLE DETECTION CODE
-PaddleDetection/ppdet/engine/trainer.py line 928 in Trainer.predict(), before self.dataset.set_images(images), add images.sort() to sort the images in the same order as the dataset else the bbox alignment will be off
+PaddleDetection/ppdet/engine/trainer.py line 941 in Trainer.predict(), before self.dataset.set_images(images), add images.sort() to sort the images in the same order as the dataset else the bbox alignment will be off
 
 
 python ../../../PaddleDetection/tools/infer.py -c rtdetr_hgnetv2_x_6x_coco.yml -o weights=checkpoints\rtdetr_hgnetv2_x_6x_coco\best_model.pdparams --infer_dir=dataset/test/images --output_dir=dataset/test/result --visualize=False --save_results=True
 
- --save_results=dataset/test/result
+python ../../../PaddleDetection/tools/infer.py -c rtdetr_hgnetv2_x_6x_coco.yml -o weights=checkpoints\autoaug\best_model.pdparams --infer_dir=dataset/test/images --output_dir=dataset/test/result --visualize=False --save_results=True

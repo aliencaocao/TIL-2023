@@ -1,26 +1,20 @@
+import collections.abc
+import logging
+import math
 import warnings
 from collections import OrderedDict
 from copy import deepcopy
-import logging
-
-import math 
+from itertools import repeat
 from typing import Sequence
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.checkpoint as cp
-import numpy as np
-import cv2
-
-from torch.nn import Module as BaseModule
-from torch.nn import ModuleList
-from torch.nn import Sequential
-from torch.nn import Linear
 from torch import Tensor
-from mmcv.runner import load_checkpoint as _load_checkpoint
+from torch.nn import Linear, Module as BaseModule, ModuleList, Sequential
 
-from itertools import repeat
-import collections.abc
+
 def _ntuple(n):
 
     def parse(x):
@@ -1388,6 +1382,10 @@ class SwinTransformer(BaseModule):
         x = self.avgpool(outs[-1])
         x = torch.flatten(x, 1)
         return x, outs
+
+def swin_large_patch4_window7_224(img_size=224,drop_rate=0.0, attn_drop_rate=0.0, drop_path_rate=0.2, **kwargs):
+    model = SwinTransformer(pretrain_img_size = img_size, patch_size=4, window_size=7, embed_dims=192, depths=(2, 2, 18, 2), num_heads=(6, 12, 24, 48), drop_path_rate=drop_path_rate, drop_rate=drop_rate, attn_drop_rate=attn_drop_rate, **kwargs)
+    return model
 
 def swin_base_patch4_window7_224(img_size=224,drop_rate=0.0, attn_drop_rate=0.0, drop_path_rate=0., **kwargs):
     model = SwinTransformer(pretrain_img_size = img_size, patch_size=4, window_size=7, embed_dims=128, depths=(2, 2, 18, 2), num_heads=(4, 8, 16, 32), drop_path_rate=drop_path_rate, drop_rate=drop_rate, attn_drop_rate=attn_drop_rate, **kwargs)

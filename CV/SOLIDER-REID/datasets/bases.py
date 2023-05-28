@@ -94,3 +94,14 @@ class InferenceImageDataset(ImageDataset):
             img = self.transform(img)
 
         return img, img_path
+
+
+class BatchInferenceImageDataset(ImageDataset):
+    def __getitem__(self, index):
+        img_path, _, camid, _ = self.dataset[index]
+        img = read_image(img_path)
+
+        if self.transform is not None:
+            img = self.transform(img)
+
+        return img, img_path, camid
