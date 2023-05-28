@@ -6,7 +6,8 @@ from pathlib import Path
 from PIL import Image
 from tqdm import tqdm
 
-preds_csv_path = Path("../RT-DETR/submissions/0.88x no aug best conf 0.8 no reid lb 0.306.csv")
+pred_path = "../RT-DETR/submissions/wbf_0.88x no aug best conf 0.5 no reid lb 0.306_0.882 manyaug best conf 0.7 no reid lb 0.30378 lb 0.307922.csv"
+preds_csv_path = Path(pred_path)
 test_imgs_path = Path("../RT-DETR/dataset/test/images/")
 output_path = Path("../RT-DETR/dataset/reid/test_old/")
 suspect_imgs_path = Path("../RT-DETR/dataset/reid/suspects/")
@@ -56,5 +57,5 @@ with open(preds_csv_path) as preds_file:
       'xmax': x2
     }
 
-with open('test_set_bbox_mapping_autoaug.json', 'w') as f:
+with open(f'{pred_path.split(".csv")[0]}_bbox_mapping.json', 'w') as f:
   json.dump(mapping_dict, f)
