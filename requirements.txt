@@ -31,3 +31,4 @@ pydub
 timm
 mmcv-full
 yacs
+language_tool_python
