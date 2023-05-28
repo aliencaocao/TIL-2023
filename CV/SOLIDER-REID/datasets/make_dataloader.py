@@ -5,7 +5,7 @@ from timm.data.random_erasing import RandomErasing
 from torch.utils.data import DataLoader
 
 from .TILCustomDataset import TILCustomDataset
-from .bases import ImageDataset, InferenceImageDataset
+from .bases import BatchInferenceImageDataset, ImageDataset, InferenceImageDataset
 from .market1501 import Market1501
 from .mm import MM
 from .msmt17 import MSMT17
@@ -40,6 +40,10 @@ def val_collate_fn(batch):
 def inference_collate_fn(batch):
     imgs, img_paths = zip(*batch)
     return torch.stack(imgs, dim=0), img_paths
+
+def batch_inference_collate_fn(batch):
+    imgs, img_paths, camids = zip(*batch)
+    return torch.stack(imgs, dim=0), img_paths, camids
 
 
 def make_dataloader(cfg):
@@ -79,15 +83,27 @@ def make_dataloader(cfg):
             num_workers=num_workers,
             collate_fn=inference_collate_fn
         )
-        # The return format is as such.
-        # inference_loader, num_classes, camera_num, view_num, num_query.
+
+        return inference_loader
+    elif cfg.EXECUTION_MODE == 'batch_inference':
+        # InferenceImageDataset is a custom ImageDataset that does not care about the personID, cameraID, etc.
+        # We pass in dataset.query_dir + dataset.gallery_dir because the inference set is the combination of the query and gallery set.
+        # We need the query to come first, then the gallery, because there will be slicing performed later which expects query to come first.
+        inference_set = BatchInferenceImageDataset(dataset.query + dataset.gallery, val_transforms)
+        inference_loader = DataLoader(
+            inference_set,
+            batch_size=cfg.TEST.IMS_PER_BATCH,
+            shuffle=False,
+            num_workers=num_workers,
+            collate_fn=batch_inference_collate_fn
+        )
 
         return inference_loader
 
-    train_set = ImageDataset(dataset.train, train_transforms)
-    train_set_normal = ImageDataset(dataset.train, val_transforms)
+    elif cfg.EXECUTION_MODE == 'training':
+        train_set = ImageDataset(dataset.train, train_transforms)
+        train_set_normal = ImageDataset(dataset.train, val_transforms)
 
-    if cfg.EXECUTION_MODE == 'training':
         num_classes, cam_num, view_num = dataset.num_train_pids, dataset.num_train_cams, dataset.num_train_vids
 
         if cfg.DATALOADER.SAMPLER in ['softmax_triplet', 'img_triplet']:

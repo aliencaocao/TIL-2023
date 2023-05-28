@@ -6,7 +6,7 @@ from loss.metric_learning import AMSoftmax, Arcface, CircleLoss, Cosface
 
 from .backbones.resnet import Bottleneck, ResNet
 from .backbones.resnet_ibn_a import resnet50_ibn_a
-from .backbones.swin_transformer import swin_base_patch4_window7_224, swin_small_patch4_window7_224, swin_tiny_patch4_window7_224
+from .backbones.swin_transformer import swin_base_patch4_window7_224, swin_large_patch4_window7_224, swin_small_patch4_window7_224, swin_tiny_patch4_window7_224
 from .backbones.vit_pytorch import vit_base_patch16_224_TransReID, vit_small_patch16_224_TransReID
 
 
@@ -147,8 +147,8 @@ class Backbone(nn.Module):
         if 'state_dict' in param_dict:
             param_dict = param_dict['state_dict']
         for i in param_dict:
-            #if 'classifier' in i:
-                #continue
+            if 'classifier' in i:
+                continue
             if 'module' in i:
                 self.state_dict()[i.replace('module.', '')].copy_(param_dict[i])
             else:
@@ -235,6 +235,8 @@ class build_transformer(nn.Module):
 
         if model_path != '':
             param_dict = torch.load(model_path)
+            if 'model' in param_dict:
+                param_dict = param_dict['model']
             for i in param_dict:
                 if 'classifier' in i:
                     continue
@@ -448,6 +450,7 @@ __factory_T_type = {
     'deit_base_patch16_224_TransReID': vit_base_patch16_224_TransReID,
     'vit_small_patch16_224_TransReID': vit_small_patch16_224_TransReID,
     'deit_small_patch16_224_TransReID': vit_small_patch16_224_TransReID,
+    'swin_large_patch4_window7_224': swin_large_patch4_window7_224,
     'swin_base_patch4_window7_224': swin_base_patch4_window7_224,
     'swin_small_patch4_window7_224': swin_small_patch4_window7_224,
     'swin_tiny_patch4_window7_224': swin_tiny_patch4_window7_224,

@@ -9,7 +9,7 @@ _BASE_: [
 weights: checkpoints/
 pretrain_weights: https://bj.bcebos.com/v1/paddledet/models/pretrained/PPHGNetV2_X_ssld_pretrained.pdparams
 find_unused_parameters: True
-log_iter: 200
+log_iter: 20
 
 
 

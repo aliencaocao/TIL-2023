@@ -1,0 +1,6 @@
+Val optimal threshold: 0.7868934651156535
+Val optimal threshold acc: 0.9654712707745359
+
+Val added_distance min point: 0.0412524029732043
+Val added_distance delta: 0.7456410621424492
+Val Intersection Area: 49801
