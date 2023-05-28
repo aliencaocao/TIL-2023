@@ -7,7 +7,8 @@ from pathlib import Path
 
 txt_dirs = [
   "../RT-DETR/dataset/train/labels",
-  "../RT-DETR/dataset/val/labels"]
+  "../RT-DETR/dataset/val/labels"
+]
 
 def relabel_dir(txt_dir):
   relabelled_dir = Path(txt_dir).parent / "relabelled"

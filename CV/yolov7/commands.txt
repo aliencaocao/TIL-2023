@@ -10,3 +10,9 @@ python train_aux.py \
   --name yolov7-w6 \
   --hyp data/hyp.scratch.p6.yaml
 CUDA OOM will occur if --workers is not set to 0. (Why? No clue.)
+
+
+Conf is confidence thresh to consider if a bbox is even a bbox.
+iou here is the iou threshold for NMS.
+
+python test.py --data data/til.yaml --img-size 1280 --batch-size 16 --conf-thres 0.0 --iou-thres 0.65 --device 0 --augment --weights './runs/train/yolov7-w626/weights/best.pt' --name yolov7-w626-best-inference --save-json

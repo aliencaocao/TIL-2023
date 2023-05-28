@@ -12,7 +12,7 @@ import numpy as np
 import evaluate
 
 model_name = 'facebook/wav2vec2-conformer-rel-pos-large-960h-ft'
-checkpoint_name = 'wav2vec2-checkpoints-audiomentations/checkpoint-843/'
+checkpoint_name = 'wav2vec2-checkpoints-audiomentations-from2337/checkpoint-1781 lb 0.01351/'
 
 processor = Wav2Vec2Processor.from_pretrained(model_name)
 
@@ -135,12 +135,12 @@ model = Wav2Vec2ConformerForCTC.from_pretrained(
 per_gpu_bs = 4
 effective_bs = 32
 training_args = TrainingArguments(
-    output_dir="wav2vec2-checkpoints-audiomentations",
+    output_dir="wav2vec2-checkpoints-audiomentations-from2337",
     overwrite_output_dir =True,
     per_device_train_batch_size=per_gpu_bs,
     gradient_accumulation_steps=math.ceil(effective_bs/per_gpu_bs),
-    learning_rate=1e-4,
-    num_train_epochs=30,
+    learning_rate=1e-6,
+    num_train_epochs=20,
     gradient_checkpointing=False,
     fp16=True,
     # bf16=True,  # for A100
@@ -159,14 +159,15 @@ training_args = TrainingArguments(
     load_best_model_at_end=True,  # True
     adam_beta1=0.9,
     adam_beta2=0.98,  # follow fairseq fintuning config
-    warmup_ratio=0.22, # follow Ranger21
+    warmup_ratio=0.1, # follow Ranger21
     weight_decay=1e-4,  # follow Ranger21
     metric_for_best_model="wer",
     greater_is_better=False,
     report_to=['tensorboard'],
     remove_unused_columns=False,
     dataloader_num_workers=8 if os.name != 'nt' else 1,
-    resume_from_checkpoint=checkpoint_name) # since num threads is 16
+    # resume_from_checkpoint=checkpoint_name
+) # since num threads is 16
 
 class CTCTrainer(Trainer):
     def training_step(self, model: torch.nn.Module, inputs: Dict[str, Union[torch.Tensor, Any]]) -> torch.Tensor:
@@ -226,6 +227,7 @@ trainer = CTCTrainer(
 if os.name != 'nt':  # windows does not support torch.compile yet
     # pass
     trainer.model_wrapped, trainer.optimizer, trainer.lr_scheduler = accelerator.prepare(trainer.model_wrapped, trainer.optimizer, trainer.lr_scheduler)
-trainer.train(checkpoint_name)  # resume from checkpoint
+# trainer.train(checkpoint_name)  # resume from checkpoint
+trainer.train()
 if os.name != 'nt':
     accelerator.wait_for_everyone()

@@ -1,6 +1,6 @@
 # data paths are relative to yolov7 repo dir
 train: "../../RT-DETR/dataset/train/images"
-val: "../../RT-DETR/dataset/val/images"
+val: "../../RT-DETR/dataset/test/images"
 test: "../../RT-DETR/dataset/test/images"
 
 # number of classes
