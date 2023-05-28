@@ -92,10 +92,10 @@ class MyPlanner:
                     #Convert unit of grid2 from pixel to cm
                     grid2[i][j] *= self.map.scale/0.01
                     
-                    #We set areas further than 40cm away from walls/border to be of equal cost so that the robot can take a straight path when far from walls.
-                    #40cm cos the robot's length is 39cm, plus the map is dilated 17cm (ROBOT_RADIUS_M=0.17),
-                    #So a total clearance of 57cm shld be a very safe distance compared to robot half-length of 19.5cm.
-                    grid2[i][j] = 1 + k / min(grid2[i][j], 40)
+                    #We set areas further than 29cm away from walls/border to be of equal cost so that the robot can take a straight path when far from walls.
+                    #The map is dilated 25.5cm (ROBOT_RADIUS_M=0.17),
+                    #So a total clearance of 54cm shld be a very safe distance compared to robot length of 39cm/half length of 19.5cm.
+                    grid2[i][j] = 1 + k / min(grid2[i][j], 29)
                 else:
                     grid2[i][j] = np.inf
         return grid2.astype("float32")
@@ -261,18 +261,18 @@ class MyPlanner:
         coeff = max(coeff, 1)
         path = path[:1] + path[:-1:coeff] + path[-1:]  # Take the 1st, last, and every nth waypoint in the middle
         # Duplication of last waypoint to avoid bug in main loop has been moved to plan()
-        return self.optimize_path(path)
+        return self.optimize_path(path)  
 
     def optimize_path(self, path: List[GridLocation]) -> List[GridLocation]:
         new_path = [path[0]]  # starting point always in path
         for i in range(1, len(path) - 1, 1):
-            d1 = (path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1])
+            d1 = (path[i][0] - new_path[-1][0], path[i][1] - new_path[-1][1])
             d2 = (path[i + 1][0] - path[i][0], path[i + 1][1] - path[i][1])
             d1_deg = math.degrees(math.atan2(d1[0],d1[1]))
             d2_deg = math.degrees(math.atan2(d2[0],d2[1]))
             deg_diff = abs(d1_deg - d2_deg)
             deg_diff = min(deg_diff, 360 - deg_diff)
-            print("ANGLES: ", d1_deg, d2_deg, "DEG DIFF:", deg_diff)
+            #print("ANGLES: ", d1_deg, d2_deg, "DEG DIFF:", deg_diff)
             deg_tolerance = 180 - self.path_opt_min_straight_deg
             if deg_diff > deg_tolerance: 
                 new_path.append(path[i])
