@@ -216,7 +216,7 @@ def do_batch_inference(cfg,
         # num_gallery is the number of cropped bboxes, for qualifiers is about 3.5k.
         # len(camid_list) and len(imgpath_list) would be num_query + num_gallery which is 1600 + ~3.5k = ~5.1k.
         with torch.no_grad():
-            img = img.to(device)
+            img = img.to(device)  # img is a tensor containing both the query and gallery images
             feat, _ = model(img)
             postprocessor.update(feat)
             imgpath_list.extend(imgpath)

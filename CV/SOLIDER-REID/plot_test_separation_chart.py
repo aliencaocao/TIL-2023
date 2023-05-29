@@ -87,9 +87,9 @@ if __name__ == '__main__':
     kde_plot = kde(x)
     gradient = np.gradient(kde_plot)
     if cfg.TEST.RE_RANKING:
-        stationary_indices = np.where(np.abs(gradient) < 2e-3)[0]  # find places with small gradient
+        stationary_indices = np.where(np.abs(gradient) < 5e-3)[0]  # find places with small gradient
         x_minpts = x[stationary_indices]
-        x_minpts_filtered_idx = np.where((x_minpts > 0.79) & (x_minpts < 0.82))[0]  # only select x between a range
+        x_minpts_filtered_idx = np.where((x_minpts > 0.7) & (x_minpts < 0.9))[0]  # only select x between a range
         # find the x_minpts with the smallest gradient
         x_minpts = x_minpts[x_minpts_filtered_idx][np.argmin(np.abs(gradient[stationary_indices][x_minpts_filtered_idx]))]
         x_minpts = np.array([x_minpts]) if not isinstance(x_minpts, np.ndarray) else x_minpts
