@@ -86,15 +86,19 @@ if __name__ == '__main__':
     x = np.linspace(np.min(collated_distances), np.max(collated_distances), num=10000)
     kde_plot = kde(x)
     gradient = np.gradient(kde_plot)
-    # Find the indices where the gradient changes sign (stationary points)
-    # stationary_indices = np.where(np.diff(np.sign(gradient)))[0]
-    stationary_indices = np.where(np.abs(gradient) < 2e-3)[0]  # find places with small gradient
-    x_minpts = x[stationary_indices]
-    x_minpts_filtered_idx = np.where((x_minpts > 0.79) & (x_minpts < 0.82))[0]  # only select x between a range
-    # find the x_minpts with the smallest gradient
-    x_minpts = x_minpts[x_minpts_filtered_idx][np.argmin(np.abs(gradient[stationary_indices][x_minpts_filtered_idx]))]
-    x_minpts = np.array([x_minpts]) if not isinstance(x_minpts, np.ndarray) else x_minpts
-
+    if cfg.TEST.RE_RANKING:
+        stationary_indices = np.where(np.abs(gradient) < 2e-3)[0]  # find places with small gradient
+        x_minpts = x[stationary_indices]
+        x_minpts_filtered_idx = np.where((x_minpts > 0.79) & (x_minpts < 0.82))[0]  # only select x between a range
+        # find the x_minpts with the smallest gradient
+        x_minpts = x_minpts[x_minpts_filtered_idx][np.argmin(np.abs(gradient[stationary_indices][x_minpts_filtered_idx]))]
+        x_minpts = np.array([x_minpts]) if not isinstance(x_minpts, np.ndarray) else x_minpts
+        distance_type = 'reranking'
+    else:
+        # Find the indices where the gradient changes sign (stationary points)
+        stationary_indices = np.where(np.diff(np.sign(gradient)))[0]
+        x_minpts = x[stationary_indices]
+        distance_type = 'euclidean'
     # Plot the histogram of collated distances
     sns.histplot(collated_distances, binrange=(min_distance, max_distance))
 
@@ -102,11 +106,6 @@ if __name__ == '__main__':
         # Draw a vertical line at the minimum stationary point
         plt.axvline(x_minpt, color='red', linestyle='--')
         plt.text(x_minpt, 0, f'{x_minpt:.15}', rotation=90, verticalalignment='bottom', horizontalalignment='center')
-
-    if cfg.TEST.RE_RANKING:
-        distance_type = 'reranking'
-    else:
-        distance_type = 'euclidean'
 
     plt.title(f'Test Set Separation Chart [{distance_type} Distance]\nModel: {cfg.TEST.WEIGHT}')
 
