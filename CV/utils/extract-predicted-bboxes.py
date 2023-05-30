@@ -1,6 +1,7 @@
 import csv
 import json
 import os
+import shutil
 from pathlib import Path
 
 from PIL import Image
@@ -47,7 +48,7 @@ with open(preds_csv_path) as preds_file:
 
     img_save_path = gallery_dir / f"-1_c{cam_id}s1_1_{num_dets[cam_id]}.png"
     img_cropped.save(img_save_path)
-    # shutil.copy(suspect_imgs_path / (filename + ".png"), query_dir)
+    shutil.copy(suspect_imgs_path / (filename + ".png"), query_dir)
 
     mapping_dict[str(img_save_path)] = {
       'confidence': row[2],

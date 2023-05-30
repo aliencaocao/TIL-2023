@@ -228,7 +228,8 @@ def do_batch_inference(cfg,
     if output_dist_mat:
         relevant_distances = []  # used for plotting
     else:  # perform thresholding to determine which gallery image, if any, are matches with the query
-        dist_mat_bool = (dist_mat < threshold).astype(int)  # boolean array
+        # dist_mat_bool = (dist_mat < threshold).astype(int)  # boolean array
+        dist_mat_bool = dist_mat  # thresholding later
     prev_camid = None
     same_camid_counter = 0
     for camid, test_set_bbox_path in zip(camid_list[num_query:], imgpath_list[num_query:]):  # skip the first len(query) items as they are suspect images
