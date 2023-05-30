@@ -21,7 +21,7 @@ INPUT:
 
 DATASETS:
   NAMES: ('TILCustomDataset')  # follow the market1501.py filename since TIL custom mods are all in that file
-  ROOT_DIR: ('../RT-DETR/dataset/reid/')
+  ROOT_DIR: ('../RT-DETR/dataset/reid_rotation_expansion/')
 
 DATALOADER:
   SAMPLER: 'softmax_triplet'
@@ -30,10 +30,11 @@ DATALOADER:
 
 SOLVER:
   OPTIMIZER_NAME: 'SGD'  # SGD
-  MAX_EPOCHS: 10
-  BASE_LR: 0.0001 # 0.0008
-  WARMUP_EPOCHS: 2
-  IMS_PER_BATCH: 32
+  MAX_EPOCHS: 500
+  # BASE_LR: 0.005 # 0.0008
+  BASE_LR: 5e-3
+  WARMUP_EPOCHS: 3
+  IMS_PER_BATCH: 128
   WARMUP_METHOD: 'cosine'
   LARGE_FC_LR: False
   CHECKPOINT_PERIOD: 1
@@ -52,4 +53,4 @@ TEST:
   FEAT_NORM: 'yes'
   THRESHOLD: 0.7868934651156535
 
-OUTPUT_DIR: './log_SGD_continue_1e-4/'
+OUTPUT_DIR: './log_SGD_500epoch_autoaugment/'
