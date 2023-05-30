@@ -1,1 +1,1 @@
-Test min point: 7.078457407467794e-01
+Test min point: 8.829747730843163e-01

@@ -218,6 +218,11 @@ def do_batch_inference(cfg,
         with torch.no_grad():
             img = img.to(device)  # img is a tensor containing both the query and gallery images
             feat, _ = model(img)
+            # rotate both the query and gallery image 4 times and get the features for each rotation then average them
+            # feat_list = [feat]
+            # for i in range(1, 4):
+            #     feat_list.append(model(torch.rot90(img, i, [2, 3]))[0])
+            # feat = torch.stack(feat_list).mean(dim=0)  # average the features from the 4 rotations
             postprocessor.update(feat)
             imgpath_list.extend(imgpath)
             camid_list.extend(camid)
