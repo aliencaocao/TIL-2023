@@ -13,7 +13,8 @@ MODEL:
 INPUT:
   SIZE_TRAIN: [224, 224]
   SIZE_TEST: [224, 224]
-  PROB: 0.5 # random horizontal flip
+  HFLIP_PROB: 0.5 # random horizontal flip
+  VFLIP_PROB: 0.5 # random vertical flip
   RE_PROB: 0.5 # random erasing
   PADDING: 10
   PIXEL_MEAN: [0.5, 0.5, 0.5]
@@ -54,4 +55,4 @@ TEST:
   # THRESHOLD: 0.0013236288040655365 # without RR transformer_29 0.0013236288040655365
   THRESHOLD: 0.8669 # with RR, transformer_29 0.7868934651156535
 
-OUTPUT_DIR: './log_SGD_500epoch_autoaugment/'
+OUTPUT_DIR: './log_SGD_500epoch_5e-3LR_expanded_autoaugment/'
