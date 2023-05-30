@@ -1,0 +1,1 @@
+2023-05-29 15:30:40 reid INFO: Namespace(config_file='TIL.yml', batched=True, opts=['TEST.WEIGHT', 'log_SGD_500epoch_5e-3LR_expanded/transformer_189_map0.936082144024757_acc0.8284107446670532.pth', 'MODEL.SEMANTIC_WEIGHT', '0.1', 'DATASETS.ROOT_DIR', '../RT-DETR/dataset/reid/test_old/', 'OUTPUT_DIR', './log_SGD_500epoch_5e-3LR_expanded/'])

@@ -216,8 +216,13 @@ def do_batch_inference(cfg,
         # num_gallery is the number of cropped bboxes, for qualifiers is about 3.5k.
         # len(camid_list) and len(imgpath_list) would be num_query + num_gallery which is 1600 + ~3.5k = ~5.1k.
         with torch.no_grad():
-            img = img.to(device)
+            img = img.to(device)  # img is a tensor containing both the query and gallery images
             feat, _ = model(img)
+            # rotate both the query and gallery image 4 times and get the features for each rotation then average them
+            # feat_list = [feat]
+            # for i in range(1, 4):
+            #     feat_list.append(model(torch.rot90(img, i, [2, 3]))[0])
+            # feat = torch.stack(feat_list).mean(dim=0)  # average the features from the 4 rotations
             postprocessor.update(feat)
             imgpath_list.extend(imgpath)
             camid_list.extend(camid)
@@ -228,7 +233,8 @@ def do_batch_inference(cfg,
     if output_dist_mat:
         relevant_distances = []  # used for plotting
     else:  # perform thresholding to determine which gallery image, if any, are matches with the query
-        dist_mat_bool = (dist_mat < threshold).astype(int)  # boolean array
+        # dist_mat_bool = (dist_mat < threshold).astype(int)  # boolean array
+        dist_mat_bool = dist_mat  # thresholding later
     prev_camid = None
     same_camid_counter = 0
     for camid, test_set_bbox_path in zip(camid_list[num_query:], imgpath_list[num_query:]):  # skip the first len(query) items as they are suspect images

@@ -10,8 +10,13 @@ python plot_val_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log/tri
 python plot_val_separation_chart.py --config_file TIL.yml TEST.WEIGHT 'log_SGD_continue_1e-4/transformer_61_map0.9101428766973926_acc0.5153370499610901.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR 'log_SGD_continue_1e-4'
 
 
+python plot_val_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR 'log_SGD_500epoch_continue_1e-4LR_expanded/21/'
+
 # PLOTTING THE TEST SET SEPARATION CHART
 python plot_test_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log_SGD_continue_1e-4/transformer_29_map0.9159278553764464_acc0.5036038160324097.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR './log_SGD_continue_1e-4/' DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test_old/'
+
+python plot_test_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log_SGD_500epoch_continue_1e-4LR_expanded/transformer_14_map0.9432788816357427_acc0.8542302250862122.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR './log_SGD_500epoch_continue_1e-4LR_expanded/14_test' DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test_old/'
+
 
 
 # INFERENCE
@@ -21,3 +26,20 @@ python infer.py --config_file TIL.yml TEST.WEIGHT './log_SGD_continue_1e-4/trans
 
 # Batched Inferenece
 python infer.py --config_file TIL.yml --batched True TEST.WEIGHT './log_SGD_continue_1e-4/transformer_29_map0.9159278553764464_acc0.5036038160324097.pth' MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test_old/'
+
+
+
+14 val
+python infer.py --config_file TIL.yml --batched True TEST.WEIGHT './log_SGD_500epoch_continue_1e-4LR_expanded/transformer_14_map0.9432788816357427_acc0.8542302250862122.pth' MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test_old/' TEST.THRESHOLD 0.8348318458578012 OUTPUT_DIR './log_SGD_500epoch_continue_1e-4LR_expanded/14_val'
+
+21 val
+python infer.py --config_file TIL.yml --batched True TEST.WEIGHT './log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth' MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test_old/' TEST.THRESHOLD 0.8341062655486188 OUTPUT_DIR './log_SGD_500epoch_continue_1e-4LR_expanded/21_val'
+
+14 test
+python infer.py --config_file TIL.yml --batched True TEST.WEIGHT './log_SGD_500epoch_continue_1e-4LR_expanded/transformer_14_map0.9432788816357427_acc0.8542302250862122.pth' MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test_old/' TEST.THRESHOLD 0.8009485408629474 OUTPUT_DIR './log_SGD_500epoch_continue_1e-4LR_expanded/14_test'
+
+
+
+# Visualization of REID preds
+
+python inspect_reid_preds.py --suspects_dir="../RT-DETR/dataset/reid/suspects" --test_set_img_dir="../RT-DETR/dataset/test/images" --preds_path="./submissions/wbf_0.88x no aug best conf 0.5 no reid lb 0.306_0.882 manyaug best conf 0.7 no reid lb 0.30378 lb 0.307922 REID lb 0.6693.csv" --output_dir="./log_currentbest669_transformer_29_wbf"

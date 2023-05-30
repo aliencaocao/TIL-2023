@@ -29,3 +29,4 @@ ASR/train_augmented_without_musan
 ASR/test
 ASR/train
 ASR/model
+CV/SOLIDER-REID/log_currentbest*
