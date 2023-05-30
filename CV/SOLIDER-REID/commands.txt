@@ -9,6 +9,8 @@ python plot_val_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log/tri
 
 python plot_val_separation_chart.py --config_file TIL.yml TEST.WEIGHT 'log_SGD_continue_1e-4/transformer_61_map0.9101428766973926_acc0.5153370499610901.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR 'log_SGD_continue_1e-4'
 
+python plot_val_separation_chart.py --config_file TIL.yml TEST.WEIGHT 'log_SGD_500epoch_5e-3LR_expanded_autoaugment/transformer_91_map0.9513378015462323_acc0.5185467600822449.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR 'log_SGD_500epoch_5e-3LR_expanded_autoaugment' DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/'
+
 
 python plot_val_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR 'log_SGD_500epoch_continue_1e-4LR_expanded/21/'
 
