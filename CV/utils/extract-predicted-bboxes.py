@@ -53,7 +53,7 @@ with open(preds_csv_path) as preds_file:
       'ymin': y1,
       'xmin': x1,
       'ymax': y2,
-      'xmax': x2
+      'xmax': x2,
     }
 
 with open('test_set_bbox_mapping_autoaug.json', 'w') as f:
