@@ -8,9 +8,9 @@ print(sys.path)
 import time
 import logging
 from typing import List
-
 from tilsdk import *  # import the SDK
 from tilsdk.utilities import PIDController, SimpleMovingAverage  # import optional useful things
+from planner import MyPlanner
 
 SIMULATOR_MODE = True # Change to False for real robomaster
 
@@ -23,39 +23,68 @@ else:
     from nlp_service import NLPService
 
 
-from planner import MyPlanner
-
 # Setup logging in a nice readable format
 logging.basicConfig(level=logging.INFO,
                     format='[%(levelname)s][%(asctime)s][%(name)s]: %(message)s',
                     datefmt='%H:%M:%S')
 
+
 # Define config variables in an easily accessible location
 # You may consider using a config file
-REACHED_THRESHOLD_M = 0.3  # TODO: Participant may tune, in meters
-ANGLE_THRESHOLD_DEG = 25.0  # TODO: Participant may tune.
-ROBOT_RADIUS_M = 0.17  # TODO: Participant may tune. 0.390 * 0.245 (L x W)
-tracker = PIDController(Kp=(0.35, 0.2), Ki=(0.1, 0.0), Kd=(0, 0))
 NLP_PREPROCESSOR_DIR = 'finals_audio_model'
 NLP_MODEL_DIR = 'model.onnx'
 CV_CONFIG_DIR = 'vfnet.py'
 CV_MODEL_DIR = 'epoch_13.pth'
-prev_img_rpt_time = 0
-
-
-# Convenience function to update locations of interest.
-def update_locations(old: List[RealLocation], new: List[RealLocation]) -> None:
-    '''Update locations with no duplicates.'''
-    if new:
-        for loc in new:
-            if loc not in old:
-                logging.getLogger('update_locations').info('New location of interest: {}'.format(loc))
-                old.append(loc)
+prev_img_rpt_time = 0 # In global scope to allow convenient usage of global keyword in do_cv()
 
 
 def main():
-    def do_cv():
+    # Connect to robot and start camera
+    robot = Robot()
+    robot.initialize(conn_type="sta")
+    robot.camera.start_video_stream(display=False, resolution='720p')
+
+
+    # Initialize services
+    if SIMULATOR_MODE:
+        cv_service = CVService(model_dir=CV_MODEL_DIR)
+        nlp_service = NLPService(model_dir=NLP_MODEL_DIR)
+        loc_service = LocalizationService(host='localhost', port=5566)  # for simulator
+        rep_service = ReportingService(host='localhost', port=5566)  # only avail on simulator
+    else:
+        cv_service = CVService(config_file=CV_CONFIG_DIR, checkpoint_file=CV_MODEL_DIR)
+        nlp_service = NLPService(preprocessor_dir=NLP_PREPROCESSOR_DIR, model_dir=NLP_MODEL_DIR)
+        loc_service = LocalizationService(host='192.168.20.56', port=5521)  # for real robot
+        # rep_service = ??? Lost the ReportingService config for the real robot
+
+
+    # Initialize variables
+    seen_clues = set()
+    curr_loi: RealLocation = None
+    path: List[RealLocation] = []
+    lois: List[RealLocation] = []
+    maybe_lois: List[RealLocation] = []
+    curr_wp: RealLocation = None
+    pose_filter = SimpleMovingAverage(n=10)
+    map_: SignedDistanceGrid = loc_service.get_map()
+
+
+    # Define helper functions
+    # Filter function to exclude clues seen before   
+    new_clues = lambda c: c.clue_id not in seen_clues
+
+    # To update locations of interest, ignoring those seen before.
+    def update_locations(old: List[RealLocation], new: List[RealLocation]) -> None:
+        if new:
+            for loc in new:
+                if loc not in old:
+                    logging.getLogger('update_locations').info('New location of interest: {}'.format(loc))
+                    old.append(loc)
+
+    # To run CV inference and report targets found
+    def do_cv(): 
         global prev_img_rpt_time
+        # print('pirt',prev_img_rpt_time)
         if not prev_img_rpt_time or time.time() - prev_img_rpt_time >= 1:  # throttle to 1 submission per second, and only read img if necessary
             img = robot.camera.read_cv2_image(strategy='newest')
 
@@ -66,54 +95,20 @@ def main():
             if targets:
                 prev_img_rpt_time = time.time()
                 rpt = rep_service.report(pose, img, targets)
-                logging.getLogger('Main').info('{} targets detected.'.format(len(targets)))
+                logging.getLogger('Main').info('{} targets detected.'.format(len(targets)))    
 
-    # Initialize services
-    if SIMULATOR_MODE:
-        cv_service = CVService(model_dir=CV_MODEL_DIR)
-        nlp_service = NLPService(model_dir=NLP_MODEL_DIR)
-        loc_service = LocalizationService(host='localhost', port=5566)  # for simulator
-        rep_service = ReportingService(host='localhost', port=5566)  # only avail on simulator
-        
-    else:
-        cv_service = CVService(config_file=CV_CONFIG_DIR, checkpoint_file=CV_MODEL_DIR)
-        nlp_service = NLPService(preprocessor_dir=NLP_PREPROCESSOR_DIR, model_dir=NLP_MODEL_DIR)
-        loc_service = LocalizationService(host='192.168.20.56', port=5521)  # for real robot
-    
 
-    robot = Robot()
-    robot.initialize(conn_type="sta")
-    robot.camera.start_video_stream(display=False, resolution='720p')
+    # Movement-related config and controls
+    REACHED_THRESHOLD_M = 0.3  # TODO: Participant may tune, in meters
+    ANGLE_THRESHOLD_DEG = 25.0  # TODO: Participant may tune.
+    tracker = PIDController(Kp=(0.35, 0.2), Ki=(0.1, 0.0), Kd=(0, 0))
 
-    #Start run
-    rep_service.start_run()  # only avail on simulator
-
-    # Initialize planner
-    map_: SignedDistanceGrid = loc_service.get_map()
-    map_ = map_.dilated(1.5 * ROBOT_RADIUS_M / map_.scale)
-
-    #Robot getting stuck? Besides tuning PID, consider decreasing waypoint_sparsity 
-    #and increasing the 29cm threshold in Planner.transform_for_astar()
-    planner = MyPlanner(map_,
-                        waypoint_sparsity=0.4,
-                        path_opt_min_straight_deg=165,
-                        explore_consider_nearest=4,
-                        biggrid_size=0.8)
-
-    # Initialize variables
-    seen_clues = set()
-    curr_loi: RealLocation = None
-    path: List[RealLocation] = []
-    lois: List[RealLocation] = []
-    maybe_lois: List[RealLocation] = []
-    curr_wp: RealLocation = None
-
-    #Prevent bug with endless spinning
+    # To prevent bug with endless spinning in alternate directions by only allowing 1 direction of spinni
     use_spin_direction_lock = False
     spin_direction_lock = False
     spin_sign = 0  # -1 or 1 when spin_direction_lock is active
 
-    #Detect stuck and unstuck. New, needs IRL testing 
+    # To detect stuck and perform unstucking. New, needs IRL testing 
     use_stuck_detection = True
     log_x = []
     log_y = []
@@ -122,14 +117,27 @@ def main():
     stuck_threshold_area_m = 0.15 #Considered stuck if it stays within a 15cm*15cm square
 
 
-    # Initialize pose filter
-    pose_filter = SimpleMovingAverage(n=10)
+    # Initialise planner
+    # Planner-related config here
+    ROBOT_RADIUS_M = 0.17  # TODO: Participant may tune. 0.390 * 0.245 (L x W)
+    map_ = map_.dilated(1.5 * ROBOT_RADIUS_M / map_.scale)
 
-    # Define filter function to exclude clues seen before   
-    new_clues = lambda c: c.clue_id not in seen_clues
+    planner = MyPlanner(map_,
+                        waypoint_sparsity_m=0.4,
+                        astargrid_threshold_dist_cm=29,
+                        path_opt_min_straight_deg=160,
+                        path_opt_max_safe_dist_cm=24,
+                        explore_consider_nearest=4,
+                        biggrid_size_m=0.8)
+    
+
+    #Start run
+    rep_service.start_run()
+
     # Main loop
     while True:
         if path: planner.visualise_update()  # just for visualisation
+
         # Get new data
         pose, clues = loc_service.get_pose()
         pose = pose_filter.update(pose)
@@ -138,8 +146,8 @@ def main():
         if not pose:
             # no new data, continue to next iteration.
             continue
-
-        # Set this location as visited in the planner (so no need to visit here again if there are no clues)
+        
+        #Set current location visit value to 1 if it is not 0. Will not set it to 2 or higher values
         planner.visit(pose[:2])
 
         # Filter out clues that were seen before
@@ -147,16 +155,21 @@ def main():
 
         # Process clues using NLP and determine any new locations of interest
         if clues:
-            new_lois, maybe_useful_lois = nlp_service.locations_from_clues(clues)  # new locations of interest  TODO: use maybe useful lois
+            new_lois, maybe_useful_lois = nlp_service.locations_from_clues(clues)  # new locations of interest 
             if len(new_lois):
                 logging.getLogger('Main').info('New location(s) of interest: {}.'.format(new_lois))
             update_locations(lois, new_lois)
             update_locations(maybe_lois, maybe_useful_lois)
             seen_clues.update([c.clue_id for c in clues])
 
-        # do_cv()
+        # do_cv() # Debug
 
+        #Reached current destination OR just started. Get next location of interest (i.e. destination to visit)
         if not curr_loi:
+
+            # If no locations of interests from clues left,
+            # Firstly visit those deemed fake clues by NLP service (incase NLP service was wrong)
+            # Then explore the arena
             if len(lois) == 0:
                 logging.getLogger('Main').info('No more locations of interest.')
                 if len(maybe_lois):
@@ -166,13 +179,15 @@ def main():
                     lois.append(nearest_maybe)
                 else:
                     logging.getLogger('Main').info('Exploring the arena')
-                    explore_next = planner.get_explore(pose[:2])
+                    explore_next = planner.get_explore(pose[:2], debug=False) #Debug plt is currently broken
+                    print("Expl next",explore_next)
                     if explore_next is None:
                         break
                     lois.append(explore_next)
+            else: # >=1 LOI, sort to find the nearest one euclidean as heuristic. Possible todo: choose the nearest one based on planned path length instead (slower tho)
+                lois.sort(key=lambda l: euclidean_distance(l, pose), reverse=True)
 
             # Get new LOI
-            lois.sort(key=lambda l: euclidean_distance(l, pose), reverse=True)
             curr_loi = lois.pop()
             logging.getLogger('Main').info('Current LOI set to: {}'.format(curr_loi))
 
@@ -195,7 +210,7 @@ def main():
                 if not curr_wp:
                     curr_wp = path.pop()
                     logging.getLogger('Navigation').info('New waypoint: {}'.format(curr_wp))
-                    if use_stuck_detection:
+                    if use_stuck_detection: #Reset lists
                         log_x.clear()
                         log_y.clear()
                         log_time.clear()
@@ -207,15 +222,16 @@ def main():
                     now = time.time()
                     log_time.append(now)
 
+                    #Remove records from more than 5 seconds before the time window examined to determine if stuck
                     while len(log_time) and log_time[0] < now - (stuck_threshold_time_s + 5):
-                        log_time.pop(0) #Inefficient but shouldn't matter due to small n (<100)
+                        log_time.pop(0) #Technically O(N^2) but shouldn't matter due to small n (<100)
                         log_x.pop(0)
                         log_y.pop(0)
 
-                    assert len(log_time) == len(log_x) == len(log_y)
-                    print(len(log_time))
+                    # assert len(log_time) == len(log_x) == len(log_y)
+                    # print(len(log_time)) It stabilises around 80 in the simulator for threshold = 10s
                     
-                    #Stuck detection
+                    #Stuck detection: Stuck if the robo is within a /0.15/m*/0.15/m box for the past /10/-/15/ seconds
                     if ((log_time[0] < now - stuck_threshold_time_s)
                     and (max(log_x) - min(log_x) <= stuck_threshold_area_m) \
                     and (max(log_y) - min(log_y) <= stuck_threshold_area_m)):
@@ -225,6 +241,7 @@ def main():
                         robot.chassis.drive_speed(x=-0.5, z=0)
                         time.sleep(2)
                         robot.chassis.drive_speed(x=0, z=0)
+                        tracker.reset()
                         continue
 
 
@@ -266,8 +283,8 @@ def main():
                 # reduce x velocity
                 vel_cmd[0] *= np.cos(np.radians(ang_diff))
 
-                # If robot is facing the wrong direction, turn to face waypoint first before
-                # moving forward.
+                # If robot is facing the wrong direction, turn to face waypoint first before moving forward.
+                # Lock spin direction (has effect only if use_spin_direction_lock = True) as bug causing infinite spinning back and forth has been encountered before in the sim
                 if abs(ang_diff) > ANGLE_THRESHOLD_DEG:
                     spin_direction_lock = True
                     spin_sign = np.sign(ang_diff)
