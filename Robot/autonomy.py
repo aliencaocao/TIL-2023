@@ -95,11 +95,10 @@ def main():
     #Robot getting stuck? Besides tuning PID, consider decreasing waypoint_sparsity 
     #and increasing the 29cm threshold in Planner.transform_for_astar()
     planner = MyPlanner(map_,
-                        waypoint_sparsity_m=0.4,
-                        path_opt_min_straight_deg=160,
-                        path_opt_max_safe_dist_cm=24,
+                        waypoint_sparsity=0.4,
+                        path_opt_min_straight_deg=165,
                         explore_consider_nearest=4,
-                        biggrid_size_m=0.8)
+                        biggrid_size=0.8)
 
     # Initialize variables
     seen_clues = set()
@@ -213,8 +212,8 @@ def main():
                         log_x.pop(0)
                         log_y.pop(0)
 
-                    #assert len(log_time) == len(log_x) == len(log_y)
-                    #print(len(log_time))
+                    assert len(log_time) == len(log_x) == len(log_y)
+                    print(len(log_time))
                     
                     #Stuck detection
                     if ((log_time[0] < now - stuck_threshold_time_s)
