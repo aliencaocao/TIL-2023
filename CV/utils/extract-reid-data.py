@@ -5,6 +5,7 @@ from pathlib import Path
 from shutil import copytree
 from tqdm import tqdm
 from PIL import Image
+import numpy as np
 
 dataset_dir = (Path(__file__) / "../../RT-DETR/dataset").resolve()
 
@@ -41,26 +42,25 @@ def extract_reid_data(dataset_split_path, output_path):
           x2 * img.width,
           y2 * img.height,
         ))
+        
+        for i in range(4):
+          if obj_id not in num_obj_instances:
+            num_obj_instances[obj_id] = 1
+          else:
+            num_obj_instances[obj_id] += 1
 
-        if obj_id not in num_obj_instances:
-          num_obj_instances[obj_id] = 1
-        else:
-          num_obj_instances[obj_id] += 1
+          img_cropped.save(output_path / f"{obj_id}_c{img_idx + 1}s1_1_{num_obj_instances[obj_id]}.png")
+          img_cropped = Image.fromarray(np.rot90(np.array(img_cropped), 1))
 
-        img_cropped.save(output_path / f"{obj_id}_c{img_idx + 1}s1_1_{num_obj_instances[obj_id]}.png")
-
-reid_dir = dataset_dir / "reid"
+reid_dir = dataset_dir / "reid_rotation_expansion"
 output_train_dir = reid_dir / "bounding_box_train"
 output_test_dir = reid_dir / "bounding_box_test"
 output_query_dir = reid_dir / "query"
 
-try:
-  os.mkdir(reid_dir)
-  os.mkdir(output_train_dir)
-  os.mkdir(output_test_dir)
-except FileExistsError as err:
-  pass
+os.mkdir(reid_dir)
+os.mkdir(output_train_dir)
+os.mkdir(output_test_dir)
 
 extract_reid_data(dataset_dir / "train", output_train_dir)
 extract_reid_data(dataset_dir / "val", output_test_dir)
-copytree(output_test_dir, output_query_dir)
+copytree(output_test_dir, output_query_dir, dirs_exist_ok=True)

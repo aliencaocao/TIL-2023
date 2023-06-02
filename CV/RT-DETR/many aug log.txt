@@ -1,0 +1,685 @@
+/home/aistudio/work/PaddleDetection-develop
+/opt/conda/envs/python35-paddle120-env/lib/python3.9/site-packages/matplotlib/__init__.py:107: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
+  from collections import MutableMapping
+/opt/conda/envs/python35-paddle120-env/lib/python3.9/site-packages/matplotlib/rcsetup.py:20: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
+  from collections import Iterable, Mapping
+/opt/conda/envs/python35-paddle120-env/lib/python3.9/site-packages/matplotlib/colors.py:53: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
+  from collections import Sized
+Warning: import ppdet from source directory without installing, run 'python setup.py install' to install ppdet firstly
+loading annotations into memory...
+Done (t=0.05s)
+creating index...
+index created!
+[05/27 22:58:18] ppdet.data.source.coco INFO: Load [5664 samples valid, 0 samples invalid] in file ../dataset/train/train.json.
+W0527 22:58:19.042982   778 gpu_resources.cc:61] Please NOTE: device: 0, GPU Compute Capability: 8.0, Driver API Version: 11.2, Runtime API Version: 11.2
+W0527 22:58:19.046063   778 gpu_resources.cc:91] device: 0, cuDNN Version: 8.2.
+[05/27 22:58:22] ppdet.utils.download INFO: Downloading PPHGNetV2_X_ssld_pretrained.pdparams from https://bj.bcebos.com/v1/paddledet/models/pretrained/PPHGNetV2_X_ssld_pretrained.pdparams
+100%|████████████████████████████████| 155004/155004 [00:10<00:00, 14267.90KB/s]
+[05/27 22:58:34] ppdet.utils.checkpoint INFO: ['fc.bias', 'fc.weight', 'last_conv.weight'] in pretrained weight is not used in the model, and its will not be loaded
+[05/27 22:58:34] ppdet.utils.checkpoint INFO: Finish loading model weights: /home/aistudio/.cache/paddle/weights/PPHGNetV2_X_ssld_pretrained.pdparams
+[05/27 22:58:37] ppdet.engine INFO: Epoch: [0] [  0/283] learning_rate: 0.000000 loss_class: 0.634638 loss_bbox: 0.741666 loss_giou: 1.474725 loss_class_aux: 3.934810 loss_bbox_aux: 4.377239 loss_giou_aux: 8.950545 loss_class_dn: 0.737199 loss_bbox_dn: 0.573980 loss_giou_dn: 1.378922 loss_class_aux_dn: 3.876688 loss_bbox_aux_dn: 2.869900 loss_giou_aux_dn: 6.894612 loss: 36.444927 eta: 8:36:29 batch_cost: 3.6501 data_cost: 0.0006 ips: 5.4793 images/s
+[05/27 22:59:03] ppdet.engine INFO: Epoch: [0] [ 20/283] learning_rate: 0.000004 loss_class: 0.666077 loss_bbox: 0.815138 loss_giou: 1.339427 loss_class_aux: 4.358782 loss_bbox_aux: 4.818641 loss_giou_aux: 8.063287 loss_class_dn: 0.689255 loss_bbox_dn: 0.717306 loss_giou_dn: 1.374187 loss_class_aux_dn: 3.778963 loss_bbox_aux_dn: 3.586837 loss_giou_aux_dn: 6.871430 loss: 37.084991 eta: 3:11:46 batch_cost: 1.2440 data_cost: 0.5964 ips: 16.0777 images/s
+[05/27 22:59:40] ppdet.engine INFO: Epoch: [0] [ 40/283] learning_rate: 0.000008 loss_class: 0.620026 loss_bbox: 0.644513 loss_giou: 1.170480 loss_class_aux: 4.572215 loss_bbox_aux: 3.901950 loss_giou_aux: 7.143787 loss_class_dn: 0.444750 loss_bbox_dn: 0.661360 loss_giou_dn: 1.368520 loss_class_aux_dn: 3.033893 loss_bbox_aux_dn: 3.308232 loss_giou_aux_dn: 6.841838 loss: 33.979603 eta: 3:37:24 batch_cost: 1.7382 data_cost: 1.0619 ips: 11.5059 images/s
+[05/27 23:00:11] ppdet.engine INFO: Epoch: [0] [ 60/283] learning_rate: 0.000012 loss_class: 0.764525 loss_bbox: 0.548694 loss_giou: 0.998764 loss_class_aux: 4.586557 loss_bbox_aux: 3.465382 loss_giou_aux: 6.186895 loss_class_dn: 0.394544 loss_bbox_dn: 0.665482 loss_giou_dn: 1.371868 loss_class_aux_dn: 2.105503 loss_bbox_aux_dn: 3.324127 loss_giou_aux_dn: 6.855932 loss: 31.486073 eta: 3:35:21 batch_cost: 1.5103 data_cost: 0.8015 ips: 13.2421 images/s
+[05/27 23:00:48] ppdet.engine INFO: Epoch: [0] [ 80/283] learning_rate: 0.000016 loss_class: 0.784439 loss_bbox: 0.509424 loss_giou: 0.929849 loss_class_aux: 4.531006 loss_bbox_aux: 3.279919 loss_giou_aux: 5.881844 loss_class_dn: 0.395007 loss_bbox_dn: 0.674687 loss_giou_dn: 1.369634 loss_class_aux_dn: 1.877980 loss_bbox_aux_dn: 3.353498 loss_giou_aux_dn: 6.845245 loss: 30.656839 eta: 3:44:42 batch_cost: 1.8176 data_cost: 1.1855 ips: 11.0034 images/s
+[05/27 23:01:21] ppdet.engine INFO: Epoch: [0] [100/283] learning_rate: 0.000020 loss_class: 0.828040 loss_bbox: 0.488130 loss_giou: 0.843479 loss_class_aux: 4.730354 loss_bbox_aux: 3.103983 loss_giou_aux: 5.329982 loss_class_dn: 0.403968 loss_bbox_dn: 0.693937 loss_giou_dn: 1.347798 loss_class_aux_dn: 1.838980 loss_bbox_aux_dn: 3.434950 loss_giou_aux_dn: 6.785063 loss: 30.009266 eta: 3:44:22 batch_cost: 1.6103 data_cost: 0.9393 ips: 12.4197 images/s
+[05/27 23:01:54] ppdet.engine INFO: Epoch: [0] [120/283] learning_rate: 0.000024 loss_class: 0.812120 loss_bbox: 0.459669 loss_giou: 0.803143 loss_class_aux: 4.648078 loss_bbox_aux: 2.912247 loss_giou_aux: 5.059392 loss_class_dn: 0.430133 loss_bbox_dn: 0.660708 loss_giou_dn: 1.261080 loss_class_aux_dn: 1.871891 loss_bbox_aux_dn: 3.362750 loss_giou_aux_dn: 6.508153 loss: 28.841625 eta: 3:43:18 batch_cost: 1.5818 data_cost: 0.9536 ips: 12.6438 images/s
+[05/27 23:02:26] ppdet.engine INFO: Epoch: [0] [140/283] learning_rate: 0.000028 loss_class: 0.836181 loss_bbox: 0.417701 loss_giou: 0.780504 loss_class_aux: 4.344430 loss_bbox_aux: 2.659356 loss_giou_aux: 4.916992 loss_class_dn: 0.468112 loss_bbox_dn: 0.589943 loss_giou_dn: 1.158908 loss_class_aux_dn: 2.024076 loss_bbox_aux_dn: 3.111583 loss_giou_aux_dn: 6.098102 loss: 27.455894 eta: 3:41:49 batch_cost: 1.5527 data_cost: 0.9173 ips: 12.8804 images/s
+[05/27 23:03:05] ppdet.engine INFO: Epoch: [0] [160/283] learning_rate: 0.000032 loss_class: 0.850978 loss_bbox: 0.351494 loss_giou: 0.732654 loss_class_aux: 4.413459 loss_bbox_aux: 2.304155 loss_giou_aux: 4.744381 loss_class_dn: 0.502901 loss_bbox_dn: 0.507285 loss_giou_dn: 1.098679 loss_class_aux_dn: 2.117139 loss_bbox_aux_dn: 2.718512 loss_giou_aux_dn: 5.783589 loss: 26.345592 eta: 3:47:05 batch_cost: 1.9297 data_cost: 1.2810 ips: 10.3642 images/s
+[05/27 23:03:37] ppdet.engine INFO: Epoch: [0] [180/283] learning_rate: 0.000036 loss_class: 0.911646 loss_bbox: 0.339258 loss_giou: 0.675045 loss_class_aux: 4.442031 loss_bbox_aux: 2.410938 loss_giou_aux: 4.611037 loss_class_dn: 0.555408 loss_bbox_dn: 0.516907 loss_giou_dn: 1.004623 loss_class_aux_dn: 2.174004 loss_bbox_aux_dn: 2.888524 loss_giou_aux_dn: 5.537075 loss: 26.209312 eta: 3:44:57 batch_cost: 1.5325 data_cost: 0.8880 ips: 13.0509 images/s
+[05/27 23:04:15] ppdet.engine INFO: Epoch: [0] [200/283] learning_rate: 0.000040 loss_class: 1.062271 loss_bbox: 0.227593 loss_giou: 0.527979 loss_class_aux: 4.653124 loss_bbox_aux: 2.064572 loss_giou_aux: 4.249772 loss_class_dn: 0.600753 loss_bbox_dn: 0.404545 loss_giou_dn: 0.877564 loss_class_aux_dn: 2.194962 loss_bbox_aux_dn: 2.523487 loss_giou_aux_dn: 5.180421 loss: 24.591177 eta: 3:47:40 batch_cost: 1.8611 data_cost: 1.2075 ips: 10.7465 images/s
+[05/27 23:04:49] ppdet.engine INFO: Epoch: [0] [220/283] learning_rate: 0.000044 loss_class: 1.120048 loss_bbox: 0.193745 loss_giou: 0.435696 loss_class_aux: 4.865952 loss_bbox_aux: 1.926865 loss_giou_aux: 3.682587 loss_class_dn: 0.653187 loss_bbox_dn: 0.337278 loss_giou_dn: 0.725759 loss_class_aux_dn: 2.322847 loss_bbox_aux_dn: 2.265083 loss_giou_aux_dn: 4.594291 loss: 23.147701 eta: 3:46:48 batch_cost: 1.6217 data_cost: 0.9317 ips: 12.3326 images/s
+[05/27 23:05:23] ppdet.engine INFO: Epoch: [0] [240/283] learning_rate: 0.000048 loss_class: 1.049720 loss_bbox: 0.207363 loss_giou: 0.444618 loss_class_aux: 4.782308 loss_bbox_aux: 1.711145 loss_giou_aux: 3.671001 loss_class_dn: 0.636193 loss_bbox_dn: 0.314052 loss_giou_dn: 0.662628 loss_class_aux_dn: 2.252557 loss_bbox_aux_dn: 2.055261 loss_giou_aux_dn: 4.316787 loss: 22.290878 eta: 3:46:40 batch_cost: 1.6831 data_cost: 1.0119 ips: 11.8831 images/s
+[05/27 23:06:06] ppdet.engine INFO: Epoch: [0] [260/283] learning_rate: 0.000052 loss_class: 0.874663 loss_bbox: 0.162538 loss_giou: 0.451123 loss_class_aux: 4.435003 loss_bbox_aux: 1.505711 loss_giou_aux: 3.522604 loss_class_dn: 0.536398 loss_bbox_dn: 0.233187 loss_giou_dn: 0.554283 loss_class_aux_dn: 2.160217 loss_bbox_aux_dn: 1.644908 loss_giou_aux_dn: 3.924410 loss: 20.149363 eta: 3:50:59 batch_cost: 2.1115 data_cost: 1.4317 ips: 9.4721 images/s
+[05/27 23:06:41] ppdet.engine INFO: Epoch: [0] [280/283] learning_rate: 0.000056 loss_class: 0.817166 loss_bbox: 0.153720 loss_giou: 0.437959 loss_class_aux: 4.275062 loss_bbox_aux: 1.432160 loss_giou_aux: 3.482835 loss_class_dn: 0.470921 loss_bbox_dn: 0.234547 loss_giou_dn: 0.532627 loss_class_aux_dn: 2.127653 loss_bbox_aux_dn: 1.637433 loss_giou_aux_dn: 3.681535 loss: 19.242809 eta: 3:50:14 batch_cost: 1.6639 data_cost: 0.9798 ips: 12.0199 images/s
+[05/27 23:06:45] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 23:06:45] ppdet.data.source.coco INFO: Load [800 samples valid, 0 samples invalid] in file ../dataset/val/val.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 23:06:48] ppdet.engine INFO: Eval iter: 0
+[05/27 23:07:08] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 23:07:08] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=1.99s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.54s).
+Accumulating evaluation results...
+DONE (t=0.54s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.563
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.841
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.713
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.573
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.563
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.339
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.739
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.770
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.735
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.772
+[05/27 23:07:15] ppdet.engine INFO: Total sample number: 800, average FPS: 44.13446224591591
+[05/27 23:07:15] ppdet.engine INFO: Best test bbox ap is 0.563.
+[05/27 23:07:17] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 23:07:18] ppdet.engine INFO: Epoch: [1] [  0/283] learning_rate: 0.000057 loss_class: 0.823676 loss_bbox: 0.154933 loss_giou: 0.436912 loss_class_aux: 4.234088 loss_bbox_aux: 1.511549 loss_giou_aux: 3.426219 loss_class_dn: 0.464645 loss_bbox_dn: 0.246786 loss_giou_dn: 0.526100 loss_class_aux_dn: 2.124165 loss_bbox_aux_dn: 1.693155 loss_giou_aux_dn: 3.640128 loss: 19.242809 eta: 3:48:35 batch_cost: 1.6617 data_cost: 0.9799 ips: 12.0359 images/s
+[05/27 23:07:49] ppdet.engine INFO: Epoch: [1] [ 20/283] learning_rate: 0.000061 loss_class: 0.724592 loss_bbox: 0.147012 loss_giou: 0.407410 loss_class_aux: 4.177566 loss_bbox_aux: 1.280796 loss_giou_aux: 3.165411 loss_class_dn: 0.448734 loss_bbox_dn: 0.211839 loss_giou_dn: 0.470052 loss_class_aux_dn: 2.114740 loss_bbox_aux_dn: 1.447391 loss_giou_aux_dn: 3.311748 loss: 18.044983 eta: 3:46:17 batch_cost: 1.4773 data_cost: 0.7764 ips: 13.5380 images/s
+[05/27 23:08:31] ppdet.engine INFO: Epoch: [1] [ 40/283] learning_rate: 0.000065 loss_class: 0.744490 loss_bbox: 0.146990 loss_giou: 0.397785 loss_class_aux: 4.127899 loss_bbox_aux: 1.325110 loss_giou_aux: 3.162983 loss_class_dn: 0.447433 loss_bbox_dn: 0.186883 loss_giou_dn: 0.461263 loss_class_aux_dn: 2.103940 loss_bbox_aux_dn: 1.419673 loss_giou_aux_dn: 3.209549 loss: 17.937635 eta: 3:49:12 batch_cost: 2.0700 data_cost: 1.3558 ips: 9.6619 images/s
+[05/27 23:09:12] ppdet.engine INFO: Epoch: [1] [ 60/283] learning_rate: 0.000069 loss_class: 0.727664 loss_bbox: 0.138902 loss_giou: 0.390159 loss_class_aux: 4.084974 loss_bbox_aux: 1.262494 loss_giou_aux: 2.947332 loss_class_dn: 0.441353 loss_bbox_dn: 0.192233 loss_giou_dn: 0.454714 loss_class_aux_dn: 2.130286 loss_bbox_aux_dn: 1.369308 loss_giou_aux_dn: 3.031368 loss: 17.278942 eta: 3:50:53 batch_cost: 1.9698 data_cost: 1.2913 ips: 10.1533 images/s
+[05/27 23:09:43] ppdet.engine INFO: Epoch: [1] [ 80/283] learning_rate: 0.000073 loss_class: 0.676297 loss_bbox: 0.152570 loss_giou: 0.369322 loss_class_aux: 3.989483 loss_bbox_aux: 1.277922 loss_giou_aux: 2.894935 loss_class_dn: 0.428850 loss_bbox_dn: 0.190553 loss_giou_dn: 0.417736 loss_class_aux_dn: 2.098155 loss_bbox_aux_dn: 1.342983 loss_giou_aux_dn: 2.919063 loss: 16.642780 eta: 3:48:47 batch_cost: 1.4928 data_cost: 0.8658 ips: 13.3976 images/s
+[05/27 23:10:14] ppdet.engine INFO: Epoch: [1] [100/283] learning_rate: 0.000077 loss_class: 0.643995 loss_bbox: 0.136294 loss_giou: 0.348713 loss_class_aux: 3.920765 loss_bbox_aux: 1.192932 loss_giou_aux: 2.844882 loss_class_dn: 0.423963 loss_bbox_dn: 0.187729 loss_giou_dn: 0.388035 loss_class_aux_dn: 2.091635 loss_bbox_aux_dn: 1.279438 loss_giou_aux_dn: 2.782262 loss: 16.232254 eta: 3:46:59 batch_cost: 1.5139 data_cost: 0.7995 ips: 13.2113 images/s
+[05/27 23:10:54] ppdet.engine INFO: Epoch: [1] [120/283] learning_rate: 0.000081 loss_class: 0.726499 loss_bbox: 0.123215 loss_giou: 0.345066 loss_class_aux: 4.034533 loss_bbox_aux: 1.126701 loss_giou_aux: 2.762040 loss_class_dn: 0.434794 loss_bbox_dn: 0.183553 loss_giou_dn: 0.393936 loss_class_aux_dn: 2.122556 loss_bbox_aux_dn: 1.252537 loss_giou_aux_dn: 2.742751 loss: 16.290039 eta: 3:48:25 batch_cost: 1.9784 data_cost: 1.3081 ips: 10.1090 images/s
+[05/27 23:11:29] ppdet.engine INFO: Epoch: [1] [140/283] learning_rate: 0.000085 loss_class: 0.662588 loss_bbox: 0.118189 loss_giou: 0.335774 loss_class_aux: 3.931220 loss_bbox_aux: 1.039930 loss_giou_aux: 2.737396 loss_class_dn: 0.418539 loss_bbox_dn: 0.155104 loss_giou_dn: 0.377911 loss_class_aux_dn: 2.106449 loss_bbox_aux_dn: 1.089036 loss_giou_aux_dn: 2.655988 loss: 15.492047 eta: 3:47:49 batch_cost: 1.6910 data_cost: 1.0197 ips: 11.8276 images/s
+[05/27 23:12:06] ppdet.engine INFO: Epoch: [1] [160/283] learning_rate: 0.000089 loss_class: 0.700779 loss_bbox: 0.136007 loss_giou: 0.325928 loss_class_aux: 3.995731 loss_bbox_aux: 1.039049 loss_giou_aux: 2.547163 loss_class_dn: 0.416856 loss_bbox_dn: 0.181994 loss_giou_dn: 0.378189 loss_class_aux_dn: 2.063117 loss_bbox_aux_dn: 1.212202 loss_giou_aux_dn: 2.664476 loss: 15.933508 eta: 3:47:48 batch_cost: 1.7840 data_cost: 1.1749 ips: 11.2109 images/s
+[05/27 23:12:39] ppdet.engine INFO: Epoch: [1] [180/283] learning_rate: 0.000093 loss_class: 0.608103 loss_bbox: 0.132593 loss_giou: 0.344096 loss_class_aux: 3.726914 loss_bbox_aux: 1.132651 loss_giou_aux: 2.765014 loss_class_dn: 0.398951 loss_bbox_dn: 0.177740 loss_giou_dn: 0.382357 loss_class_aux_dn: 2.061404 loss_bbox_aux_dn: 1.254300 loss_giou_aux_dn: 2.698425 loss: 15.499575 eta: 3:46:44 batch_cost: 1.6108 data_cost: 0.9094 ips: 12.4159 images/s
+[05/27 23:13:11] ppdet.engine INFO: Epoch: [1] [200/283] learning_rate: 0.000097 loss_class: 0.566913 loss_bbox: 0.115016 loss_giou: 0.331602 loss_class_aux: 3.612635 loss_bbox_aux: 0.938117 loss_giou_aux: 2.428473 loss_class_dn: 0.380916 loss_bbox_dn: 0.138078 loss_giou_dn: 0.351294 loss_class_aux_dn: 1.997635 loss_bbox_aux_dn: 0.994772 loss_giou_aux_dn: 2.364218 loss: 14.293870 eta: 3:45:07 batch_cost: 1.5040 data_cost: 0.8496 ips: 13.2977 images/s
+[05/27 23:13:42] ppdet.engine INFO: Epoch: [1] [220/283] learning_rate: 0.000100 loss_class: 0.638314 loss_bbox: 0.127107 loss_giou: 0.336453 loss_class_aux: 3.828146 loss_bbox_aux: 1.020320 loss_giou_aux: 2.560559 loss_class_dn: 0.388214 loss_bbox_dn: 0.159416 loss_giou_dn: 0.371214 loss_class_aux_dn: 2.015793 loss_bbox_aux_dn: 1.129747 loss_giou_aux_dn: 2.518797 loss: 15.154453 eta: 3:43:43 batch_cost: 1.5291 data_cost: 0.8891 ips: 13.0799 images/s
+[05/27 23:14:20] ppdet.engine INFO: Epoch: [1] [240/283] learning_rate: 0.000100 loss_class: 0.606918 loss_bbox: 0.127239 loss_giou: 0.322512 loss_class_aux: 3.778638 loss_bbox_aux: 1.010543 loss_giou_aux: 2.421759 loss_class_dn: 0.380015 loss_bbox_dn: 0.151823 loss_giou_dn: 0.356022 loss_class_aux_dn: 2.007453 loss_bbox_aux_dn: 1.084101 loss_giou_aux_dn: 2.465456 loss: 14.819847 eta: 3:43:56 batch_cost: 1.8354 data_cost: 1.1642 ips: 10.8966 images/s
+[05/27 23:14:54] ppdet.engine INFO: Epoch: [1] [260/283] learning_rate: 0.000100 loss_class: 0.656717 loss_bbox: 0.109849 loss_giou: 0.303816 loss_class_aux: 3.847409 loss_bbox_aux: 0.922974 loss_giou_aux: 2.333750 loss_class_dn: 0.372654 loss_bbox_dn: 0.139564 loss_giou_dn: 0.339898 loss_class_aux_dn: 1.996274 loss_bbox_aux_dn: 0.989272 loss_giou_aux_dn: 2.382403 loss: 14.444112 eta: 3:43:08 batch_cost: 1.6370 data_cost: 0.9140 ips: 12.2172 images/s
+[05/27 23:15:25] ppdet.engine INFO: Epoch: [1] [280/283] learning_rate: 0.000100 loss_class: 0.573711 loss_bbox: 0.111552 loss_giou: 0.303354 loss_class_aux: 3.616397 loss_bbox_aux: 0.925750 loss_giou_aux: 2.297038 loss_class_dn: 0.372886 loss_bbox_dn: 0.152937 loss_giou_dn: 0.341387 loss_class_aux_dn: 1.977173 loss_bbox_aux_dn: 1.055326 loss_giou_aux_dn: 2.334203 loss: 14.077818 eta: 3:41:38 batch_cost: 1.4824 data_cost: 0.8464 ips: 13.4912 images/s
+[05/27 23:15:35] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 23:15:35] ppdet.engine INFO: Eval iter: 0
+[05/27 23:15:56] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 23:15:56] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=1.85s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.37s).
+Accumulating evaluation results...
+DONE (t=0.53s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.789
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.968
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.954
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.734
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.793
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.405
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.863
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.884
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.862
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.885
+[05/27 23:16:02] ppdet.engine INFO: Total sample number: 800, average FPS: 53.71487597160458
+[05/27 23:16:02] ppdet.engine INFO: Best test bbox ap is 0.789.
+[05/27 23:16:05] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 23:16:06] ppdet.engine INFO: Epoch: [2] [  0/283] learning_rate: 0.000100 loss_class: 0.567416 loss_bbox: 0.106438 loss_giou: 0.310852 loss_class_aux: 3.612087 loss_bbox_aux: 0.898391 loss_giou_aux: 2.297038 loss_class_dn: 0.372886 loss_bbox_dn: 0.147496 loss_giou_dn: 0.338342 loss_class_aux_dn: 1.982450 loss_bbox_aux_dn: 1.006566 loss_giou_aux_dn: 2.308887 loss: 13.991492 eta: 3:42:05 batch_cost: 1.5996 data_cost: 0.9819 ips: 12.5031 images/s
+[05/27 23:16:34] ppdet.engine INFO: Epoch: [2] [ 20/283] learning_rate: 0.000100 loss_class: 0.549736 loss_bbox: 0.088338 loss_giou: 0.275278 loss_class_aux: 3.600374 loss_bbox_aux: 0.824538 loss_giou_aux: 2.304426 loss_class_dn: 0.360179 loss_bbox_dn: 0.119188 loss_giou_dn: 0.309087 loss_class_aux_dn: 1.946191 loss_bbox_aux_dn: 0.898351 loss_giou_aux_dn: 2.245554 loss: 13.258340 eta: 3:39:57 batch_cost: 1.3322 data_cost: 0.6194 ips: 15.0128 images/s
+[05/27 23:17:10] ppdet.engine INFO: Epoch: [2] [ 40/283] learning_rate: 0.000100 loss_class: 0.503184 loss_bbox: 0.098296 loss_giou: 0.283506 loss_class_aux: 3.362604 loss_bbox_aux: 0.841453 loss_giou_aux: 2.186875 loss_class_dn: 0.348990 loss_bbox_dn: 0.124932 loss_giou_dn: 0.301211 loss_class_aux_dn: 1.900659 loss_bbox_aux_dn: 0.903372 loss_giou_aux_dn: 2.131756 loss: 13.207605 eta: 3:39:40 batch_cost: 1.7297 data_cost: 1.0021 ips: 11.5624 images/s
+[05/27 23:17:47] ppdet.engine INFO: Epoch: [2] [ 60/283] learning_rate: 0.000100 loss_class: 0.503452 loss_bbox: 0.103441 loss_giou: 0.282035 loss_class_aux: 3.344010 loss_bbox_aux: 0.872098 loss_giou_aux: 2.276171 loss_class_dn: 0.341749 loss_bbox_dn: 0.124131 loss_giou_dn: 0.308793 loss_class_aux_dn: 1.916701 loss_bbox_aux_dn: 0.885075 loss_giou_aux_dn: 2.166960 loss: 13.132271 eta: 3:39:38 batch_cost: 1.7991 data_cost: 1.0986 ips: 11.1167 images/s
+[05/27 23:18:19] ppdet.engine INFO: Epoch: [2] [ 80/283] learning_rate: 0.000100 loss_class: 0.499670 loss_bbox: 0.090846 loss_giou: 0.261814 loss_class_aux: 3.273839 loss_bbox_aux: 0.758645 loss_giou_aux: 2.104957 loss_class_dn: 0.350488 loss_bbox_dn: 0.105103 loss_giou_dn: 0.290101 loss_class_aux_dn: 1.904734 loss_bbox_aux_dn: 0.792672 loss_giou_aux_dn: 2.104511 loss: 12.661450 eta: 3:38:39 batch_cost: 1.5688 data_cost: 0.9217 ips: 12.7483 images/s
+[05/27 23:18:52] ppdet.engine INFO: Epoch: [2] [100/283] learning_rate: 0.000100 loss_class: 0.496649 loss_bbox: 0.095787 loss_giou: 0.248561 loss_class_aux: 3.313476 loss_bbox_aux: 0.800845 loss_giou_aux: 1.980698 loss_class_dn: 0.331879 loss_bbox_dn: 0.114837 loss_giou_dn: 0.278998 loss_class_aux_dn: 1.837021 loss_bbox_aux_dn: 0.848319 loss_giou_aux_dn: 1.992587 loss: 12.565379 eta: 3:37:43 batch_cost: 1.5767 data_cost: 0.8555 ips: 12.6847 images/s
+[05/27 23:19:29] ppdet.engine INFO: Epoch: [2] [120/283] learning_rate: 0.000100 loss_class: 0.507782 loss_bbox: 0.099540 loss_giou: 0.262008 loss_class_aux: 3.340279 loss_bbox_aux: 0.857827 loss_giou_aux: 2.186840 loss_class_dn: 0.349474 loss_bbox_dn: 0.118599 loss_giou_dn: 0.282416 loss_class_aux_dn: 1.912634 loss_bbox_aux_dn: 0.841008 loss_giou_aux_dn: 2.101727 loss: 12.919849 eta: 3:37:36 batch_cost: 1.7881 data_cost: 1.0802 ips: 11.1848 images/s
+[05/27 23:20:00] ppdet.engine INFO: Epoch: [2] [140/283] learning_rate: 0.000100 loss_class: 0.510487 loss_bbox: 0.106296 loss_giou: 0.277790 loss_class_aux: 3.279902 loss_bbox_aux: 0.904377 loss_giou_aux: 2.104841 loss_class_dn: 0.336516 loss_bbox_dn: 0.117269 loss_giou_dn: 0.277900 loss_class_aux_dn: 1.868199 loss_bbox_aux_dn: 0.918826 loss_giou_aux_dn: 1.997630 loss: 12.871962 eta: 3:36:23 batch_cost: 1.4943 data_cost: 0.7486 ips: 13.3842 images/s
+[05/27 23:20:31] ppdet.engine INFO: Epoch: [2] [160/283] learning_rate: 0.000100 loss_class: 0.502753 loss_bbox: 0.098767 loss_giou: 0.271288 loss_class_aux: 3.288785 loss_bbox_aux: 0.828632 loss_giou_aux: 2.006723 loss_class_dn: 0.335719 loss_bbox_dn: 0.118747 loss_giou_dn: 0.289096 loss_class_aux_dn: 1.845462 loss_bbox_aux_dn: 0.871082 loss_giou_aux_dn: 1.947049 loss: 12.405556 eta: 3:35:15 batch_cost: 1.5057 data_cost: 0.8346 ips: 13.2833 images/s
+[05/27 23:21:09] ppdet.engine INFO: Epoch: [2] [180/283] learning_rate: 0.000100 loss_class: 0.452535 loss_bbox: 0.089377 loss_giou: 0.264057 loss_class_aux: 3.130047 loss_bbox_aux: 0.764577 loss_giou_aux: 2.041974 loss_class_dn: 0.329829 loss_bbox_dn: 0.109283 loss_giou_dn: 0.285789 loss_class_aux_dn: 1.834085 loss_bbox_aux_dn: 0.795674 loss_giou_aux_dn: 1.880070 loss: 12.016850 eta: 3:35:17 batch_cost: 1.8342 data_cost: 1.1910 ips: 10.9039 images/s
+[05/27 23:21:41] ppdet.engine INFO: Epoch: [2] [200/283] learning_rate: 0.000100 loss_class: 0.453593 loss_bbox: 0.094456 loss_giou: 0.254014 loss_class_aux: 3.086727 loss_bbox_aux: 0.753156 loss_giou_aux: 1.982534 loss_class_dn: 0.330275 loss_bbox_dn: 0.112153 loss_giou_dn: 0.270199 loss_class_aux_dn: 1.854874 loss_bbox_aux_dn: 0.778531 loss_giou_aux_dn: 1.891599 loss: 12.214172 eta: 3:34:22 batch_cost: 1.5593 data_cost: 0.8531 ips: 12.8259 images/s
+[05/27 23:22:19] ppdet.engine INFO: Epoch: [2] [220/283] learning_rate: 0.000100 loss_class: 0.446918 loss_bbox: 0.099658 loss_giou: 0.260114 loss_class_aux: 3.086104 loss_bbox_aux: 0.768153 loss_giou_aux: 2.067685 loss_class_dn: 0.322889 loss_bbox_dn: 0.112066 loss_giou_dn: 0.258080 loss_class_aux_dn: 1.823482 loss_bbox_aux_dn: 0.832543 loss_giou_aux_dn: 2.004776 loss: 12.132784 eta: 3:34:17 batch_cost: 1.8103 data_cost: 1.1307 ips: 11.0479 images/s
+[05/27 23:22:54] ppdet.engine INFO: Epoch: [2] [240/283] learning_rate: 0.000100 loss_class: 0.439219 loss_bbox: 0.090576 loss_giou: 0.256851 loss_class_aux: 3.036868 loss_bbox_aux: 0.744175 loss_giou_aux: 1.979120 loss_class_dn: 0.315954 loss_bbox_dn: 0.103365 loss_giou_dn: 0.272118 loss_class_aux_dn: 1.811589 loss_bbox_aux_dn: 0.759231 loss_giou_aux_dn: 1.914347 loss: 11.780712 eta: 3:33:47 batch_cost: 1.6858 data_cost: 0.9659 ips: 11.8641 images/s
+[05/27 23:23:27] ppdet.engine INFO: Epoch: [2] [260/283] learning_rate: 0.000100 loss_class: 0.480827 loss_bbox: 0.081184 loss_giou: 0.229875 loss_class_aux: 3.112387 loss_bbox_aux: 0.758028 loss_giou_aux: 1.848709 loss_class_dn: 0.316576 loss_bbox_dn: 0.100315 loss_giou_dn: 0.248616 loss_class_aux_dn: 1.784214 loss_bbox_aux_dn: 0.761055 loss_giou_aux_dn: 1.844599 loss: 11.550129 eta: 3:33:03 batch_cost: 1.6114 data_cost: 0.9074 ips: 12.4119 images/s
+[05/27 23:24:05] ppdet.engine INFO: Epoch: [2] [280/283] learning_rate: 0.000100 loss_class: 0.436445 loss_bbox: 0.082017 loss_giou: 0.238186 loss_class_aux: 2.989718 loss_bbox_aux: 0.684749 loss_giou_aux: 1.880733 loss_class_dn: 0.312402 loss_bbox_dn: 0.093668 loss_giou_dn: 0.250538 loss_class_aux_dn: 1.768426 loss_bbox_aux_dn: 0.635225 loss_giou_aux_dn: 1.805482 loss: 11.151649 eta: 3:33:08 batch_cost: 1.8794 data_cost: 1.2181 ips: 10.6415 images/s
+[05/27 23:24:10] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 23:24:10] ppdet.engine INFO: Eval iter: 0
+[05/27 23:24:30] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 23:24:30] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.12s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.34s).
+Accumulating evaluation results...
+DONE (t=0.53s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.840
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.980
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.965
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.789
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.843
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.423
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.902
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.916
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.892
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.918
+[05/27 23:24:37] ppdet.engine INFO: Total sample number: 800, average FPS: 51.07117884275879
+[05/27 23:24:37] ppdet.engine INFO: Best test bbox ap is 0.840.
+[05/27 23:24:39] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 23:24:40] ppdet.engine INFO: Epoch: [3] [  0/283] learning_rate: 0.000100 loss_class: 0.436445 loss_bbox: 0.076839 loss_giou: 0.238186 loss_class_aux: 2.996504 loss_bbox_aux: 0.649002 loss_giou_aux: 1.880733 loss_class_dn: 0.314649 loss_bbox_dn: 0.088840 loss_giou_dn: 0.250538 loss_class_aux_dn: 1.768426 loss_bbox_aux_dn: 0.602881 loss_giou_aux_dn: 1.787839 loss: 11.151649 eta: 3:32:33 batch_cost: 1.6429 data_cost: 1.0206 ips: 12.1738 images/s
+[05/27 23:25:16] ppdet.engine INFO: Epoch: [3] [ 20/283] learning_rate: 0.000100 loss_class: 0.440859 loss_bbox: 0.086183 loss_giou: 0.250797 loss_class_aux: 3.058975 loss_bbox_aux: 0.710408 loss_giou_aux: 1.995533 loss_class_dn: 0.323301 loss_bbox_dn: 0.097755 loss_giou_dn: 0.273622 loss_class_aux_dn: 1.802313 loss_bbox_aux_dn: 0.672535 loss_giou_aux_dn: 1.848359 loss: 11.563007 eta: 3:32:09 batch_cost: 1.7229 data_cost: 1.0951 ips: 11.6085 images/s
+[05/27 23:25:48] ppdet.engine INFO: Epoch: [3] [ 40/283] learning_rate: 0.000100 loss_class: 0.448353 loss_bbox: 0.081059 loss_giou: 0.233001 loss_class_aux: 2.957599 loss_bbox_aux: 0.724215 loss_giou_aux: 1.883866 loss_class_dn: 0.317118 loss_bbox_dn: 0.086797 loss_giou_dn: 0.237551 loss_class_aux_dn: 1.782297 loss_bbox_aux_dn: 0.683561 loss_giou_aux_dn: 1.763363 loss: 11.238184 eta: 3:31:18 batch_cost: 1.5706 data_cost: 0.9248 ips: 12.7340 images/s
+[05/27 23:26:23] ppdet.engine INFO: Epoch: [3] [ 60/283] learning_rate: 0.000100 loss_class: 0.433322 loss_bbox: 0.086276 loss_giou: 0.244949 loss_class_aux: 3.016015 loss_bbox_aux: 0.706453 loss_giou_aux: 1.925719 loss_class_dn: 0.319894 loss_bbox_dn: 0.106161 loss_giou_dn: 0.256388 loss_class_aux_dn: 1.795030 loss_bbox_aux_dn: 0.735811 loss_giou_aux_dn: 1.843316 loss: 11.658561 eta: 3:30:44 batch_cost: 1.6625 data_cost: 0.9570 ips: 12.0298 images/s
+[05/27 23:26:55] ppdet.engine INFO: Epoch: [3] [ 80/283] learning_rate: 0.000100 loss_class: 0.447130 loss_bbox: 0.090162 loss_giou: 0.247421 loss_class_aux: 2.900893 loss_bbox_aux: 0.752939 loss_giou_aux: 1.924872 loss_class_dn: 0.324032 loss_bbox_dn: 0.105796 loss_giou_dn: 0.267829 loss_class_aux_dn: 1.792629 loss_bbox_aux_dn: 0.728743 loss_giou_aux_dn: 1.814569 loss: 11.538003 eta: 3:29:53 batch_cost: 1.5611 data_cost: 0.9181 ips: 12.8111 images/s
+[05/27 23:27:27] ppdet.engine INFO: Epoch: [3] [100/283] learning_rate: 0.000100 loss_class: 0.444104 loss_bbox: 0.088070 loss_giou: 0.258457 loss_class_aux: 2.952642 loss_bbox_aux: 0.716272 loss_giou_aux: 1.986319 loss_class_dn: 0.313651 loss_bbox_dn: 0.092516 loss_giou_dn: 0.268869 loss_class_aux_dn: 1.772004 loss_bbox_aux_dn: 0.717721 loss_giou_aux_dn: 1.843476 loss: 11.349967 eta: 3:29:03 batch_cost: 1.5581 data_cost: 0.8937 ips: 12.8358 images/s
+[05/27 23:28:01] ppdet.engine INFO: Epoch: [3] [120/283] learning_rate: 0.000100 loss_class: 0.438399 loss_bbox: 0.082450 loss_giou: 0.239165 loss_class_aux: 2.934063 loss_bbox_aux: 0.676342 loss_giou_aux: 1.767892 loss_class_dn: 0.315121 loss_bbox_dn: 0.099982 loss_giou_dn: 0.245103 loss_class_aux_dn: 1.741356 loss_bbox_aux_dn: 0.736405 loss_giou_aux_dn: 1.700904 loss: 10.904596 eta: 3:28:26 batch_cost: 1.6422 data_cost: 0.9830 ips: 12.1791 images/s
+[05/27 23:28:38] ppdet.engine INFO: Epoch: [3] [140/283] learning_rate: 0.000100 loss_class: 0.408400 loss_bbox: 0.081410 loss_giou: 0.253829 loss_class_aux: 2.832142 loss_bbox_aux: 0.661429 loss_giou_aux: 1.887042 loss_class_dn: 0.317158 loss_bbox_dn: 0.092330 loss_giou_dn: 0.266705 loss_class_aux_dn: 1.768504 loss_bbox_aux_dn: 0.654475 loss_giou_aux_dn: 1.801911 loss: 10.835136 eta: 3:28:15 batch_cost: 1.8049 data_cost: 1.1250 ips: 11.0810 images/s
+[05/27 23:29:12] ppdet.engine INFO: Epoch: [3] [160/283] learning_rate: 0.000100 loss_class: 0.409832 loss_bbox: 0.084834 loss_giou: 0.237057 loss_class_aux: 2.804750 loss_bbox_aux: 0.673561 loss_giou_aux: 1.750596 loss_class_dn: 0.315810 loss_bbox_dn: 0.096522 loss_giou_dn: 0.253569 loss_class_aux_dn: 1.741592 loss_bbox_aux_dn: 0.646160 loss_giou_aux_dn: 1.716738 loss: 10.861982 eta: 3:27:41 batch_cost: 1.6613 data_cost: 0.9779 ips: 12.0384 images/s
+[05/27 23:29:45] ppdet.engine INFO: Epoch: [3] [180/283] learning_rate: 0.000100 loss_class: 0.396164 loss_bbox: 0.078958 loss_giou: 0.219366 loss_class_aux: 2.825210 loss_bbox_aux: 0.684503 loss_giou_aux: 1.767615 loss_class_dn: 0.302838 loss_bbox_dn: 0.085752 loss_giou_dn: 0.228993 loss_class_aux_dn: 1.699183 loss_bbox_aux_dn: 0.671847 loss_giou_aux_dn: 1.622080 loss: 10.700349 eta: 3:26:56 batch_cost: 1.5858 data_cost: 0.9396 ips: 12.6123 images/s
+[05/27 23:30:19] ppdet.engine INFO: Epoch: [3] [200/283] learning_rate: 0.000100 loss_class: 0.487790 loss_bbox: 0.094263 loss_giou: 0.235188 loss_class_aux: 2.987834 loss_bbox_aux: 0.796657 loss_giou_aux: 1.838487 loss_class_dn: 0.321254 loss_bbox_dn: 0.103100 loss_giou_dn: 0.244857 loss_class_aux_dn: 1.782987 loss_bbox_aux_dn: 0.763254 loss_giou_aux_dn: 1.740286 loss: 11.541842 eta: 3:26:24 batch_cost: 1.6722 data_cost: 1.0392 ips: 11.9605 images/s
+[05/27 23:30:56] ppdet.engine INFO: Epoch: [3] [220/283] learning_rate: 0.000100 loss_class: 0.453423 loss_bbox: 0.084592 loss_giou: 0.230572 loss_class_aux: 2.920386 loss_bbox_aux: 0.718042 loss_giou_aux: 1.781687 loss_class_dn: 0.320283 loss_bbox_dn: 0.093974 loss_giou_dn: 0.242532 loss_class_aux_dn: 1.761631 loss_bbox_aux_dn: 0.691701 loss_giou_aux_dn: 1.667699 loss: 11.065228 eta: 3:26:06 batch_cost: 1.7766 data_cost: 1.1210 ips: 11.2575 images/s
+[05/27 23:31:33] ppdet.engine INFO: Epoch: [3] [240/283] learning_rate: 0.000100 loss_class: 0.423347 loss_bbox: 0.094156 loss_giou: 0.239906 loss_class_aux: 2.873576 loss_bbox_aux: 0.789651 loss_giou_aux: 1.776460 loss_class_dn: 0.306355 loss_bbox_dn: 0.103800 loss_giou_dn: 0.235864 loss_class_aux_dn: 1.721587 loss_bbox_aux_dn: 0.742472 loss_giou_aux_dn: 1.644630 loss: 11.096569 eta: 3:25:53 batch_cost: 1.8194 data_cost: 1.1370 ips: 10.9926 images/s
+[05/27 23:32:08] ppdet.engine INFO: Epoch: [3] [260/283] learning_rate: 0.000100 loss_class: 0.417625 loss_bbox: 0.077342 loss_giou: 0.234776 loss_class_aux: 2.862855 loss_bbox_aux: 0.658223 loss_giou_aux: 1.804785 loss_class_dn: 0.309178 loss_bbox_dn: 0.086614 loss_giou_dn: 0.248070 loss_class_aux_dn: 1.726108 loss_bbox_aux_dn: 0.602329 loss_giou_aux_dn: 1.655380 loss: 10.753216 eta: 3:25:25 batch_cost: 1.7093 data_cost: 1.0690 ips: 11.7008 images/s
+[05/27 23:32:39] ppdet.engine INFO: Epoch: [3] [280/283] learning_rate: 0.000100 loss_class: 0.444895 loss_bbox: 0.089689 loss_giou: 0.243449 loss_class_aux: 2.862275 loss_bbox_aux: 0.722989 loss_giou_aux: 1.877234 loss_class_dn: 0.309333 loss_bbox_dn: 0.098193 loss_giou_dn: 0.246919 loss_class_aux_dn: 1.744852 loss_bbox_aux_dn: 0.676692 loss_giou_aux_dn: 1.702226 loss: 11.179026 eta: 3:24:29 batch_cost: 1.4942 data_cost: 0.8902 ips: 13.3855 images/s
+[05/27 23:32:49] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 23:32:49] ppdet.engine INFO: Eval iter: 0
+[05/27 23:33:09] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 23:33:09] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.19s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.31s).
+Accumulating evaluation results...
+DONE (t=0.53s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.834
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.991
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.970
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.757
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.839
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.418
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.888
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.911
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.874
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.913
+[05/27 23:33:15] ppdet.engine INFO: Total sample number: 800, average FPS: 53.78098850344794
+[05/27 23:33:15] ppdet.engine INFO: Best test bbox ap is 0.840.
+[05/27 23:33:16] ppdet.engine INFO: Epoch: [4] [  0/283] learning_rate: 0.000100 loss_class: 0.454259 loss_bbox: 0.087103 loss_giou: 0.248854 loss_class_aux: 2.905975 loss_bbox_aux: 0.722213 loss_giou_aux: 1.889882 loss_class_dn: 0.315806 loss_bbox_dn: 0.098193 loss_giou_dn: 0.255521 loss_class_aux_dn: 1.763890 loss_bbox_aux_dn: 0.676692 loss_giou_aux_dn: 1.722746 loss: 11.179026 eta: 3:24:33 batch_cost: 1.6047 data_cost: 0.9983 ips: 12.4636 images/s
+[05/27 23:33:48] ppdet.engine INFO: Epoch: [4] [ 20/283] learning_rate: 0.000100 loss_class: 0.423445 loss_bbox: 0.074628 loss_giou: 0.230745 loss_class_aux: 2.889868 loss_bbox_aux: 0.667587 loss_giou_aux: 1.793901 loss_class_dn: 0.312250 loss_bbox_dn: 0.090424 loss_giou_dn: 0.236557 loss_class_aux_dn: 1.740470 loss_bbox_aux_dn: 0.637565 loss_giou_aux_dn: 1.663763 loss: 10.909397 eta: 3:23:47 batch_cost: 1.5697 data_cost: 0.8547 ips: 12.7413 images/s
+[05/27 23:34:21] ppdet.engine INFO: Epoch: [4] [ 40/283] learning_rate: 0.000100 loss_class: 0.434164 loss_bbox: 0.074079 loss_giou: 0.223070 loss_class_aux: 2.909885 loss_bbox_aux: 0.646907 loss_giou_aux: 1.782500 loss_class_dn: 0.302356 loss_bbox_dn: 0.090156 loss_giou_dn: 0.237120 loss_class_aux_dn: 1.718516 loss_bbox_aux_dn: 0.593803 loss_giou_aux_dn: 1.624008 loss: 10.756147 eta: 3:23:06 batch_cost: 1.6078 data_cost: 0.9684 ips: 12.4390 images/s
+[05/27 23:34:52] ppdet.engine INFO: Epoch: [4] [ 60/283] learning_rate: 0.000100 loss_class: 0.379255 loss_bbox: 0.077779 loss_giou: 0.214555 loss_class_aux: 2.686398 loss_bbox_aux: 0.652356 loss_giou_aux: 1.696025 loss_class_dn: 0.290037 loss_bbox_dn: 0.083590 loss_giou_dn: 0.223864 loss_class_aux_dn: 1.657237 loss_bbox_aux_dn: 0.592531 loss_giou_aux_dn: 1.572856 loss: 10.137257 eta: 3:22:12 batch_cost: 1.4901 data_cost: 0.8228 ips: 13.4217 images/s
+[05/27 23:35:19] ppdet.engine INFO: Epoch: [4] [ 80/283] learning_rate: 0.000100 loss_class: 0.421836 loss_bbox: 0.088276 loss_giou: 0.225662 loss_class_aux: 2.760472 loss_bbox_aux: 0.696489 loss_giou_aux: 1.811537 loss_class_dn: 0.307739 loss_bbox_dn: 0.091917 loss_giou_dn: 0.236618 loss_class_aux_dn: 1.723102 loss_bbox_aux_dn: 0.646345 loss_giou_aux_dn: 1.639736 loss: 10.663680 eta: 3:20:51 batch_cost: 1.2716 data_cost: 0.6571 ips: 15.7288 images/s
+[05/27 23:35:58] ppdet.engine INFO: Epoch: [4] [100/283] learning_rate: 0.000100 loss_class: 0.401605 loss_bbox: 0.071161 loss_giou: 0.213353 loss_class_aux: 2.667397 loss_bbox_aux: 0.703578 loss_giou_aux: 1.729344 loss_class_dn: 0.302789 loss_bbox_dn: 0.089332 loss_giou_dn: 0.230921 loss_class_aux_dn: 1.740062 loss_bbox_aux_dn: 0.605033 loss_giou_aux_dn: 1.535007 loss: 10.400625 eta: 3:20:52 batch_cost: 1.9413 data_cost: 1.2378 ips: 10.3022 images/s
+[05/27 23:36:36] ppdet.engine INFO: Epoch: [4] [120/283] learning_rate: 0.000100 loss_class: 0.413990 loss_bbox: 0.074954 loss_giou: 0.220141 loss_class_aux: 2.771321 loss_bbox_aux: 0.616278 loss_giou_aux: 1.741550 loss_class_dn: 0.308967 loss_bbox_dn: 0.084312 loss_giou_dn: 0.239437 loss_class_aux_dn: 1.742707 loss_bbox_aux_dn: 0.580938 loss_giou_aux_dn: 1.719461 loss: 10.742065 eta: 3:20:40 batch_cost: 1.8418 data_cost: 1.1828 ips: 10.8591 images/s
+[05/27 23:37:06] ppdet.engine INFO: Epoch: [4] [140/283] learning_rate: 0.000100 loss_class: 0.408842 loss_bbox: 0.077004 loss_giou: 0.228830 loss_class_aux: 2.717376 loss_bbox_aux: 0.661163 loss_giou_aux: 1.731293 loss_class_dn: 0.295214 loss_bbox_dn: 0.086121 loss_giou_dn: 0.228888 loss_class_aux_dn: 1.681412 loss_bbox_aux_dn: 0.618819 loss_giou_aux_dn: 1.576357 loss: 10.273334 eta: 3:19:37 batch_cost: 1.4084 data_cost: 0.7843 ips: 14.2006 images/s
+[05/27 23:37:41] ppdet.engine INFO: Epoch: [4] [160/283] learning_rate: 0.000100 loss_class: 0.394546 loss_bbox: 0.083899 loss_giou: 0.229240 loss_class_aux: 2.839845 loss_bbox_aux: 0.633131 loss_giou_aux: 1.694362 loss_class_dn: 0.300247 loss_bbox_dn: 0.090213 loss_giou_dn: 0.231147 loss_class_aux_dn: 1.699099 loss_bbox_aux_dn: 0.618847 loss_giou_aux_dn: 1.592637 loss: 10.323198 eta: 3:19:14 batch_cost: 1.7501 data_cost: 1.0518 ips: 11.4279 images/s
+[05/27 23:38:21] ppdet.engine INFO: Epoch: [4] [180/283] learning_rate: 0.000100 loss_class: 0.441008 loss_bbox: 0.075327 loss_giou: 0.220553 loss_class_aux: 2.815935 loss_bbox_aux: 0.619216 loss_giou_aux: 1.734229 loss_class_dn: 0.305298 loss_bbox_dn: 0.079976 loss_giou_dn: 0.229409 loss_class_aux_dn: 1.687542 loss_bbox_aux_dn: 0.577875 loss_giou_aux_dn: 1.527155 loss: 10.290344 eta: 3:19:11 batch_cost: 1.9352 data_cost: 1.3102 ips: 10.3351 images/s
+[05/27 23:38:56] ppdet.engine INFO: Epoch: [4] [200/283] learning_rate: 0.000100 loss_class: 0.365496 loss_bbox: 0.073852 loss_giou: 0.222120 loss_class_aux: 2.637334 loss_bbox_aux: 0.600928 loss_giou_aux: 1.735721 loss_class_dn: 0.310143 loss_bbox_dn: 0.079089 loss_giou_dn: 0.235120 loss_class_aux_dn: 1.715266 loss_bbox_aux_dn: 0.557424 loss_giou_aux_dn: 1.561826 loss: 10.201082 eta: 3:18:41 batch_cost: 1.6987 data_cost: 1.0457 ips: 11.7737 images/s
+[05/27 23:39:31] ppdet.engine INFO: Epoch: [4] [220/283] learning_rate: 0.000100 loss_class: 0.372990 loss_bbox: 0.067618 loss_giou: 0.217589 loss_class_aux: 2.529669 loss_bbox_aux: 0.574501 loss_giou_aux: 1.609150 loss_class_dn: 0.282611 loss_bbox_dn: 0.078132 loss_giou_dn: 0.215286 loss_class_aux_dn: 1.621391 loss_bbox_aux_dn: 0.558938 loss_giou_aux_dn: 1.448273 loss: 9.749410 eta: 3:18:09 batch_cost: 1.6707 data_cost: 0.9902 ips: 11.9709 images/s
+[05/27 23:40:09] ppdet.engine INFO: Epoch: [4] [240/283] learning_rate: 0.000100 loss_class: 0.369527 loss_bbox: 0.068295 loss_giou: 0.213001 loss_class_aux: 2.646086 loss_bbox_aux: 0.612705 loss_giou_aux: 1.673446 loss_class_dn: 0.294376 loss_bbox_dn: 0.074470 loss_giou_dn: 0.216349 loss_class_aux_dn: 1.682578 loss_bbox_aux_dn: 0.552727 loss_giou_aux_dn: 1.528176 loss: 9.982182 eta: 3:17:58 batch_cost: 1.8842 data_cost: 1.2226 ips: 10.6148 images/s
+[05/27 23:40:41] ppdet.engine INFO: Epoch: [4] [260/283] learning_rate: 0.000100 loss_class: 0.395393 loss_bbox: 0.071705 loss_giou: 0.213536 loss_class_aux: 2.750756 loss_bbox_aux: 0.596809 loss_giou_aux: 1.697039 loss_class_dn: 0.298086 loss_bbox_dn: 0.075806 loss_giou_dn: 0.222185 loss_class_aux_dn: 1.656937 loss_bbox_aux_dn: 0.538801 loss_giou_aux_dn: 1.486548 loss: 9.947973 eta: 3:17:13 batch_cost: 1.5556 data_cost: 0.8541 ips: 12.8571 images/s
+[05/27 23:41:13] ppdet.engine INFO: Epoch: [4] [280/283] learning_rate: 0.000100 loss_class: 0.359155 loss_bbox: 0.072857 loss_giou: 0.203941 loss_class_aux: 2.611953 loss_bbox_aux: 0.589324 loss_giou_aux: 1.568490 loss_class_dn: 0.289821 loss_bbox_dn: 0.079267 loss_giou_dn: 0.216337 loss_class_aux_dn: 1.640671 loss_bbox_aux_dn: 0.563724 loss_giou_aux_dn: 1.460239 loss: 9.893383 eta: 3:16:26 batch_cost: 1.5321 data_cost: 0.8743 ips: 13.0538 images/s
+[05/27 23:41:18] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 23:41:18] ppdet.engine INFO: Eval iter: 0
+[05/27 23:41:40] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 23:41:40] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=1.84s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.41s).
+Accumulating evaluation results...
+DONE (t=0.57s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.857
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.990
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.978
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.781
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.860
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.428
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.907
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.919
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.888
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.921
+[05/27 23:41:46] ppdet.engine INFO: Total sample number: 800, average FPS: 49.33291014080679
+[05/27 23:41:46] ppdet.engine INFO: Best test bbox ap is 0.857.
+[05/27 23:41:48] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 23:41:50] ppdet.engine INFO: Epoch: [5] [  0/283] learning_rate: 0.000100 loss_class: 0.398807 loss_bbox: 0.071149 loss_giou: 0.215792 loss_class_aux: 2.698884 loss_bbox_aux: 0.578203 loss_giou_aux: 1.646177 loss_class_dn: 0.292002 loss_bbox_dn: 0.079267 loss_giou_dn: 0.220940 loss_class_aux_dn: 1.654351 loss_bbox_aux_dn: 0.561990 loss_giou_aux_dn: 1.496061 loss: 9.944912 eta: 3:16:07 batch_cost: 1.5172 data_cost: 0.8743 ips: 13.1820 images/s
+[05/27 23:42:18] ppdet.engine INFO: Epoch: [5] [ 20/283] learning_rate: 0.000100 loss_class: 0.359992 loss_bbox: 0.069724 loss_giou: 0.199651 loss_class_aux: 2.567802 loss_bbox_aux: 0.587060 loss_giou_aux: 1.618758 loss_class_dn: 0.286211 loss_bbox_dn: 0.078654 loss_giou_dn: 0.212721 loss_class_aux_dn: 1.648383 loss_bbox_aux_dn: 0.561376 loss_giou_aux_dn: 1.504817 loss: 9.713133 eta: 3:15:04 batch_cost: 1.3637 data_cost: 0.6515 ips: 14.6657 images/s
+[05/27 23:42:49] ppdet.engine INFO: Epoch: [5] [ 40/283] learning_rate: 0.000100 loss_class: 0.362403 loss_bbox: 0.072807 loss_giou: 0.205622 loss_class_aux: 2.569535 loss_bbox_aux: 0.617506 loss_giou_aux: 1.593125 loss_class_dn: 0.291454 loss_bbox_dn: 0.084419 loss_giou_dn: 0.217976 loss_class_aux_dn: 1.660753 loss_bbox_aux_dn: 0.607906 loss_giou_aux_dn: 1.507956 loss: 9.859322 eta: 3:14:18 batch_cost: 1.5186 data_cost: 0.8264 ips: 13.1696 images/s
+[05/27 23:43:20] ppdet.engine INFO: Epoch: [5] [ 60/283] learning_rate: 0.000100 loss_class: 0.366993 loss_bbox: 0.072118 loss_giou: 0.213293 loss_class_aux: 2.608408 loss_bbox_aux: 0.585459 loss_giou_aux: 1.680883 loss_class_dn: 0.295724 loss_bbox_dn: 0.078103 loss_giou_dn: 0.216953 loss_class_aux_dn: 1.648358 loss_bbox_aux_dn: 0.538085 loss_giou_aux_dn: 1.496321 loss: 9.743141 eta: 3:13:29 batch_cost: 1.4897 data_cost: 0.7865 ips: 13.4251 images/s
+[05/27 23:43:57] ppdet.engine INFO: Epoch: [5] [ 80/283] learning_rate: 0.000100 loss_class: 0.365555 loss_bbox: 0.069446 loss_giou: 0.230628 loss_class_aux: 2.603085 loss_bbox_aux: 0.588794 loss_giou_aux: 1.684250 loss_class_dn: 0.292059 loss_bbox_dn: 0.077982 loss_giou_dn: 0.229118 loss_class_aux_dn: 1.646541 loss_bbox_aux_dn: 0.542413 loss_giou_aux_dn: 1.482795 loss: 9.766805 eta: 3:13:09 batch_cost: 1.7954 data_cost: 1.1451 ips: 11.1397 images/s
+[05/27 23:44:30] ppdet.engine INFO: Epoch: [5] [100/283] learning_rate: 0.000100 loss_class: 0.352814 loss_bbox: 0.073605 loss_giou: 0.212309 loss_class_aux: 2.515157 loss_bbox_aux: 0.605089 loss_giou_aux: 1.581703 loss_class_dn: 0.294281 loss_bbox_dn: 0.082708 loss_giou_dn: 0.212147 loss_class_aux_dn: 1.668650 loss_bbox_aux_dn: 0.608673 loss_giou_aux_dn: 1.478503 loss: 9.962852 eta: 3:12:30 batch_cost: 1.6001 data_cost: 0.9649 ips: 12.4994 images/s
+[05/27 23:45:00] ppdet.engine INFO: Epoch: [5] [120/283] learning_rate: 0.000100 loss_class: 0.370939 loss_bbox: 0.073393 loss_giou: 0.231206 loss_class_aux: 2.581345 loss_bbox_aux: 0.583304 loss_giou_aux: 1.705040 loss_class_dn: 0.307062 loss_bbox_dn: 0.082385 loss_giou_dn: 0.233800 loss_class_aux_dn: 1.707872 loss_bbox_aux_dn: 0.589761 loss_giou_aux_dn: 1.553904 loss: 10.102293 eta: 3:11:39 batch_cost: 1.4576 data_cost: 0.8080 ips: 13.7215 images/s
+[05/27 23:45:35] ppdet.engine INFO: Epoch: [5] [140/283] learning_rate: 0.000100 loss_class: 0.397602 loss_bbox: 0.074996 loss_giou: 0.209098 loss_class_aux: 2.640280 loss_bbox_aux: 0.593613 loss_giou_aux: 1.622283 loss_class_dn: 0.308909 loss_bbox_dn: 0.081719 loss_giou_dn: 0.227662 loss_class_aux_dn: 1.699596 loss_bbox_aux_dn: 0.575387 loss_giou_aux_dn: 1.513033 loss: 10.071886 eta: 3:11:08 batch_cost: 1.6771 data_cost: 1.0148 ips: 11.9256 images/s
+[05/27 23:46:10] ppdet.engine INFO: Epoch: [5] [160/283] learning_rate: 0.000100 loss_class: 0.371176 loss_bbox: 0.074665 loss_giou: 0.222587 loss_class_aux: 2.555654 loss_bbox_aux: 0.590382 loss_giou_aux: 1.685737 loss_class_dn: 0.299825 loss_bbox_dn: 0.082398 loss_giou_dn: 0.228772 loss_class_aux_dn: 1.677594 loss_bbox_aux_dn: 0.558866 loss_giou_aux_dn: 1.568662 loss: 10.078529 eta: 3:10:38 batch_cost: 1.6825 data_cost: 1.0239 ips: 11.8869 images/s
+[05/27 23:46:39] ppdet.engine INFO: Epoch: [5] [180/283] learning_rate: 0.000100 loss_class: 0.376312 loss_bbox: 0.071060 loss_giou: 0.221859 loss_class_aux: 2.642356 loss_bbox_aux: 0.609890 loss_giou_aux: 1.726056 loss_class_dn: 0.293841 loss_bbox_dn: 0.079570 loss_giou_dn: 0.223044 loss_class_aux_dn: 1.640104 loss_bbox_aux_dn: 0.585822 loss_giou_aux_dn: 1.516930 loss: 9.983315 eta: 3:09:45 batch_cost: 1.4325 data_cost: 0.8262 ips: 13.9619 images/s
+[05/27 23:47:12] ppdet.engine INFO: Epoch: [5] [200/283] learning_rate: 0.000100 loss_class: 0.360621 loss_bbox: 0.068310 loss_giou: 0.201005 loss_class_aux: 2.483937 loss_bbox_aux: 0.571745 loss_giou_aux: 1.572488 loss_class_dn: 0.277118 loss_bbox_dn: 0.073466 loss_giou_dn: 0.204899 loss_class_aux_dn: 1.592086 loss_bbox_aux_dn: 0.501322 loss_giou_aux_dn: 1.354905 loss: 9.285162 eta: 3:09:07 batch_cost: 1.5870 data_cost: 0.9088 ips: 12.6024 images/s
+[05/27 23:47:45] ppdet.engine INFO: Epoch: [5] [220/283] learning_rate: 0.000100 loss_class: 0.349285 loss_bbox: 0.070983 loss_giou: 0.203401 loss_class_aux: 2.477924 loss_bbox_aux: 0.603577 loss_giou_aux: 1.606374 loss_class_dn: 0.286354 loss_bbox_dn: 0.077588 loss_giou_dn: 0.207842 loss_class_aux_dn: 1.622948 loss_bbox_aux_dn: 0.545266 loss_giou_aux_dn: 1.447440 loss: 9.577597 eta: 3:08:28 batch_cost: 1.5847 data_cost: 0.8144 ips: 12.6209 images/s
+[05/27 23:48:21] ppdet.engine INFO: Epoch: [5] [240/283] learning_rate: 0.000100 loss_class: 0.338402 loss_bbox: 0.085139 loss_giou: 0.227810 loss_class_aux: 2.435378 loss_bbox_aux: 0.648202 loss_giou_aux: 1.709572 loss_class_dn: 0.291716 loss_bbox_dn: 0.089320 loss_giou_dn: 0.235252 loss_class_aux_dn: 1.637267 loss_bbox_aux_dn: 0.573956 loss_giou_aux_dn: 1.490578 loss: 9.830573 eta: 3:08:05 batch_cost: 1.7618 data_cost: 1.0644 ips: 11.3518 images/s
+[05/27 23:48:55] ppdet.engine INFO: Epoch: [5] [260/283] learning_rate: 0.000100 loss_class: 0.351052 loss_bbox: 0.074795 loss_giou: 0.239809 loss_class_aux: 2.480250 loss_bbox_aux: 0.616720 loss_giou_aux: 1.734562 loss_class_dn: 0.298280 loss_bbox_dn: 0.078633 loss_giou_dn: 0.239673 loss_class_aux_dn: 1.687890 loss_bbox_aux_dn: 0.545813 loss_giou_aux_dn: 1.582105 loss: 9.827819 eta: 3:07:31 batch_cost: 1.6447 data_cost: 0.9849 ips: 12.1605 images/s
+[05/27 23:49:29] ppdet.engine INFO: Epoch: [5] [280/283] learning_rate: 0.000100 loss_class: 0.335240 loss_bbox: 0.078170 loss_giou: 0.209931 loss_class_aux: 2.373354 loss_bbox_aux: 0.583666 loss_giou_aux: 1.588076 loss_class_dn: 0.294522 loss_bbox_dn: 0.079356 loss_giou_dn: 0.223520 loss_class_aux_dn: 1.674508 loss_bbox_aux_dn: 0.558945 loss_giou_aux_dn: 1.520278 loss: 9.616228 eta: 3:06:55 batch_cost: 1.6110 data_cost: 0.9578 ips: 12.4150 images/s
+[05/27 23:49:36] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 23:49:36] ppdet.engine INFO: Eval iter: 0
+[05/27 23:49:57] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.22s)
+creating index...
+index created!
+[05/27 23:49:57] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=1.80s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.36s).
+Accumulating evaluation results...
+DONE (t=0.52s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.861
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.994
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.981
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.774
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.867
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.431
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.899
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.911
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.869
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.914
+[05/27 23:50:03] ppdet.engine INFO: Total sample number: 800, average FPS: 50.96174281023647
+[05/27 23:50:03] ppdet.engine INFO: Best test bbox ap is 0.861.
+[05/27 23:50:05] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 23:50:07] ppdet.engine INFO: Epoch: [6] [  0/283] learning_rate: 0.000100 loss_class: 0.335240 loss_bbox: 0.074245 loss_giou: 0.200985 loss_class_aux: 2.373354 loss_bbox_aux: 0.571353 loss_giou_aux: 1.558692 loss_class_dn: 0.287730 loss_bbox_dn: 0.079305 loss_giou_dn: 0.219856 loss_class_aux_dn: 1.662173 loss_bbox_aux_dn: 0.558945 loss_giou_aux_dn: 1.526710 loss: 9.557897 eta: 3:06:48 batch_cost: 1.6395 data_cost: 0.9882 ips: 12.1987 images/s
+[05/27 23:50:39] ppdet.engine INFO: Epoch: [6] [ 20/283] learning_rate: 0.000100 loss_class: 0.350520 loss_bbox: 0.067611 loss_giou: 0.205704 loss_class_aux: 2.408981 loss_bbox_aux: 0.545826 loss_giou_aux: 1.516491 loss_class_dn: 0.284286 loss_bbox_dn: 0.078939 loss_giou_dn: 0.210035 loss_class_aux_dn: 1.614126 loss_bbox_aux_dn: 0.531228 loss_giou_aux_dn: 1.445281 loss: 9.148109 eta: 3:06:08 batch_cost: 1.5555 data_cost: 0.8814 ips: 12.8575 images/s
+[05/27 23:51:17] ppdet.engine INFO: Epoch: [6] [ 40/283] learning_rate: 0.000100 loss_class: 0.332069 loss_bbox: 0.069958 loss_giou: 0.219838 loss_class_aux: 2.402113 loss_bbox_aux: 0.560360 loss_giou_aux: 1.629994 loss_class_dn: 0.283678 loss_bbox_dn: 0.080792 loss_giou_dn: 0.223912 loss_class_aux_dn: 1.613003 loss_bbox_aux_dn: 0.559150 loss_giou_aux_dn: 1.417375 loss: 9.614021 eta: 3:05:52 batch_cost: 1.8760 data_cost: 1.1391 ips: 10.6608 images/s
+[05/27 23:51:49] ppdet.engine INFO: Epoch: [6] [ 60/283] learning_rate: 0.000100 loss_class: 0.343586 loss_bbox: 0.076614 loss_giou: 0.199935 loss_class_aux: 2.439419 loss_bbox_aux: 0.597403 loss_giou_aux: 1.513005 loss_class_dn: 0.288243 loss_bbox_dn: 0.081479 loss_giou_dn: 0.210576 loss_class_aux_dn: 1.598732 loss_bbox_aux_dn: 0.539668 loss_giou_aux_dn: 1.371929 loss: 9.331181 eta: 3:05:08 batch_cost: 1.5102 data_cost: 0.8623 ips: 13.2429 images/s
+[05/27 23:52:17] ppdet.engine INFO: Epoch: [6] [ 80/283] learning_rate: 0.000100 loss_class: 0.359824 loss_bbox: 0.079829 loss_giou: 0.212218 loss_class_aux: 2.551220 loss_bbox_aux: 0.605708 loss_giou_aux: 1.575949 loss_class_dn: 0.287584 loss_bbox_dn: 0.083483 loss_giou_dn: 0.218084 loss_class_aux_dn: 1.640609 loss_bbox_aux_dn: 0.554768 loss_giou_aux_dn: 1.423374 loss: 9.639445 eta: 3:04:11 batch_cost: 1.3328 data_cost: 0.6753 ips: 15.0055 images/s
+[05/27 23:53:00] ppdet.engine INFO: Epoch: [6] [100/283] learning_rate: 0.000100 loss_class: 0.344445 loss_bbox: 0.073168 loss_giou: 0.211980 loss_class_aux: 2.476457 loss_bbox_aux: 0.573490 loss_giou_aux: 1.577988 loss_class_dn: 0.297238 loss_bbox_dn: 0.080965 loss_giou_dn: 0.220249 loss_class_aux_dn: 1.667323 loss_bbox_aux_dn: 0.558383 loss_giou_aux_dn: 1.506266 loss: 9.557659 eta: 3:04:13 batch_cost: 2.1056 data_cost: 1.4618 ips: 9.4985 images/s
+[05/27 23:53:42] ppdet.engine INFO: Epoch: [6] [120/283] learning_rate: 0.000100 loss_class: 0.324936 loss_bbox: 0.071634 loss_giou: 0.228577 loss_class_aux: 2.354941 loss_bbox_aux: 0.581593 loss_giou_aux: 1.637783 loss_class_dn: 0.292791 loss_bbox_dn: 0.079955 loss_giou_dn: 0.233684 loss_class_aux_dn: 1.635751 loss_bbox_aux_dn: 0.561445 loss_giou_aux_dn: 1.475700 loss: 9.834640 eta: 3:04:10 batch_cost: 2.0616 data_cost: 1.3690 ips: 9.7014 images/s
+[05/27 23:54:16] ppdet.engine INFO: Epoch: [6] [140/283] learning_rate: 0.000100 loss_class: 0.328207 loss_bbox: 0.066621 loss_giou: 0.206193 loss_class_aux: 2.300097 loss_bbox_aux: 0.530421 loss_giou_aux: 1.526696 loss_class_dn: 0.288681 loss_bbox_dn: 0.071609 loss_giou_dn: 0.220042 loss_class_aux_dn: 1.606517 loss_bbox_aux_dn: 0.481448 loss_giou_aux_dn: 1.396714 loss: 9.096899 eta: 3:03:34 batch_cost: 1.6264 data_cost: 0.9826 ips: 12.2970 images/s
+[05/27 23:54:48] ppdet.engine INFO: Epoch: [6] [160/283] learning_rate: 0.000100 loss_class: 0.339539 loss_bbox: 0.069489 loss_giou: 0.215123 loss_class_aux: 2.382268 loss_bbox_aux: 0.538253 loss_giou_aux: 1.643106 loss_class_dn: 0.284839 loss_bbox_dn: 0.073851 loss_giou_dn: 0.218264 loss_class_aux_dn: 1.624612 loss_bbox_aux_dn: 0.535585 loss_giou_aux_dn: 1.469909 loss: 9.264738 eta: 3:02:53 batch_cost: 1.5395 data_cost: 0.8983 ips: 12.9909 images/s
+[05/27 23:55:24] ppdet.engine INFO: Epoch: [6] [180/283] learning_rate: 0.000100 loss_class: 0.341344 loss_bbox: 0.077210 loss_giou: 0.214562 loss_class_aux: 2.397850 loss_bbox_aux: 0.622774 loss_giou_aux: 1.664886 loss_class_dn: 0.294615 loss_bbox_dn: 0.079739 loss_giou_dn: 0.220969 loss_class_aux_dn: 1.644316 loss_bbox_aux_dn: 0.544909 loss_giou_aux_dn: 1.481597 loss: 9.737675 eta: 3:02:28 batch_cost: 1.7632 data_cost: 1.0525 ips: 11.3433 images/s
+[05/27 23:55:57] ppdet.engine INFO: Epoch: [6] [200/283] learning_rate: 0.000100 loss_class: 0.350369 loss_bbox: 0.071287 loss_giou: 0.211422 loss_class_aux: 2.471982 loss_bbox_aux: 0.586240 loss_giou_aux: 1.612809 loss_class_dn: 0.279859 loss_bbox_dn: 0.079438 loss_giou_dn: 0.215444 loss_class_aux_dn: 1.630392 loss_bbox_aux_dn: 0.554982 loss_giou_aux_dn: 1.477990 loss: 9.479486 eta: 3:01:49 batch_cost: 1.5743 data_cost: 0.8702 ips: 12.7042 images/s
+[05/27 23:56:34] ppdet.engine INFO: Epoch: [6] [220/283] learning_rate: 0.000100 loss_class: 0.367427 loss_bbox: 0.071053 loss_giou: 0.220997 loss_class_aux: 2.398474 loss_bbox_aux: 0.550642 loss_giou_aux: 1.625821 loss_class_dn: 0.291370 loss_bbox_dn: 0.079821 loss_giou_dn: 0.229881 loss_class_aux_dn: 1.621541 loss_bbox_aux_dn: 0.514645 loss_giou_aux_dn: 1.450110 loss: 9.633289 eta: 3:01:26 batch_cost: 1.8114 data_cost: 1.1257 ips: 11.0413 images/s
+[05/27 23:57:08] ppdet.engine INFO: Epoch: [6] [240/283] learning_rate: 0.000100 loss_class: 0.307684 loss_bbox: 0.061672 loss_giou: 0.172220 loss_class_aux: 2.284224 loss_bbox_aux: 0.500086 loss_giou_aux: 1.313805 loss_class_dn: 0.261041 loss_bbox_dn: 0.069186 loss_giou_dn: 0.175954 loss_class_aux_dn: 1.524055 loss_bbox_aux_dn: 0.495153 loss_giou_aux_dn: 1.247833 loss: 8.509033 eta: 3:00:51 batch_cost: 1.6173 data_cost: 0.8835 ips: 12.3664 images/s
+[05/27 23:57:43] ppdet.engine INFO: Epoch: [6] [260/283] learning_rate: 0.000100 loss_class: 0.340101 loss_bbox: 0.073806 loss_giou: 0.211566 loss_class_aux: 2.355527 loss_bbox_aux: 0.564906 loss_giou_aux: 1.538081 loss_class_dn: 0.292053 loss_bbox_dn: 0.077286 loss_giou_dn: 0.232478 loss_class_aux_dn: 1.638891 loss_bbox_aux_dn: 0.518611 loss_giou_aux_dn: 1.446665 loss: 9.412652 eta: 3:00:23 batch_cost: 1.7407 data_cost: 1.0156 ips: 11.4893 images/s
+[05/27 23:58:19] ppdet.engine INFO: Epoch: [6] [280/283] learning_rate: 0.000100 loss_class: 0.307174 loss_bbox: 0.078047 loss_giou: 0.200637 loss_class_aux: 2.300230 loss_bbox_aux: 0.598557 loss_giou_aux: 1.474378 loss_class_dn: 0.277310 loss_bbox_dn: 0.086519 loss_giou_dn: 0.200317 loss_class_aux_dn: 1.597980 loss_bbox_aux_dn: 0.590718 loss_giou_aux_dn: 1.410673 loss: 9.248470 eta: 2:59:54 batch_cost: 1.7189 data_cost: 1.0484 ips: 11.6355 images/s
+[05/27 23:58:24] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/27 23:58:24] ppdet.engine INFO: Eval iter: 0
+[05/27 23:58:44] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/27 23:58:44] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=1.86s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.38s).
+Accumulating evaluation results...
+DONE (t=0.55s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.853
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.998
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.981
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.799
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.857
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.425
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.894
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.914
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.879
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.916
+[05/27 23:58:50] ppdet.engine INFO: Total sample number: 800, average FPS: 53.05067912580044
+[05/27 23:58:50] ppdet.engine INFO: Best test bbox ap is 0.861.
+[05/27 23:58:51] ppdet.engine INFO: Epoch: [7] [  0/283] learning_rate: 0.000100 loss_class: 0.333369 loss_bbox: 0.080566 loss_giou: 0.206271 loss_class_aux: 2.358003 loss_bbox_aux: 0.598557 loss_giou_aux: 1.508560 loss_class_dn: 0.282253 loss_bbox_dn: 0.086519 loss_giou_dn: 0.211247 loss_class_aux_dn: 1.620803 loss_bbox_aux_dn: 0.590334 loss_giou_aux_dn: 1.434332 loss: 9.566133 eta: 2:59:39 batch_cost: 1.4401 data_cost: 0.7818 ips: 13.8882 images/s
+[05/27 23:59:20] ppdet.engine INFO: Epoch: [7] [ 20/283] learning_rate: 0.000100 loss_class: 0.339017 loss_bbox: 0.072616 loss_giou: 0.202208 loss_class_aux: 2.458596 loss_bbox_aux: 0.582219 loss_giou_aux: 1.510187 loss_class_dn: 0.287599 loss_bbox_dn: 0.079137 loss_giou_dn: 0.206998 loss_class_aux_dn: 1.638635 loss_bbox_aux_dn: 0.573668 loss_giou_aux_dn: 1.361114 loss: 9.641243 eta: 2:58:50 batch_cost: 1.4108 data_cost: 0.7263 ips: 14.1767 images/s
+[05/27 23:59:54] ppdet.engine INFO: Epoch: [7] [ 40/283] learning_rate: 0.000100 loss_class: 0.324965 loss_bbox: 0.071526 loss_giou: 0.207444 loss_class_aux: 2.314637 loss_bbox_aux: 0.535562 loss_giou_aux: 1.534064 loss_class_dn: 0.286146 loss_bbox_dn: 0.075644 loss_giou_dn: 0.216875 loss_class_aux_dn: 1.625125 loss_bbox_aux_dn: 0.504564 loss_giou_aux_dn: 1.397492 loss: 9.177942 eta: 2:58:16 batch_cost: 1.6493 data_cost: 1.0179 ips: 12.1266 images/s
+[05/28 00:00:26] ppdet.engine INFO: Epoch: [7] [ 60/283] learning_rate: 0.000100 loss_class: 0.332364 loss_bbox: 0.065764 loss_giou: 0.202882 loss_class_aux: 2.397168 loss_bbox_aux: 0.517408 loss_giou_aux: 1.515630 loss_class_dn: 0.282029 loss_bbox_dn: 0.071043 loss_giou_dn: 0.211317 loss_class_aux_dn: 1.624663 loss_bbox_aux_dn: 0.515894 loss_giou_aux_dn: 1.447690 loss: 9.177860 eta: 2:57:38 batch_cost: 1.5674 data_cost: 0.9567 ips: 12.7601 images/s
+[05/28 00:01:01] ppdet.engine INFO: Epoch: [7] [ 80/283] learning_rate: 0.000100 loss_class: 0.328985 loss_bbox: 0.074059 loss_giou: 0.207206 loss_class_aux: 2.394520 loss_bbox_aux: 0.606290 loss_giou_aux: 1.542278 loss_class_dn: 0.282085 loss_bbox_dn: 0.083807 loss_giou_dn: 0.215117 loss_class_aux_dn: 1.612039 loss_bbox_aux_dn: 0.584804 loss_giou_aux_dn: 1.384383 loss: 9.139606 eta: 2:57:06 batch_cost: 1.6709 data_cost: 0.9881 ips: 11.9697 images/s
+[05/28 00:01:39] ppdet.engine INFO: Epoch: [7] [100/283] learning_rate: 0.000100 loss_class: 0.350907 loss_bbox: 0.065245 loss_giou: 0.217887 loss_class_aux: 2.449889 loss_bbox_aux: 0.518747 loss_giou_aux: 1.567687 loss_class_dn: 0.294614 loss_bbox_dn: 0.071945 loss_giou_dn: 0.224961 loss_class_aux_dn: 1.650165 loss_bbox_aux_dn: 0.496304 loss_giou_aux_dn: 1.465845 loss: 9.253263 eta: 2:56:44 batch_cost: 1.8386 data_cost: 1.1716 ips: 10.8780 images/s
+[05/28 00:02:13] ppdet.engine INFO: Epoch: [7] [120/283] learning_rate: 0.000100 loss_class: 0.337894 loss_bbox: 0.067941 loss_giou: 0.198860 loss_class_aux: 2.433248 loss_bbox_aux: 0.528815 loss_giou_aux: 1.429434 loss_class_dn: 0.286149 loss_bbox_dn: 0.079434 loss_giou_dn: 0.201214 loss_class_aux_dn: 1.619185 loss_bbox_aux_dn: 0.529239 loss_giou_aux_dn: 1.346578 loss: 9.102652 eta: 2:56:13 batch_cost: 1.6833 data_cost: 1.0601 ips: 11.8813 images/s
+[05/28 00:02:48] ppdet.engine INFO: Epoch: [7] [140/283] learning_rate: 0.000100 loss_class: 0.327618 loss_bbox: 0.068087 loss_giou: 0.214121 loss_class_aux: 2.373514 loss_bbox_aux: 0.529898 loss_giou_aux: 1.569343 loss_class_dn: 0.283714 loss_bbox_dn: 0.072572 loss_giou_dn: 0.213617 loss_class_aux_dn: 1.595696 loss_bbox_aux_dn: 0.464606 loss_giou_aux_dn: 1.356875 loss: 9.164471 eta: 2:55:42 batch_cost: 1.6864 data_cost: 1.0383 ips: 11.8596 images/s
+[05/28 00:03:26] ppdet.engine INFO: Epoch: [7] [160/283] learning_rate: 0.000100 loss_class: 0.300521 loss_bbox: 0.068732 loss_giou: 0.207683 loss_class_aux: 2.192432 loss_bbox_aux: 0.529828 loss_giou_aux: 1.539654 loss_class_dn: 0.275912 loss_bbox_dn: 0.074823 loss_giou_dn: 0.210060 loss_class_aux_dn: 1.582095 loss_bbox_aux_dn: 0.500459 loss_giou_aux_dn: 1.379174 loss: 8.822758 eta: 2:55:19 batch_cost: 1.8315 data_cost: 1.1607 ips: 10.9202 images/s
+[05/28 00:03:55] ppdet.engine INFO: Epoch: [7] [180/283] learning_rate: 0.000100 loss_class: 0.304317 loss_bbox: 0.065452 loss_giou: 0.196570 loss_class_aux: 2.218710 loss_bbox_aux: 0.529885 loss_giou_aux: 1.419331 loss_class_dn: 0.272476 loss_bbox_dn: 0.067597 loss_giou_dn: 0.195402 loss_class_aux_dn: 1.543393 loss_bbox_aux_dn: 0.456337 loss_giou_aux_dn: 1.308293 loss: 8.668638 eta: 2:54:33 batch_cost: 1.4290 data_cost: 0.8103 ips: 13.9960 images/s
+[05/28 00:04:31] ppdet.engine INFO: Epoch: [7] [200/283] learning_rate: 0.000100 loss_class: 0.310963 loss_bbox: 0.066915 loss_giou: 0.211499 loss_class_aux: 2.325729 loss_bbox_aux: 0.551170 loss_giou_aux: 1.583618 loss_class_dn: 0.278582 loss_bbox_dn: 0.074750 loss_giou_dn: 0.213307 loss_class_aux_dn: 1.587453 loss_bbox_aux_dn: 0.519314 loss_giou_aux_dn: 1.387009 loss: 9.319915 eta: 2:54:05 batch_cost: 1.7515 data_cost: 1.0905 ips: 11.4188 images/s
+[05/28 00:05:14] ppdet.engine INFO: Epoch: [7] [220/283] learning_rate: 0.000100 loss_class: 0.334913 loss_bbox: 0.072213 loss_giou: 0.214466 loss_class_aux: 2.346986 loss_bbox_aux: 0.558542 loss_giou_aux: 1.568782 loss_class_dn: 0.286246 loss_bbox_dn: 0.079908 loss_giou_dn: 0.219968 loss_class_aux_dn: 1.621596 loss_bbox_aux_dn: 0.507492 loss_giou_aux_dn: 1.377164 loss: 9.165977 eta: 2:53:57 batch_cost: 2.0904 data_cost: 1.3804 ips: 9.5674 images/s
+[05/28 00:05:50] ppdet.engine INFO: Epoch: [7] [240/283] learning_rate: 0.000100 loss_class: 0.320337 loss_bbox: 0.071684 loss_giou: 0.190004 loss_class_aux: 2.385904 loss_bbox_aux: 0.564923 loss_giou_aux: 1.414238 loss_class_dn: 0.269938 loss_bbox_dn: 0.081670 loss_giou_dn: 0.195761 loss_class_aux_dn: 1.591792 loss_bbox_aux_dn: 0.574685 loss_giou_aux_dn: 1.333601 loss: 8.999466 eta: 2:53:27 batch_cost: 1.7258 data_cost: 0.9415 ips: 11.5888 images/s
+[05/28 00:06:23] ppdet.engine INFO: Epoch: [7] [260/283] learning_rate: 0.000100 loss_class: 0.311864 loss_bbox: 0.075916 loss_giou: 0.200460 loss_class_aux: 2.344954 loss_bbox_aux: 0.606288 loss_giou_aux: 1.514896 loss_class_dn: 0.274195 loss_bbox_dn: 0.083756 loss_giou_dn: 0.198538 loss_class_aux_dn: 1.572072 loss_bbox_aux_dn: 0.527047 loss_giou_aux_dn: 1.301907 loss: 9.272751 eta: 2:52:52 batch_cost: 1.6157 data_cost: 0.8909 ips: 12.3782 images/s
+Found inf or nan, current scale is: 4096.0, decrease to: 4096.0*0.5
+[05/28 00:06:57] ppdet.engine INFO: Epoch: [7] [280/283] learning_rate: 0.000100 loss_class: 0.320408 loss_bbox: 0.068429 loss_giou: 0.208115 loss_class_aux: 2.250560 loss_bbox_aux: 0.574980 loss_giou_aux: 1.573683 loss_class_dn: 0.282620 loss_bbox_dn: 0.074300 loss_giou_dn: 0.205348 loss_class_aux_dn: 1.586630 loss_bbox_aux_dn: 0.490623 loss_giou_aux_dn: 1.353397 loss: 9.044941 eta: 2:52:19 batch_cost: 1.6619 data_cost: 0.9629 ips: 12.0346 images/s
+[05/28 00:07:02] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/28 00:07:02] ppdet.engine INFO: Eval iter: 0
+[05/28 00:07:24] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/28 00:07:24] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.02s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.30s).
+Accumulating evaluation results...
+DONE (t=0.54s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.862
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.997
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.977
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.801
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.865
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.429
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.901
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.920
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.882
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.922
+[05/28 00:07:30] ppdet.engine INFO: Total sample number: 800, average FPS: 47.247082529511516
+[05/28 00:07:30] ppdet.engine INFO: Best test bbox ap is 0.862.
+[05/28 00:07:33] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/28 00:07:34] ppdet.engine INFO: Epoch: [8] [  0/283] learning_rate: 0.000100 loss_class: 0.320408 loss_bbox: 0.064954 loss_giou: 0.203838 loss_class_aux: 2.249346 loss_bbox_aux: 0.539865 loss_giou_aux: 1.523841 loss_class_dn: 0.282342 loss_bbox_dn: 0.071097 loss_giou_dn: 0.205163 loss_class_aux_dn: 1.579298 loss_bbox_aux_dn: 0.490119 loss_giou_aux_dn: 1.319872 loss: 8.963021 eta: 2:52:04 batch_cost: 1.6260 data_cost: 0.9629 ips: 12.2999 images/s
+[05/28 00:08:00] ppdet.engine INFO: Epoch: [8] [ 20/283] learning_rate: 0.000100 loss_class: 0.323150 loss_bbox: 0.068560 loss_giou: 0.168154 loss_class_aux: 2.283360 loss_bbox_aux: 0.527102 loss_giou_aux: 1.340841 loss_class_dn: 0.265395 loss_bbox_dn: 0.071770 loss_giou_dn: 0.179524 loss_class_aux_dn: 1.525611 loss_bbox_aux_dn: 0.472217 loss_giou_aux_dn: 1.214859 loss: 8.496091 eta: 2:51:10 batch_cost: 1.2707 data_cost: 0.5665 ips: 15.7395 images/s
+[05/28 00:08:34] ppdet.engine INFO: Epoch: [8] [ 40/283] learning_rate: 0.000100 loss_class: 0.336832 loss_bbox: 0.083306 loss_giou: 0.215529 loss_class_aux: 2.388762 loss_bbox_aux: 0.617653 loss_giou_aux: 1.550187 loss_class_dn: 0.284328 loss_bbox_dn: 0.084796 loss_giou_dn: 0.216769 loss_class_aux_dn: 1.609367 loss_bbox_aux_dn: 0.574166 loss_giou_aux_dn: 1.431379 loss: 9.490814 eta: 2:50:35 batch_cost: 1.6091 data_cost: 0.9292 ips: 12.4290 images/s
+[05/28 00:09:12] ppdet.engine INFO: Epoch: [8] [ 60/283] learning_rate: 0.000100 loss_class: 0.300383 loss_bbox: 0.067339 loss_giou: 0.185877 loss_class_aux: 2.276872 loss_bbox_aux: 0.513705 loss_giou_aux: 1.406003 loss_class_dn: 0.269989 loss_bbox_dn: 0.076807 loss_giou_dn: 0.192338 loss_class_aux_dn: 1.548700 loss_bbox_aux_dn: 0.502541 loss_giou_aux_dn: 1.311522 loss: 8.784245 eta: 2:50:12 batch_cost: 1.8511 data_cost: 1.0355 ips: 10.8043 images/s
+[05/28 00:09:46] ppdet.engine INFO: Epoch: [8] [ 80/283] learning_rate: 0.000100 loss_class: 0.308868 loss_bbox: 0.067612 loss_giou: 0.202222 loss_class_aux: 2.269887 loss_bbox_aux: 0.518139 loss_giou_aux: 1.483382 loss_class_dn: 0.270801 loss_bbox_dn: 0.070798 loss_giou_dn: 0.211446 loss_class_aux_dn: 1.539303 loss_bbox_aux_dn: 0.454101 loss_giou_aux_dn: 1.347322 loss: 8.883017 eta: 2:49:39 batch_cost: 1.6650 data_cost: 1.0320 ips: 12.0120 images/s
+[05/28 00:10:18] ppdet.engine INFO: Epoch: [8] [100/283] learning_rate: 0.000100 loss_class: 0.336247 loss_bbox: 0.070399 loss_giou: 0.217816 loss_class_aux: 2.297925 loss_bbox_aux: 0.546824 loss_giou_aux: 1.536230 loss_class_dn: 0.285681 loss_bbox_dn: 0.079880 loss_giou_dn: 0.217251 loss_class_aux_dn: 1.590039 loss_bbox_aux_dn: 0.509547 loss_giou_aux_dn: 1.350940 loss: 9.131489 eta: 2:49:01 batch_cost: 1.5535 data_cost: 0.8695 ips: 12.8741 images/s
+[05/28 00:10:52] ppdet.engine INFO: Epoch: [8] [120/283] learning_rate: 0.000100 loss_class: 0.308708 loss_bbox: 0.063695 loss_giou: 0.185516 loss_class_aux: 2.301653 loss_bbox_aux: 0.501055 loss_giou_aux: 1.435912 loss_class_dn: 0.281722 loss_bbox_dn: 0.069015 loss_giou_dn: 0.200947 loss_class_aux_dn: 1.558467 loss_bbox_aux_dn: 0.496477 loss_giou_aux_dn: 1.327539 loss: 8.676355 eta: 2:48:26 batch_cost: 1.6259 data_cost: 0.9274 ips: 12.3006 images/s
+[05/28 00:11:27] ppdet.engine INFO: Epoch: [8] [140/283] learning_rate: 0.000100 loss_class: 0.347002 loss_bbox: 0.063998 loss_giou: 0.209532 loss_class_aux: 2.454537 loss_bbox_aux: 0.500923 loss_giou_aux: 1.530414 loss_class_dn: 0.282354 loss_bbox_dn: 0.069284 loss_giou_dn: 0.215256 loss_class_aux_dn: 1.582972 loss_bbox_aux_dn: 0.473007 loss_giou_aux_dn: 1.384492 loss: 9.000998 eta: 2:47:57 batch_cost: 1.7382 data_cost: 1.0835 ips: 11.5064 images/s
+[05/28 00:12:07] ppdet.engine INFO: Epoch: [8] [160/283] learning_rate: 0.000100 loss_class: 0.365403 loss_bbox: 0.066019 loss_giou: 0.214975 loss_class_aux: 2.443597 loss_bbox_aux: 0.525124 loss_giou_aux: 1.593285 loss_class_dn: 0.298308 loss_bbox_dn: 0.075956 loss_giou_dn: 0.220835 loss_class_aux_dn: 1.640112 loss_bbox_aux_dn: 0.508675 loss_giou_aux_dn: 1.452579 loss: 9.238972 eta: 2:47:38 batch_cost: 1.9415 data_cost: 1.3083 ips: 10.3012 images/s
+[05/28 00:12:40] ppdet.engine INFO: Epoch: [8] [180/283] learning_rate: 0.000100 loss_class: 0.301241 loss_bbox: 0.062970 loss_giou: 0.200474 loss_class_aux: 2.137769 loss_bbox_aux: 0.471364 loss_giou_aux: 1.427529 loss_class_dn: 0.278744 loss_bbox_dn: 0.067044 loss_giou_dn: 0.204226 loss_class_aux_dn: 1.559545 loss_bbox_aux_dn: 0.464880 loss_giou_aux_dn: 1.312196 loss: 8.500148 eta: 2:47:01 batch_cost: 1.5639 data_cost: 0.9258 ips: 12.7882 images/s
+[05/28 00:13:08] ppdet.engine INFO: Epoch: [8] [200/283] learning_rate: 0.000100 loss_class: 0.311680 loss_bbox: 0.073040 loss_giou: 0.192478 loss_class_aux: 2.248985 loss_bbox_aux: 0.562441 loss_giou_aux: 1.464713 loss_class_dn: 0.273881 loss_bbox_dn: 0.077536 loss_giou_dn: 0.191805 loss_class_aux_dn: 1.563596 loss_bbox_aux_dn: 0.523166 loss_giou_aux_dn: 1.283207 loss: 8.770857 eta: 2:46:11 batch_cost: 1.3261 data_cost: 0.6524 ips: 15.0823 images/s
+[05/28 00:13:34] ppdet.engine INFO: Epoch: [8] [220/283] learning_rate: 0.000100 loss_class: 0.308453 loss_bbox: 0.069599 loss_giou: 0.192841 loss_class_aux: 2.219745 loss_bbox_aux: 0.515819 loss_giou_aux: 1.396925 loss_class_dn: 0.265541 loss_bbox_dn: 0.069611 loss_giou_dn: 0.192858 loss_class_aux_dn: 1.515658 loss_bbox_aux_dn: 0.455886 loss_giou_aux_dn: 1.252585 loss: 8.405482 eta: 2:45:20 batch_cost: 1.2779 data_cost: 0.6497 ips: 15.6509 images/s
+[05/28 00:14:14] ppdet.engine INFO: Epoch: [8] [240/283] learning_rate: 0.000100 loss_class: 0.297312 loss_bbox: 0.055354 loss_giou: 0.181204 loss_class_aux: 2.155171 loss_bbox_aux: 0.438368 loss_giou_aux: 1.382661 loss_class_dn: 0.270657 loss_bbox_dn: 0.058955 loss_giou_dn: 0.187127 loss_class_aux_dn: 1.513530 loss_bbox_aux_dn: 0.396685 loss_giou_aux_dn: 1.192710 loss: 8.093886 eta: 2:45:00 batch_cost: 1.9249 data_cost: 1.1935 ips: 10.3902 images/s
+[05/28 00:14:47] ppdet.engine INFO: Epoch: [8] [260/283] learning_rate: 0.000100 loss_class: 0.317880 loss_bbox: 0.082457 loss_giou: 0.220476 loss_class_aux: 2.246616 loss_bbox_aux: 0.593718 loss_giou_aux: 1.510957 loss_class_dn: 0.285003 loss_bbox_dn: 0.085169 loss_giou_dn: 0.223546 loss_class_aux_dn: 1.604145 loss_bbox_aux_dn: 0.547037 loss_giou_aux_dn: 1.386705 loss: 9.129356 eta: 2:44:24 batch_cost: 1.5862 data_cost: 0.9110 ips: 12.6085 images/s
+[05/28 00:15:21] ppdet.engine INFO: Epoch: [8] [280/283] learning_rate: 0.000100 loss_class: 0.294693 loss_bbox: 0.058875 loss_giou: 0.194742 loss_class_aux: 2.181868 loss_bbox_aux: 0.459711 loss_giou_aux: 1.385681 loss_class_dn: 0.278315 loss_bbox_dn: 0.062503 loss_giou_dn: 0.196543 loss_class_aux_dn: 1.551860 loss_bbox_aux_dn: 0.430446 loss_giou_aux_dn: 1.271262 loss: 8.307488 eta: 2:43:52 batch_cost: 1.6800 data_cost: 0.9846 ips: 11.9047 images/s
+[05/28 00:15:30] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/28 00:15:31] ppdet.engine INFO: Eval iter: 0
+[05/28 00:15:52] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.34s)
+creating index...
+index created!
+[05/28 00:15:52] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.20s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.45s).
+Accumulating evaluation results...
+DONE (t=0.57s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.872
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.999
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.979
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.794
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.876
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.433
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.907
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.922
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.892
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.924
+[05/28 00:15:59] ppdet.engine INFO: Total sample number: 800, average FPS: 49.97117170821602
+[05/28 00:15:59] ppdet.engine INFO: Best test bbox ap is 0.872.
+[05/28 00:16:01] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/28 00:16:03] ppdet.engine INFO: Epoch: [9] [  0/283] learning_rate: 0.000100 loss_class: 0.299960 loss_bbox: 0.058535 loss_giou: 0.205144 loss_class_aux: 2.183487 loss_bbox_aux: 0.459711 loss_giou_aux: 1.440301 loss_class_dn: 0.277615 loss_bbox_dn: 0.062503 loss_giou_dn: 0.207480 loss_class_aux_dn: 1.550041 loss_bbox_aux_dn: 0.422963 loss_giou_aux_dn: 1.285321 loss: 8.398581 eta: 2:43:49 batch_cost: 1.7241 data_cost: 1.0391 ips: 11.6005 images/s
+[05/28 00:16:36] ppdet.engine INFO: Epoch: [9] [ 20/283] learning_rate: 0.000100 loss_class: 0.283375 loss_bbox: 0.065413 loss_giou: 0.192218 loss_class_aux: 2.103129 loss_bbox_aux: 0.509144 loss_giou_aux: 1.392882 loss_class_dn: 0.271148 loss_bbox_dn: 0.070520 loss_giou_dn: 0.192212 loss_class_aux_dn: 1.518106 loss_bbox_aux_dn: 0.472023 loss_giou_aux_dn: 1.199988 loss: 8.334726 eta: 2:43:15 batch_cost: 1.6294 data_cost: 0.9010 ips: 12.2744 images/s
+[05/28 00:17:09] ppdet.engine INFO: Epoch: [9] [ 40/283] learning_rate: 0.000100 loss_class: 0.315388 loss_bbox: 0.066687 loss_giou: 0.188839 loss_class_aux: 2.308237 loss_bbox_aux: 0.526707 loss_giou_aux: 1.351408 loss_class_dn: 0.269566 loss_bbox_dn: 0.073697 loss_giou_dn: 0.193493 loss_class_aux_dn: 1.513540 loss_bbox_aux_dn: 0.467481 loss_giou_aux_dn: 1.201418 loss: 8.481846 eta: 2:42:38 batch_cost: 1.5717 data_cost: 0.8952 ips: 12.7254 images/s
+[05/28 00:17:42] ppdet.engine INFO: Epoch: [9] [ 60/283] learning_rate: 0.000100 loss_class: 0.320681 loss_bbox: 0.062919 loss_giou: 0.204921 loss_class_aux: 2.338411 loss_bbox_aux: 0.518128 loss_giou_aux: 1.503508 loss_class_dn: 0.276104 loss_bbox_dn: 0.070181 loss_giou_dn: 0.198947 loss_class_aux_dn: 1.552159 loss_bbox_aux_dn: 0.436677 loss_giou_aux_dn: 1.301142 loss: 8.866785 eta: 2:42:01 batch_cost: 1.5720 data_cost: 0.9329 ips: 12.7223 images/s
+[05/28 00:18:19] ppdet.engine INFO: Epoch: [9] [ 80/283] learning_rate: 0.000100 loss_class: 0.302593 loss_bbox: 0.062844 loss_giou: 0.196172 loss_class_aux: 2.149808 loss_bbox_aux: 0.480765 loss_giou_aux: 1.407222 loss_class_dn: 0.274391 loss_bbox_dn: 0.068126 loss_giou_dn: 0.192785 loss_class_aux_dn: 1.541214 loss_bbox_aux_dn: 0.447148 loss_giou_aux_dn: 1.232876 loss: 8.315168 eta: 2:41:36 batch_cost: 1.8288 data_cost: 1.1536 ips: 10.9360 images/s
+[05/28 00:18:54] ppdet.engine INFO: Epoch: [9] [100/283] learning_rate: 0.000100 loss_class: 0.297232 loss_bbox: 0.064718 loss_giou: 0.188610 loss_class_aux: 2.210080 loss_bbox_aux: 0.499165 loss_giou_aux: 1.381394 loss_class_dn: 0.265680 loss_bbox_dn: 0.069798 loss_giou_dn: 0.190338 loss_class_aux_dn: 1.523143 loss_bbox_aux_dn: 0.501879 loss_giou_aux_dn: 1.271320 loss: 8.522339 eta: 2:41:04 batch_cost: 1.6688 data_cost: 0.9693 ips: 11.9850 images/s
+[05/28 00:19:25] ppdet.engine INFO: Epoch: [9] [120/283] learning_rate: 0.000100 loss_class: 0.300716 loss_bbox: 0.064155 loss_giou: 0.187230 loss_class_aux: 2.143018 loss_bbox_aux: 0.499628 loss_giou_aux: 1.427298 loss_class_dn: 0.268899 loss_bbox_dn: 0.072506 loss_giou_dn: 0.195686 loss_class_aux_dn: 1.527015 loss_bbox_aux_dn: 0.496137 loss_giou_aux_dn: 1.260753 loss: 8.491061 eta: 2:40:24 batch_cost: 1.5106 data_cost: 0.8413 ips: 13.2399 images/s
+[05/28 00:20:02] ppdet.engine INFO: Epoch: [9] [140/283] learning_rate: 0.000100 loss_class: 0.314565 loss_bbox: 0.073598 loss_giou: 0.194181 loss_class_aux: 2.239971 loss_bbox_aux: 0.516326 loss_giou_aux: 1.396224 loss_class_dn: 0.278071 loss_bbox_dn: 0.076406 loss_giou_dn: 0.195582 loss_class_aux_dn: 1.542152 loss_bbox_aux_dn: 0.488181 loss_giou_aux_dn: 1.299925 loss: 8.714172 eta: 2:39:57 batch_cost: 1.7890 data_cost: 1.1184 ips: 11.1795 images/s
+[05/28 00:20:37] ppdet.engine INFO: Epoch: [9] [160/283] learning_rate: 0.000100 loss_class: 0.294873 loss_bbox: 0.069768 loss_giou: 0.203699 loss_class_aux: 2.155548 loss_bbox_aux: 0.528264 loss_giou_aux: 1.411271 loss_class_dn: 0.273022 loss_bbox_dn: 0.078763 loss_giou_dn: 0.205806 loss_class_aux_dn: 1.530127 loss_bbox_aux_dn: 0.511876 loss_giou_aux_dn: 1.279353 loss: 8.498365 eta: 2:39:26 batch_cost: 1.6959 data_cost: 0.9801 ips: 11.7933 images/s
+[05/28 00:21:04] ppdet.engine INFO: Epoch: [9] [180/283] learning_rate: 0.000100 loss_class: 0.317502 loss_bbox: 0.055123 loss_giou: 0.191503 loss_class_aux: 2.251995 loss_bbox_aux: 0.489271 loss_giou_aux: 1.359588 loss_class_dn: 0.271477 loss_bbox_dn: 0.062961 loss_giou_dn: 0.190610 loss_class_aux_dn: 1.514309 loss_bbox_aux_dn: 0.428914 loss_giou_aux_dn: 1.216858 loss: 8.235594 eta: 2:38:38 batch_cost: 1.2950 data_cost: 0.5999 ips: 15.4434 images/s
+[05/28 00:21:39] ppdet.engine INFO: Epoch: [9] [200/283] learning_rate: 0.000100 loss_class: 0.330343 loss_bbox: 0.076478 loss_giou: 0.192118 loss_class_aux: 2.301979 loss_bbox_aux: 0.557217 loss_giou_aux: 1.409874 loss_class_dn: 0.279061 loss_bbox_dn: 0.084388 loss_giou_dn: 0.202506 loss_class_aux_dn: 1.553265 loss_bbox_aux_dn: 0.571996 loss_giou_aux_dn: 1.291058 loss: 8.973413 eta: 2:38:07 batch_cost: 1.6973 data_cost: 1.0616 ips: 11.7832 images/s
+[05/28 00:22:14] ppdet.engine INFO: Epoch: [9] [220/283] learning_rate: 0.000100 loss_class: 0.317593 loss_bbox: 0.073148 loss_giou: 0.188534 loss_class_aux: 2.184523 loss_bbox_aux: 0.511139 loss_giou_aux: 1.360404 loss_class_dn: 0.275486 loss_bbox_dn: 0.072366 loss_giou_dn: 0.188640 loss_class_aux_dn: 1.542426 loss_bbox_aux_dn: 0.476414 loss_giou_aux_dn: 1.272691 loss: 8.608257 eta: 2:37:34 batch_cost: 1.6512 data_cost: 0.9966 ips: 12.1127 images/s
+[05/28 00:22:50] ppdet.engine INFO: Epoch: [9] [240/283] learning_rate: 0.000100 loss_class: 0.300202 loss_bbox: 0.061436 loss_giou: 0.186425 loss_class_aux: 2.193015 loss_bbox_aux: 0.465886 loss_giou_aux: 1.423285 loss_class_dn: 0.265986 loss_bbox_dn: 0.062021 loss_giou_dn: 0.184112 loss_class_aux_dn: 1.507990 loss_bbox_aux_dn: 0.416485 loss_giou_aux_dn: 1.223666 loss: 8.447428 eta: 2:37:04 batch_cost: 1.7492 data_cost: 1.0774 ips: 11.4340 images/s
+[05/28 00:23:24] ppdet.engine INFO: Epoch: [9] [260/283] learning_rate: 0.000100 loss_class: 0.314603 loss_bbox: 0.056775 loss_giou: 0.193853 loss_class_aux: 2.238373 loss_bbox_aux: 0.470186 loss_giou_aux: 1.489703 loss_class_dn: 0.277603 loss_bbox_dn: 0.061531 loss_giou_dn: 0.196116 loss_class_aux_dn: 1.524645 loss_bbox_aux_dn: 0.433481 loss_giou_aux_dn: 1.250415 loss: 8.412378 eta: 2:36:32 batch_cost: 1.6603 data_cost: 0.9535 ips: 12.0461 images/s
+[05/28 00:23:56] ppdet.engine INFO: Epoch: [9] [280/283] learning_rate: 0.000100 loss_class: 0.308075 loss_bbox: 0.056903 loss_giou: 0.195224 loss_class_aux: 2.217581 loss_bbox_aux: 0.419743 loss_giou_aux: 1.398126 loss_class_dn: 0.278687 loss_bbox_dn: 0.057668 loss_giou_dn: 0.199437 loss_class_aux_dn: 1.552176 loss_bbox_aux_dn: 0.400401 loss_giou_aux_dn: 1.265885 loss: 8.454948 eta: 2:35:54 batch_cost: 1.5485 data_cost: 0.8568 ips: 12.9154 images/s
+[05/28 00:24:01] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/28 00:24:02] ppdet.engine INFO: Eval iter: 0
+[05/28 00:24:23] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/28 00:24:23] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=1.82s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.33s).
+Accumulating evaluation results...
+DONE (t=0.53s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.862
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.997
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.982
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.785
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.867
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.430
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.893
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.910
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.873
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.912
+[05/28 00:24:29] ppdet.engine INFO: Total sample number: 800, average FPS: 47.238721523846294
+[05/28 00:24:29] ppdet.engine INFO: Best test bbox ap is 0.872.
+[05/28 00:24:30] ppdet.engine INFO: Epoch: [10] [  0/283] learning_rate: 0.000100 loss_class: 0.306398 loss_bbox: 0.056903 loss_giou: 0.190523 loss_class_aux: 2.172829 loss_bbox_aux: 0.419743 loss_giou_aux: 1.388520 loss_class_dn: 0.274712 loss_bbox_dn: 0.057668 loss_giou_dn: 0.199220 loss_class_aux_dn: 1.530281 loss_bbox_aux_dn: 0.400401 loss_giou_aux_dn: 1.248228 loss: 8.430742 eta: 2:35:44 batch_cost: 1.5455 data_cost: 0.8820 ips: 12.9407 images/s
+[05/28 00:24:58] ppdet.engine INFO: Epoch: [10] [ 20/283] learning_rate: 0.000100 loss_class: 0.313006 loss_bbox: 0.070302 loss_giou: 0.201937 loss_class_aux: 2.235338 loss_bbox_aux: 0.552239 loss_giou_aux: 1.458794 loss_class_dn: 0.285471 loss_bbox_dn: 0.076515 loss_giou_dn: 0.202618 loss_class_aux_dn: 1.624567 loss_bbox_aux_dn: 0.534923 loss_giou_aux_dn: 1.364724 loss: 9.006420 eta: 2:34:58 batch_cost: 1.3246 data_cost: 0.6006 ips: 15.0989 images/s
+[05/28 00:25:30] ppdet.engine INFO: Epoch: [10] [ 40/283] learning_rate: 0.000100 loss_class: 0.291719 loss_bbox: 0.065811 loss_giou: 0.198741 loss_class_aux: 2.240255 loss_bbox_aux: 0.494925 loss_giou_aux: 1.403749 loss_class_dn: 0.270855 loss_bbox_dn: 0.069648 loss_giou_dn: 0.205127 loss_class_aux_dn: 1.577576 loss_bbox_aux_dn: 0.509311 loss_giou_aux_dn: 1.330597 loss: 8.563780 eta: 2:34:22 batch_cost: 1.5710 data_cost: 0.8881 ips: 12.7310 images/s
+[05/28 00:26:05] ppdet.engine INFO: Epoch: [10] [ 60/283] learning_rate: 0.000100 loss_class: 0.297454 loss_bbox: 0.062732 loss_giou: 0.193563 loss_class_aux: 2.127235 loss_bbox_aux: 0.496092 loss_giou_aux: 1.406559 loss_class_dn: 0.274191 loss_bbox_dn: 0.067002 loss_giou_dn: 0.198887 loss_class_aux_dn: 1.523388 loss_bbox_aux_dn: 0.436843 loss_giou_aux_dn: 1.286400 loss: 8.409771 eta: 2:33:50 batch_cost: 1.6797 data_cost: 1.0358 ips: 11.9069 images/s
+[05/28 00:26:48] ppdet.engine INFO: Epoch: [10] [ 80/283] learning_rate: 0.000100 loss_class: 0.296117 loss_bbox: 0.063420 loss_giou: 0.184455 loss_class_aux: 2.108948 loss_bbox_aux: 0.506883 loss_giou_aux: 1.359718 loss_class_dn: 0.268587 loss_bbox_dn: 0.067176 loss_giou_dn: 0.191341 loss_class_aux_dn: 1.501510 loss_bbox_aux_dn: 0.433243 loss_giou_aux_dn: 1.218334 loss: 8.365537 eta: 2:33:34 batch_cost: 2.0898 data_cost: 1.4633 ips: 9.5701 images/s
+[05/28 00:27:28] ppdet.engine INFO: Epoch: [10] [100/283] learning_rate: 0.000100 loss_class: 0.313902 loss_bbox: 0.062105 loss_giou: 0.212890 loss_class_aux: 2.261518 loss_bbox_aux: 0.486646 loss_giou_aux: 1.524745 loss_class_dn: 0.281929 loss_bbox_dn: 0.067230 loss_giou_dn: 0.222258 loss_class_aux_dn: 1.574549 loss_bbox_aux_dn: 0.436689 loss_giou_aux_dn: 1.335112 loss: 8.787576 eta: 2:33:13 batch_cost: 1.9605 data_cost: 1.2242 ips: 10.2013 images/s
+[05/28 00:28:02] ppdet.engine INFO: Epoch: [10] [120/283] learning_rate: 0.000100 loss_class: 0.307109 loss_bbox: 0.063526 loss_giou: 0.188605 loss_class_aux: 2.196288 loss_bbox_aux: 0.464557 loss_giou_aux: 1.408694 loss_class_dn: 0.269736 loss_bbox_dn: 0.066266 loss_giou_dn: 0.190187 loss_class_aux_dn: 1.520535 loss_bbox_aux_dn: 0.450603 loss_giou_aux_dn: 1.215668 loss: 8.426170 eta: 2:32:40 batch_cost: 1.6611 data_cost: 0.9827 ips: 12.0404 images/s
+[05/28 00:28:37] ppdet.engine INFO: Epoch: [10] [140/283] learning_rate: 0.000100 loss_class: 0.316275 loss_bbox: 0.070744 loss_giou: 0.190538 loss_class_aux: 2.248188 loss_bbox_aux: 0.515370 loss_giou_aux: 1.394285 loss_class_dn: 0.274394 loss_bbox_dn: 0.071980 loss_giou_dn: 0.192567 loss_class_aux_dn: 1.542853 loss_bbox_aux_dn: 0.471953 loss_giou_aux_dn: 1.255298 loss: 8.696214 eta: 2:32:09 batch_cost: 1.7122 data_cost: 1.0261 ips: 11.6806 images/s
+[05/28 00:29:10] ppdet.engine INFO: Epoch: [10] [160/283] learning_rate: 0.000100 loss_class: 0.294884 loss_bbox: 0.059673 loss_giou: 0.198800 loss_class_aux: 2.152340 loss_bbox_aux: 0.464523 loss_giou_aux: 1.422955 loss_class_dn: 0.272483 loss_bbox_dn: 0.064268 loss_giou_dn: 0.202761 loss_class_aux_dn: 1.517122 loss_bbox_aux_dn: 0.442552 loss_giou_aux_dn: 1.283845 loss: 8.439293 eta: 2:31:34 batch_cost: 1.5887 data_cost: 0.8996 ips: 12.5893 images/s
+[05/28 00:29:49] ppdet.engine INFO: Epoch: [10] [180/283] learning_rate: 0.000100 loss_class: 0.302531 loss_bbox: 0.063231 loss_giou: 0.192146 loss_class_aux: 2.199885 loss_bbox_aux: 0.449620 loss_giou_aux: 1.366410 loss_class_dn: 0.276370 loss_bbox_dn: 0.069321 loss_giou_dn: 0.197376 loss_class_aux_dn: 1.548285 loss_bbox_aux_dn: 0.419560 loss_giou_aux_dn: 1.246083 loss: 8.408363 eta: 2:31:09 batch_cost: 1.8741 data_cost: 1.2122 ips: 10.6720 images/s
+[05/28 00:30:22] ppdet.engine INFO: Epoch: [10] [200/283] learning_rate: 0.000100 loss_class: 0.286118 loss_bbox: 0.069097 loss_giou: 0.171968 loss_class_aux: 2.053475 loss_bbox_aux: 0.552315 loss_giou_aux: 1.224070 loss_class_dn: 0.252017 loss_bbox_dn: 0.076734 loss_giou_dn: 0.173545 loss_class_aux_dn: 1.426852 loss_bbox_aux_dn: 0.498396 loss_giou_aux_dn: 1.100364 loss: 7.807837 eta: 2:30:35 batch_cost: 1.6317 data_cost: 0.9672 ips: 12.2574 images/s
+[05/28 00:30:55] ppdet.engine INFO: Epoch: [10] [220/283] learning_rate: 0.000100 loss_class: 0.303596 loss_bbox: 0.066523 loss_giou: 0.194593 loss_class_aux: 2.294810 loss_bbox_aux: 0.499791 loss_giou_aux: 1.405852 loss_class_dn: 0.268630 loss_bbox_dn: 0.067076 loss_giou_dn: 0.192454 loss_class_aux_dn: 1.496778 loss_bbox_aux_dn: 0.430188 loss_giou_aux_dn: 1.199277 loss: 8.523305 eta: 2:29:58 batch_cost: 1.5500 data_cost: 0.9090 ips: 12.9031 images/s
+[05/28 00:31:30] ppdet.engine INFO: Epoch: [10] [240/283] learning_rate: 0.000100 loss_class: 0.318390 loss_bbox: 0.066615 loss_giou: 0.187580 loss_class_aux: 2.316615 loss_bbox_aux: 0.488854 loss_giou_aux: 1.383780 loss_class_dn: 0.269651 loss_bbox_dn: 0.072350 loss_giou_dn: 0.189122 loss_class_aux_dn: 1.500231 loss_bbox_aux_dn: 0.470318 loss_giou_aux_dn: 1.263578 loss: 8.580595 eta: 2:29:28 batch_cost: 1.7397 data_cost: 1.1373 ips: 11.4961 images/s
+[05/28 00:32:07] ppdet.engine INFO: Epoch: [10] [260/283] learning_rate: 0.000100 loss_class: 0.308106 loss_bbox: 0.062919 loss_giou: 0.206180 loss_class_aux: 2.201674 loss_bbox_aux: 0.476060 loss_giou_aux: 1.433215 loss_class_dn: 0.276063 loss_bbox_dn: 0.065701 loss_giou_dn: 0.201098 loss_class_aux_dn: 1.533358 loss_bbox_aux_dn: 0.428579 loss_giou_aux_dn: 1.257761 loss: 8.391210 eta: 2:29:00 batch_cost: 1.7991 data_cost: 1.1244 ips: 11.1164 images/s
+[05/28 00:32:41] ppdet.engine INFO: Epoch: [10] [280/283] learning_rate: 0.000100 loss_class: 0.305301 loss_bbox: 0.063287 loss_giou: 0.206926 loss_class_aux: 2.133078 loss_bbox_aux: 0.446231 loss_giou_aux: 1.464186 loss_class_dn: 0.277576 loss_bbox_dn: 0.063941 loss_giou_dn: 0.204972 loss_class_aux_dn: 1.532012 loss_bbox_aux_dn: 0.420597 loss_giou_aux_dn: 1.248235 loss: 8.413543 eta: 2:28:26 batch_cost: 1.6246 data_cost: 0.9676 ips: 12.3105 images/s
+[05/28 00:32:49] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/28 00:32:49] ppdet.engine INFO: Eval iter: 0
+[05/28 00:33:12] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/28 00:33:12] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.06s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.32s).
+Accumulating evaluation results...
+DONE (t=0.52s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.874
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.999
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.979
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.809
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.878
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.434
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.910
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.924
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.882
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.926
+[05/28 00:33:18] ppdet.engine INFO: Total sample number: 800, average FPS: 44.35732257074673
+[05/28 00:33:18] ppdet.engine INFO: Best test bbox ap is 0.874.
+[05/28 00:33:21] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/28 00:33:22] ppdet.engine INFO: Epoch: [11] [  0/283] learning_rate: 0.000100 loss_class: 0.294206 loss_bbox: 0.063230 loss_giou: 0.201584 loss_class_aux: 2.133078 loss_bbox_aux: 0.450907 loss_giou_aux: 1.454947 loss_class_dn: 0.274682 loss_bbox_dn: 0.062979 loss_giou_dn: 0.199057 loss_class_aux_dn: 1.518895 loss_bbox_aux_dn: 0.387222 loss_giou_aux_dn: 1.234747 loss: 8.297609 eta: 2:28:21 batch_cost: 1.5801 data_cost: 0.9517 ips: 12.6573 images/s
+[05/28 00:33:50] ppdet.engine INFO: Epoch: [11] [ 20/283] learning_rate: 0.000100 loss_class: 0.289630 loss_bbox: 0.066031 loss_giou: 0.193014 loss_class_aux: 2.116657 loss_bbox_aux: 0.458279 loss_giou_aux: 1.354821 loss_class_dn: 0.274442 loss_bbox_dn: 0.067637 loss_giou_dn: 0.196627 loss_class_aux_dn: 1.520522 loss_bbox_aux_dn: 0.421637 loss_giou_aux_dn: 1.224991 loss: 8.142472 eta: 2:27:38 batch_cost: 1.3798 data_cost: 0.7145 ips: 14.4947 images/s
+[05/28 00:34:24] ppdet.engine INFO: Epoch: [11] [ 40/283] learning_rate: 0.000100 loss_class: 0.282071 loss_bbox: 0.065589 loss_giou: 0.192492 loss_class_aux: 2.100502 loss_bbox_aux: 0.485098 loss_giou_aux: 1.365504 loss_class_dn: 0.267254 loss_bbox_dn: 0.069779 loss_giou_dn: 0.197565 loss_class_aux_dn: 1.503246 loss_bbox_aux_dn: 0.474915 loss_giou_aux_dn: 1.255753 loss: 8.356579 eta: 2:27:06 batch_cost: 1.6682 data_cost: 0.9815 ips: 11.9890 images/s
+[05/28 00:34:59] ppdet.engine INFO: Epoch: [11] [ 60/283] learning_rate: 0.000100 loss_class: 0.308468 loss_bbox: 0.073128 loss_giou: 0.198972 loss_class_aux: 2.122679 loss_bbox_aux: 0.539935 loss_giou_aux: 1.464031 loss_class_dn: 0.272619 loss_bbox_dn: 0.078533 loss_giou_dn: 0.199725 loss_class_aux_dn: 1.563481 loss_bbox_aux_dn: 0.525730 loss_giou_aux_dn: 1.297344 loss: 8.908516 eta: 2:26:33 batch_cost: 1.6800 data_cost: 1.0198 ips: 11.9047 images/s
+[05/28 00:35:40] ppdet.engine INFO: Epoch: [11] [ 80/283] learning_rate: 0.000100 loss_class: 0.289288 loss_bbox: 0.059940 loss_giou: 0.174624 loss_class_aux: 2.063171 loss_bbox_aux: 0.445761 loss_giou_aux: 1.322065 loss_class_dn: 0.260233 loss_bbox_dn: 0.063852 loss_giou_dn: 0.181900 loss_class_aux_dn: 1.509390 loss_bbox_aux_dn: 0.408371 loss_giou_aux_dn: 1.245316 loss: 8.028440 eta: 2:26:11 batch_cost: 1.9721 data_cost: 1.2641 ips: 10.1416 images/s
+[05/28 00:36:11] ppdet.engine INFO: Epoch: [11] [100/283] learning_rate: 0.000100 loss_class: 0.287672 loss_bbox: 0.066152 loss_giou: 0.183351 loss_class_aux: 2.133928 loss_bbox_aux: 0.502945 loss_giou_aux: 1.341068 loss_class_dn: 0.271144 loss_bbox_dn: 0.070417 loss_giou_dn: 0.184788 loss_class_aux_dn: 1.516394 loss_bbox_aux_dn: 0.465435 loss_giou_aux_dn: 1.219294 loss: 8.320971 eta: 2:25:34 batch_cost: 1.5392 data_cost: 0.8553 ips: 12.9936 images/s
+[05/28 00:36:39] ppdet.engine INFO: Epoch: [11] [120/283] learning_rate: 0.000100 loss_class: 0.291585 loss_bbox: 0.063194 loss_giou: 0.165249 loss_class_aux: 2.140841 loss_bbox_aux: 0.464654 loss_giou_aux: 1.231751 loss_class_dn: 0.255630 loss_bbox_dn: 0.065145 loss_giou_dn: 0.168477 loss_class_aux_dn: 1.443806 loss_bbox_aux_dn: 0.425428 loss_giou_aux_dn: 1.098315 loss: 8.062696 eta: 2:24:51 batch_cost: 1.3383 data_cost: 0.6004 ips: 14.9442 images/s
+[05/28 00:37:13] ppdet.engine INFO: Epoch: [11] [140/283] learning_rate: 0.000100 loss_class: 0.311350 loss_bbox: 0.074841 loss_giou: 0.199440 loss_class_aux: 2.248320 loss_bbox_aux: 0.555981 loss_giou_aux: 1.448114 loss_class_dn: 0.276340 loss_bbox_dn: 0.078136 loss_giou_dn: 0.197705 loss_class_aux_dn: 1.522699 loss_bbox_aux_dn: 0.482642 loss_giou_aux_dn: 1.235608 loss: 8.651803 eta: 2:24:16 batch_cost: 1.6084 data_cost: 0.9737 ips: 12.4350 images/s
+[05/28 00:37:49] ppdet.engine INFO: Epoch: [11] [160/283] learning_rate: 0.000100 loss_class: 0.303851 loss_bbox: 0.063397 loss_giou: 0.207941 loss_class_aux: 2.234979 loss_bbox_aux: 0.500368 loss_giou_aux: 1.492512 loss_class_dn: 0.281392 loss_bbox_dn: 0.068055 loss_giou_dn: 0.214446 loss_class_aux_dn: 1.565978 loss_bbox_aux_dn: 0.462915 loss_giou_aux_dn: 1.344423 loss: 8.918324 eta: 2:23:47 batch_cost: 1.7893 data_cost: 1.1078 ips: 11.1775 images/s
+[05/28 00:38:22] ppdet.engine INFO: Epoch: [11] [180/283] learning_rate: 0.000100 loss_class: 0.279538 loss_bbox: 0.058694 loss_giou: 0.186059 loss_class_aux: 1.969329 loss_bbox_aux: 0.461867 loss_giou_aux: 1.327390 loss_class_dn: 0.262263 loss_bbox_dn: 0.061060 loss_giou_dn: 0.188937 loss_class_aux_dn: 1.494391 loss_bbox_aux_dn: 0.413016 loss_giou_aux_dn: 1.190403 loss: 7.962520 eta: 2:23:12 batch_cost: 1.5707 data_cost: 0.9240 ips: 12.7333 images/s
+[05/28 00:39:01] ppdet.engine INFO: Epoch: [11] [200/283] learning_rate: 0.000100 loss_class: 0.275189 loss_bbox: 0.057137 loss_giou: 0.179450 loss_class_aux: 2.051885 loss_bbox_aux: 0.460411 loss_giou_aux: 1.306339 loss_class_dn: 0.261389 loss_bbox_dn: 0.059485 loss_giou_dn: 0.178782 loss_class_aux_dn: 1.510001 loss_bbox_aux_dn: 0.455511 loss_giou_aux_dn: 1.224876 loss: 7.974531 eta: 2:22:46 batch_cost: 1.8927 data_cost: 1.2357 ips: 10.5669 images/s
+[05/28 00:39:36] ppdet.engine INFO: Epoch: [11] [220/283] learning_rate: 0.000100 loss_class: 0.275911 loss_bbox: 0.060744 loss_giou: 0.183743 loss_class_aux: 2.072840 loss_bbox_aux: 0.469456 loss_giou_aux: 1.289393 loss_class_dn: 0.260034 loss_bbox_dn: 0.066595 loss_giou_dn: 0.183436 loss_class_aux_dn: 1.469013 loss_bbox_aux_dn: 0.445778 loss_giou_aux_dn: 1.170087 loss: 7.879931 eta: 2:22:15 batch_cost: 1.7136 data_cost: 0.9964 ips: 11.6711 images/s
+[05/28 00:40:09] ppdet.engine INFO: Epoch: [11] [240/283] learning_rate: 0.000100 loss_class: 0.274696 loss_bbox: 0.054384 loss_giou: 0.184281 loss_class_aux: 2.012149 loss_bbox_aux: 0.406944 loss_giou_aux: 1.311397 loss_class_dn: 0.251021 loss_bbox_dn: 0.056663 loss_giou_dn: 0.179429 loss_class_aux_dn: 1.445040 loss_bbox_aux_dn: 0.368307 loss_giou_aux_dn: 1.142884 loss: 7.713782 eta: 2:21:41 batch_cost: 1.6259 data_cost: 0.9547 ips: 12.3006 images/s
+[05/28 00:40:46] ppdet.engine INFO: Epoch: [11] [260/283] learning_rate: 0.000100 loss_class: 0.289277 loss_bbox: 0.067813 loss_giou: 0.193792 loss_class_aux: 2.117868 loss_bbox_aux: 0.478316 loss_giou_aux: 1.381464 loss_class_dn: 0.272680 loss_bbox_dn: 0.068026 loss_giou_dn: 0.195307 loss_class_aux_dn: 1.496087 loss_bbox_aux_dn: 0.421998 loss_giou_aux_dn: 1.187015 loss: 8.140353 eta: 2:21:12 batch_cost: 1.7879 data_cost: 1.1130 ips: 11.1862 images/s
+[05/28 00:41:17] ppdet.engine INFO: Epoch: [11] [280/283] learning_rate: 0.000100 loss_class: 0.281959 loss_bbox: 0.058302 loss_giou: 0.170148 loss_class_aux: 2.091363 loss_bbox_aux: 0.456208 loss_giou_aux: 1.256189 loss_class_dn: 0.260127 loss_bbox_dn: 0.061169 loss_giou_dn: 0.180707 loss_class_aux_dn: 1.479831 loss_bbox_aux_dn: 0.394369 loss_giou_aux_dn: 1.153774 loss: 7.892986 eta: 2:20:34 batch_cost: 1.4969 data_cost: 0.8526 ips: 13.3606 images/s
+[05/28 00:41:22] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/28 00:41:23] ppdet.engine INFO: Eval iter: 0
+[05/28 00:41:45] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.22s)
+creating index...
+index created!
+[05/28 00:41:45] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=1.80s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.35s).
+Accumulating evaluation results...
+DONE (t=0.53s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.870
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.985
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.803
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.875
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.434
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.903
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.921
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.888
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.923
+[05/28 00:41:51] ppdet.engine INFO: Total sample number: 800, average FPS: 46.24419908349626
+[05/28 00:41:51] ppdet.engine INFO: Best test bbox ap is 0.874.
+[05/28 00:41:52] ppdet.engine INFO: Epoch: [12] [  0/283] learning_rate: 0.000100 loss_class: 0.285255 loss_bbox: 0.059434 loss_giou: 0.176317 loss_class_aux: 2.102297 loss_bbox_aux: 0.465429 loss_giou_aux: 1.283692 loss_class_dn: 0.262422 loss_bbox_dn: 0.061844 loss_giou_dn: 0.189102 loss_class_aux_dn: 1.493565 loss_bbox_aux_dn: 0.412519 loss_giou_aux_dn: 1.198622 loss: 8.154157 eta: 2:20:25 batch_cost: 1.5105 data_cost: 0.8526 ips: 13.2407 images/s
+[05/28 00:42:19] ppdet.engine INFO: Epoch: [12] [ 20/283] learning_rate: 0.000100 loss_class: 0.279475 loss_bbox: 0.061191 loss_giou: 0.178022 loss_class_aux: 2.069627 loss_bbox_aux: 0.499029 loss_giou_aux: 1.331577 loss_class_dn: 0.261735 loss_bbox_dn: 0.068189 loss_giou_dn: 0.177586 loss_class_aux_dn: 1.498498 loss_bbox_aux_dn: 0.447566 loss_giou_aux_dn: 1.146795 loss: 8.017778 eta: 2:19:42 batch_cost: 1.3255 data_cost: 0.6619 ips: 15.0892 images/s
+[05/28 00:42:53] ppdet.engine INFO: Epoch: [12] [ 40/283] learning_rate: 0.000100 loss_class: 0.266012 loss_bbox: 0.052359 loss_giou: 0.173693 loss_class_aux: 2.081648 loss_bbox_aux: 0.448877 loss_giou_aux: 1.318400 loss_class_dn: 0.249652 loss_bbox_dn: 0.052947 loss_giou_dn: 0.171469 loss_class_aux_dn: 1.443961 loss_bbox_aux_dn: 0.396444 loss_giou_aux_dn: 1.150462 loss: 7.730400 eta: 2:19:08 batch_cost: 1.6195 data_cost: 0.9202 ips: 12.3494 images/s
+[05/28 00:43:28] ppdet.engine INFO: Epoch: [12] [ 60/283] learning_rate: 0.000100 loss_class: 0.310469 loss_bbox: 0.069798 loss_giou: 0.203254 loss_class_aux: 2.232637 loss_bbox_aux: 0.523321 loss_giou_aux: 1.495159 loss_class_dn: 0.279399 loss_bbox_dn: 0.072911 loss_giou_dn: 0.200299 loss_class_aux_dn: 1.532908 loss_bbox_aux_dn: 0.477112 loss_giou_aux_dn: 1.287477 loss: 8.562235 eta: 2:18:36 batch_cost: 1.6901 data_cost: 1.0156 ips: 11.8335 images/s
+[05/28 00:43:54] ppdet.engine INFO: Epoch: [12] [ 80/283] learning_rate: 0.000100 loss_class: 0.314987 loss_bbox: 0.071104 loss_giou: 0.178144 loss_class_aux: 2.245554 loss_bbox_aux: 0.571868 loss_giou_aux: 1.370502 loss_class_dn: 0.264369 loss_bbox_dn: 0.069997 loss_giou_dn: 0.184044 loss_class_aux_dn: 1.505581 loss_bbox_aux_dn: 0.459903 loss_giou_aux_dn: 1.162242 loss: 8.413615 eta: 2:17:52 batch_cost: 1.2627 data_cost: 0.5954 ips: 15.8393 images/s
+[05/28 00:44:36] ppdet.engine INFO: Epoch: [12] [100/283] learning_rate: 0.000100 loss_class: 0.298386 loss_bbox: 0.063136 loss_giou: 0.180544 loss_class_aux: 2.309968 loss_bbox_aux: 0.469066 loss_giou_aux: 1.360879 loss_class_dn: 0.270013 loss_bbox_dn: 0.067967 loss_giou_dn: 0.185729 loss_class_aux_dn: 1.500513 loss_bbox_aux_dn: 0.427895 loss_giou_aux_dn: 1.235759 loss: 8.252424 eta: 2:17:29 batch_cost: 2.0186 data_cost: 1.2893 ips: 9.9077 images/s
+[05/28 00:45:04] ppdet.engine INFO: Epoch: [12] [120/283] learning_rate: 0.000100 loss_class: 0.274146 loss_bbox: 0.061029 loss_giou: 0.191506 loss_class_aux: 2.070283 loss_bbox_aux: 0.454047 loss_giou_aux: 1.345283 loss_class_dn: 0.264106 loss_bbox_dn: 0.061802 loss_giou_dn: 0.184971 loss_class_aux_dn: 1.492356 loss_bbox_aux_dn: 0.397446 loss_giou_aux_dn: 1.172445 loss: 7.930495 eta: 2:16:48 batch_cost: 1.3717 data_cost: 0.7117 ips: 14.5806 images/s
+[05/28 00:45:40] ppdet.engine INFO: Epoch: [12] [140/283] learning_rate: 0.000100 loss_class: 0.282163 loss_bbox: 0.062930 loss_giou: 0.195572 loss_class_aux: 2.097178 loss_bbox_aux: 0.444752 loss_giou_aux: 1.363702 loss_class_dn: 0.272084 loss_bbox_dn: 0.065322 loss_giou_dn: 0.193932 loss_class_aux_dn: 1.510654 loss_bbox_aux_dn: 0.387873 loss_giou_aux_dn: 1.214493 loss: 8.255795 eta: 2:16:18 batch_cost: 1.7598 data_cost: 1.0832 ips: 11.3649 images/s
+[05/28 00:46:13] ppdet.engine INFO: Epoch: [12] [160/283] learning_rate: 0.000100 loss_class: 0.298704 loss_bbox: 0.066728 loss_giou: 0.185557 loss_class_aux: 2.185447 loss_bbox_aux: 0.471896 loss_giou_aux: 1.330589 loss_class_dn: 0.259458 loss_bbox_dn: 0.071194 loss_giou_dn: 0.181905 loss_class_aux_dn: 1.454922 loss_bbox_aux_dn: 0.475375 loss_giou_aux_dn: 1.173728 loss: 8.186346 eta: 2:15:42 batch_cost: 1.5545 data_cost: 0.8513 ips: 12.8660 images/s
+[05/28 00:46:50] ppdet.engine INFO: Epoch: [12] [180/283] learning_rate: 0.000100 loss_class: 0.273788 loss_bbox: 0.057111 loss_giou: 0.177618 loss_class_aux: 2.034912 loss_bbox_aux: 0.410760 loss_giou_aux: 1.273545 loss_class_dn: 0.261081 loss_bbox_dn: 0.058350 loss_giou_dn: 0.179111 loss_class_aux_dn: 1.458253 loss_bbox_aux_dn: 0.372780 loss_giou_aux_dn: 1.105121 loss: 7.597346 eta: 2:15:15 batch_cost: 1.8415 data_cost: 1.1807 ips: 10.8605 images/s
+[05/28 00:47:24] ppdet.engine INFO: Epoch: [12] [200/283] learning_rate: 0.000100 loss_class: 0.293423 loss_bbox: 0.062172 loss_giou: 0.174449 loss_class_aux: 2.147176 loss_bbox_aux: 0.469464 loss_giou_aux: 1.308187 loss_class_dn: 0.257662 loss_bbox_dn: 0.065775 loss_giou_dn: 0.180326 loss_class_aux_dn: 1.493965 loss_bbox_aux_dn: 0.444110 loss_giou_aux_dn: 1.167576 loss: 8.200710 eta: 2:14:40 batch_cost: 1.5965 data_cost: 0.9117 ips: 12.5270 images/s
+[05/28 00:48:03] ppdet.engine INFO: Epoch: [12] [220/283] learning_rate: 0.000100 loss_class: 0.274253 loss_bbox: 0.060740 loss_giou: 0.183001 loss_class_aux: 2.009593 loss_bbox_aux: 0.425103 loss_giou_aux: 1.264104 loss_class_dn: 0.259300 loss_bbox_dn: 0.065290 loss_giou_dn: 0.181642 loss_class_aux_dn: 1.472036 loss_bbox_aux_dn: 0.415800 loss_giou_aux_dn: 1.166890 loss: 7.832172 eta: 2:14:15 batch_cost: 1.9297 data_cost: 1.1879 ips: 10.3644 images/s
+[05/28 00:48:33] ppdet.engine INFO: Epoch: [12] [240/283] learning_rate: 0.000100 loss_class: 0.264764 loss_bbox: 0.061275 loss_giou: 0.176390 loss_class_aux: 1.966689 loss_bbox_aux: 0.465187 loss_giou_aux: 1.256223 loss_class_dn: 0.249691 loss_bbox_dn: 0.062770 loss_giou_dn: 0.173628 loss_class_aux_dn: 1.414581 loss_bbox_aux_dn: 0.429497 loss_giou_aux_dn: 1.102805 loss: 7.700051 eta: 2:13:36 batch_cost: 1.4516 data_cost: 0.7903 ips: 13.7782 images/s
+[05/28 00:49:04] ppdet.engine INFO: Epoch: [12] [260/283] learning_rate: 0.000100 loss_class: 0.275771 loss_bbox: 0.059476 loss_giou: 0.191547 loss_class_aux: 2.034627 loss_bbox_aux: 0.434695 loss_giou_aux: 1.344721 loss_class_dn: 0.271736 loss_bbox_dn: 0.061614 loss_giou_dn: 0.189901 loss_class_aux_dn: 1.498564 loss_bbox_aux_dn: 0.396800 loss_giou_aux_dn: 1.185978 loss: 7.988328 eta: 2:12:59 batch_cost: 1.4848 data_cost: 0.7986 ips: 13.4702 images/s
+[05/28 00:49:38] ppdet.engine INFO: Epoch: [12] [280/283] learning_rate: 0.000100 loss_class: 0.266381 loss_bbox: 0.068233 loss_giou: 0.185652 loss_class_aux: 2.043294 loss_bbox_aux: 0.500083 loss_giou_aux: 1.300678 loss_class_dn: 0.262812 loss_bbox_dn: 0.067473 loss_giou_dn: 0.185205 loss_class_aux_dn: 1.449729 loss_bbox_aux_dn: 0.430272 loss_giou_aux_dn: 1.132267 loss: 7.815683 eta: 2:12:26 batch_cost: 1.6538 data_cost: 0.9841 ips: 12.0937 images/s
+[05/28 00:49:45] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/28 00:49:45] ppdet.engine INFO: Eval iter: 0
+[05/28 00:50:07] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/28 00:50:07] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=1.85s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.33s).
+Accumulating evaluation results...
+DONE (t=0.52s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.871
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.998
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.981
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.806
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.877
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.435
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.904
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.914
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.881
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.916
+[05/28 00:50:13] ppdet.engine INFO: Total sample number: 800, average FPS: 47.0357262538594
+[05/28 00:50:13] ppdet.engine INFO: Best test bbox ap is 0.874.
+[05/28 00:50:14] ppdet.engine INFO: Epoch: [13] [  0/283] learning_rate: 0.000100 loss_class: 0.263129 loss_bbox: 0.068151 loss_giou: 0.182866 loss_class_aux: 2.069918 loss_bbox_aux: 0.500083 loss_giou_aux: 1.309490 loss_class_dn: 0.262812 loss_bbox_dn: 0.067906 loss_giou_dn: 0.183672 loss_class_aux_dn: 1.454678 loss_bbox_aux_dn: 0.433462 loss_giou_aux_dn: 1.132267 loss: 7.913171 eta: 2:12:20 batch_cost: 1.4247 data_cost: 0.7875 ips: 14.0380 images/s
+[05/28 00:50:43] ppdet.engine INFO: Epoch: [13] [ 20/283] learning_rate: 0.000100 loss_class: 0.284977 loss_bbox: 0.060179 loss_giou: 0.181274 loss_class_aux: 2.115869 loss_bbox_aux: 0.485528 loss_giou_aux: 1.336422 loss_class_dn: 0.267815 loss_bbox_dn: 0.063939 loss_giou_dn: 0.186055 loss_class_aux_dn: 1.477064 loss_bbox_aux_dn: 0.413102 loss_giou_aux_dn: 1.159353 loss: 8.107461 eta: 2:11:40 batch_cost: 1.3971 data_cost: 0.7704 ips: 14.3150 images/s
+[05/28 00:51:19] ppdet.engine INFO: Epoch: [13] [ 40/283] learning_rate: 0.000100 loss_class: 0.280824 loss_bbox: 0.062510 loss_giou: 0.192602 loss_class_aux: 2.129470 loss_bbox_aux: 0.497276 loss_giou_aux: 1.375449 loss_class_dn: 0.263864 loss_bbox_dn: 0.067075 loss_giou_dn: 0.189402 loss_class_aux_dn: 1.447692 loss_bbox_aux_dn: 0.421451 loss_giou_aux_dn: 1.151996 loss: 8.042514 eta: 2:11:09 batch_cost: 1.7220 data_cost: 1.0689 ips: 11.6147 images/s
+[05/28 00:51:54] ppdet.engine INFO: Epoch: [13] [ 60/283] learning_rate: 0.000100 loss_class: 0.290791 loss_bbox: 0.060400 loss_giou: 0.186910 loss_class_aux: 2.027661 loss_bbox_aux: 0.437732 loss_giou_aux: 1.318185 loss_class_dn: 0.264778 loss_bbox_dn: 0.060603 loss_giou_dn: 0.186069 loss_class_aux_dn: 1.467686 loss_bbox_aux_dn: 0.379510 loss_giou_aux_dn: 1.149602 loss: 7.728607 eta: 2:10:38 batch_cost: 1.7090 data_cost: 1.0476 ips: 11.7026 images/s
+[05/28 00:52:26] ppdet.engine INFO: Epoch: [13] [ 80/283] learning_rate: 0.000100 loss_class: 0.282787 loss_bbox: 0.065389 loss_giou: 0.180288 loss_class_aux: 2.062767 loss_bbox_aux: 0.485091 loss_giou_aux: 1.278283 loss_class_dn: 0.258584 loss_bbox_dn: 0.063629 loss_giou_dn: 0.177856 loss_class_aux_dn: 1.435316 loss_bbox_aux_dn: 0.420713 loss_giou_aux_dn: 1.125620 loss: 7.846169 eta: 2:10:02 batch_cost: 1.5598 data_cost: 0.8591 ips: 12.8219 images/s
+Found inf or nan, current scale is: 4096.0, decrease to: 4096.0*0.5
+[05/28 00:53:00] ppdet.engine INFO: Epoch: [13] [100/283] learning_rate: 0.000100 loss_class: 0.294151 loss_bbox: 0.063678 loss_giou: 0.186901 loss_class_aux: 2.062563 loss_bbox_aux: 0.502920 loss_giou_aux: 1.356830 loss_class_dn: 0.269362 loss_bbox_dn: 0.075663 loss_giou_dn: 0.185183 loss_class_aux_dn: 1.490585 loss_bbox_aux_dn: 0.443168 loss_giou_aux_dn: 1.177980 loss: 8.157689 eta: 2:09:30 batch_cost: 1.6611 data_cost: 0.9688 ips: 12.0400 images/s
+[05/28 00:53:34] ppdet.engine INFO: Epoch: [13] [120/283] learning_rate: 0.000100 loss_class: 0.286949 loss_bbox: 0.055454 loss_giou: 0.190682 loss_class_aux: 2.113296 loss_bbox_aux: 0.470799 loss_giou_aux: 1.391323 loss_class_dn: 0.269568 loss_bbox_dn: 0.063868 loss_giou_dn: 0.197193 loss_class_aux_dn: 1.500865 loss_bbox_aux_dn: 0.419591 loss_giou_aux_dn: 1.210713 loss: 8.089314 eta: 2:08:56 batch_cost: 1.6372 data_cost: 0.9841 ips: 12.2160 images/s
+[05/28 00:54:07] ppdet.engine INFO: Epoch: [13] [140/283] learning_rate: 0.000100 loss_class: 0.269516 loss_bbox: 0.058066 loss_giou: 0.174448 loss_class_aux: 1.975694 loss_bbox_aux: 0.450153 loss_giou_aux: 1.292551 loss_class_dn: 0.258915 loss_bbox_dn: 0.061934 loss_giou_dn: 0.177421 loss_class_aux_dn: 1.474880 loss_bbox_aux_dn: 0.399229 loss_giou_aux_dn: 1.155671 loss: 7.881850 eta: 2:08:22 batch_cost: 1.6094 data_cost: 0.9427 ips: 12.4269 images/s
+[05/28 00:54:38] ppdet.engine INFO: Epoch: [13] [160/283] learning_rate: 0.000100 loss_class: 0.278310 loss_bbox: 0.059935 loss_giou: 0.195474 loss_class_aux: 2.013712 loss_bbox_aux: 0.429727 loss_giou_aux: 1.328236 loss_class_dn: 0.261837 loss_bbox_dn: 0.061450 loss_giou_dn: 0.195769 loss_class_aux_dn: 1.453797 loss_bbox_aux_dn: 0.378339 loss_giou_aux_dn: 1.172027 loss: 7.805264 eta: 2:07:46 batch_cost: 1.5125 data_cost: 0.8662 ips: 13.2228 images/s
+[05/28 00:55:17] ppdet.engine INFO: Epoch: [13] [180/283] learning_rate: 0.000100 loss_class: 0.278804 loss_bbox: 0.058918 loss_giou: 0.174867 loss_class_aux: 2.046716 loss_bbox_aux: 0.446880 loss_giou_aux: 1.297855 loss_class_dn: 0.258313 loss_bbox_dn: 0.061594 loss_giou_dn: 0.179414 loss_class_aux_dn: 1.456491 loss_bbox_aux_dn: 0.420551 loss_giou_aux_dn: 1.154668 loss: 7.918866 eta: 2:07:19 batch_cost: 1.8822 data_cost: 1.2482 ips: 10.6258 images/s
+[05/28 00:55:48] ppdet.engine INFO: Epoch: [13] [200/283] learning_rate: 0.000100 loss_class: 0.283877 loss_bbox: 0.069285 loss_giou: 0.187918 loss_class_aux: 2.053333 loss_bbox_aux: 0.518596 loss_giou_aux: 1.321354 loss_class_dn: 0.261404 loss_bbox_dn: 0.069126 loss_giou_dn: 0.189660 loss_class_aux_dn: 1.456691 loss_bbox_aux_dn: 0.426798 loss_giou_aux_dn: 1.151240 loss: 7.955437 eta: 2:06:42 batch_cost: 1.4795 data_cost: 0.8209 ips: 13.5181 images/s
+[05/28 00:56:19] ppdet.engine INFO: Epoch: [13] [220/283] learning_rate: 0.000100 loss_class: 0.269346 loss_bbox: 0.070964 loss_giou: 0.178995 loss_class_aux: 1.996430 loss_bbox_aux: 0.509297 loss_giou_aux: 1.267300 loss_class_dn: 0.251655 loss_bbox_dn: 0.068326 loss_giou_dn: 0.179469 loss_class_aux_dn: 1.447780 loss_bbox_aux_dn: 0.443694 loss_giou_aux_dn: 1.133684 loss: 7.874199 eta: 2:06:06 batch_cost: 1.5165 data_cost: 0.8065 ips: 13.1883 images/s
+[05/28 00:56:52] ppdet.engine INFO: Epoch: [13] [240/283] learning_rate: 0.000100 loss_class: 0.290828 loss_bbox: 0.059086 loss_giou: 0.179749 loss_class_aux: 2.055954 loss_bbox_aux: 0.438821 loss_giou_aux: 1.270605 loss_class_dn: 0.256899 loss_bbox_dn: 0.060293 loss_giou_dn: 0.189076 loss_class_aux_dn: 1.466619 loss_bbox_aux_dn: 0.403006 loss_giou_aux_dn: 1.175957 loss: 8.069687 eta: 2:05:32 batch_cost: 1.6032 data_cost: 0.9511 ips: 12.4753 images/s
+[05/28 00:57:27] ppdet.engine INFO: Epoch: [13] [260/283] learning_rate: 0.000100 loss_class: 0.267768 loss_bbox: 0.056865 loss_giou: 0.168076 loss_class_aux: 1.990573 loss_bbox_aux: 0.437972 loss_giou_aux: 1.269217 loss_class_dn: 0.252992 loss_bbox_dn: 0.062113 loss_giou_dn: 0.169643 loss_class_aux_dn: 1.461442 loss_bbox_aux_dn: 0.419367 loss_giou_aux_dn: 1.174695 loss: 7.757117 eta: 2:05:00 batch_cost: 1.6849 data_cost: 0.9689 ips: 11.8700 images/s
+[05/28 00:58:01] ppdet.engine INFO: Epoch: [13] [280/283] learning_rate: 0.000100 loss_class: 0.274916 loss_bbox: 0.059490 loss_giou: 0.177513 loss_class_aux: 2.068801 loss_bbox_aux: 0.491918 loss_giou_aux: 1.330646 loss_class_dn: 0.264294 loss_bbox_dn: 0.067139 loss_giou_dn: 0.181797 loss_class_aux_dn: 1.476088 loss_bbox_aux_dn: 0.433721 loss_giou_aux_dn: 1.169303 loss: 8.094171 eta: 2:04:27 batch_cost: 1.6864 data_cost: 0.9830 ips: 11.8595 images/s
+[05/28 00:58:09] ppdet.utils.checkpoint INFO: Save checkpoint: checkpoints/rtdetr_hgnetv2_x_6x_coco
+[05/28 00:58:09] ppdet.engine INFO: Eval iter: 0
+[05/28 00:58:31] ppdet.metrics.metrics INFO: The bbox result is saved to bbox.json.
+loading annotations into memory...
+Done (t=0.01s)
+creating index...
+index created!
+[05/28 00:58:31] ppdet.metrics.coco_utils INFO: Start evaluate...
+Loading and preparing results...
+DONE (t=2.07s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *bbox*
+DONE (t=3.32s).
+Accumulating evaluation results...
+DONE (t=0.55s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.867
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.999
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.979
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.795
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.872
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.434
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.898
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.918
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.862
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.921
+[05/28 00:58:37] ppdet.engine INFO: Total sample number: 800, average FPS: 45.35111017017922
+[05/28 00:58:37] ppdet.engine INFO: Best test bbox ap is 0.874.
+[05/28 00:58:38] ppdet.engine INFO: Epoch: [14] [  0/283] learning_rate: 0.000100 loss_class: 0.274916 loss_bbox: 0.060667 loss_giou: 0.181589 loss_class_aux: 2.120789 loss_bbox_aux: 0.498739 loss_giou_aux: 1.335955 loss_class_dn: 0.262961 loss_bbox_dn: 0.067704 loss_giou_dn: 0.176736 loss_class_aux_dn: 1.478470 loss_bbox_aux_dn: 0.450679 loss_giou_aux_dn: 1.179265 loss: 8.183420 eta: 2:04:22 batch_cost: 1.6524 data_cost: 0.9898 ips: 12.1038 images/s
+[05/28 00:59:06] ppdet.engine INFO: Epoch: [14] [ 20/283] learning_rate: 0.000100 loss_class: 0.290082 loss_bbox: 0.057661 loss_giou: 0.193854 loss_class_aux: 2.025457 loss_bbox_aux: 0.443068 loss_giou_aux: 1.414270 loss_class_dn: 0.258021 loss_bbox_dn: 0.057449 loss_giou_dn: 0.193585 loss_class_aux_dn: 1.447699 loss_bbox_aux_dn: 0.383008 loss_giou_aux_dn: 1.237724 loss: 8.096889 eta: 2:03:41 batch_cost: 1.3208 data_cost: 0.6770 ips: 15.1421 images/s
+[05/28 00:59:41] ppdet.engine INFO: Epoch: [14] [ 40/283] learning_rate: 0.000100 loss_class: 0.276469 loss_bbox: 0.059582 loss_giou: 0.170652 loss_class_aux: 2.025301 loss_bbox_aux: 0.451526 loss_giou_aux: 1.230361 loss_class_dn: 0.257218 loss_bbox_dn: 0.064533 loss_giou_dn: 0.173213 loss_class_aux_dn: 1.444774 loss_bbox_aux_dn: 0.421823 loss_giou_aux_dn: 1.119163 loss: 7.658912 eta: 2:03:09 batch_cost: 1.6699 data_cost: 0.9587 ips: 11.9768 images/s

@@ -12,11 +12,12 @@ import numpy as np
 import evaluate
 
 model_name = 'facebook/wav2vec2-conformer-rel-pos-large-960h-ft'
-checkpoint_name = 'checkpoints/checkpoint-750/'
+checkpoint_name = 'wav2vec2-checkpoints-audiomentations-from2337/checkpoint-1781 lb 0.01351/'
 
 processor = Wav2Vec2Processor.from_pretrained(model_name)
 
-ds = load_dataset('audiofolder', data_dir='imda_truncated_edited', split='train')
+ds = load_dataset('audiofolder', data_dir='train', split='train')
+
 ds = ds.train_test_split(test_size=0.2, shuffle=True)
 
 def prepare_dataset(batch):
@@ -26,14 +27,59 @@ def prepare_dataset(batch):
     from transformers import Wav2Vec2Processor
     processor = Wav2Vec2Processor.from_pretrained(model_name)
 
-    batch["input_values"] = [processor(audio["array"], sampling_rate=16000).input_values for audio in batch["audio"]]
-    batch["input_length"] = [len(b[0]) for b in batch["input_values"]]
+    # input_values refers to 
+    # input_length is the length of the input_values. 
+    # input_length is needed for 1) maximum length padding, 2) group by length
+    # length is the key name that is used for Group By Length
+    # labels is the tokenized text annotation
+
+    batch['input_values'] = [audio["array"] for audio in batch['audio']] 
+    # batch["input_values"] = [processor(audio["array"], sampling_rate=16000).input_values for audio in batch["audio"]]
+    batch["input_length"] = [len(audio) for audio in batch["input_values"]]
+    # batch['input_length'] = [len(b[0]) for b in batch["input_values"]]
     batch['length'] = batch["input_length"]
     batch["labels"] = processor(text=batch["annotation"]).input_ids
 
     return batch
 
 ds = ds.map(prepare_dataset, num_proc=8, batched=True, batch_size=256)
+
+from audiomentations import Compose, HighShelfFilter, LowShelfFilter, TimeStretch, BandPassFilter
+# High Shelf Filter + Low Shelf Filter
+# Subtle Time Strech (aka Speed Perturbation) of Entire Audio
+# Frequency Band Pass
+
+def augment_audio(batch):
+    # batch['input_values']  -> (BATCH, variable AUDIO_LENGTH)
+    augmented_audios = []
+    # print(batch.keys())
+    # print(batch)
+    # exit()
+
+    if 'input_values' not in batch:
+        return batch
+    for sample in batch['input_values']:
+        sample = np.array(sample)
+
+        augment = Compose([
+            HighShelfFilter(max_gain_db=6.0, p=0.3),
+            LowShelfFilter(max_gain_db=6.0, p=0.3),
+            TimeStretch(min_rate=0.9, max_rate=1.1, p=0.2),
+            BandPassFilter(p=0.3)
+        ])
+
+        augmented_audio = augment(samples=sample, sample_rate=16000)
+
+        standardized_augmented_audio = processor(audio=augmented_audio, sampling_rate=16000).input_values
+
+        augmented_audios.append(standardized_augmented_audio)
+
+    batch['input_values'] = augmented_audios
+    batch['input_length'] = [len(b[0]) for b in batch["input_values"]]
+    # batch['length'] = batch['input_length']
+    return batch
+
+ds.set_transform(augment_audio, columns=['audio', 'annotation', 'input_values', 'input_length', 'length', 'labels'])
 
 @dataclass
 class DataCollatorCTCWithPadding:
@@ -43,7 +89,12 @@ class DataCollatorCTCWithPadding:
     def __call__(self, features: List[Dict[str, Union[List[int], torch.Tensor]]]) -> Dict[str, torch.Tensor]:
         # split inputs and labels since they have to be of different lengths and need
         # different padding methods
+        # print('im in tha collator')
+        # print(features)
+        # input_features contains a batch of standardized audio arrays
         input_features = [{"input_values": feature["input_values"][0]} for feature in features]
+        
+        # label_features contains a batch of tokenized text annotations
         label_features = [{"input_ids": feature["labels"]} for feature in features]
 
         batch = self.processor.pad(input_features, padding=self.padding, return_tensors="pt")
@@ -75,27 +126,27 @@ model = Wav2Vec2ConformerForCTC.from_pretrained(
     model_name,
     ctc_loss_reduction="mean",
     pad_token_id=processor.tokenizer.pad_token_id,
-    mask_time_prob=0.7,  # 0.05
+    mask_time_prob=0.0,  # 0.05
     mask_time_length=10, # 10
-    mask_feature_prob=0.7, # 0
+    mask_feature_prob=0.3, # 0
     mask_feature_length=10, # 10
 )
 
 per_gpu_bs = 4
-effective_bs = 384
+effective_bs = 32
 training_args = TrainingArguments(
-    output_dir="wav2vec2-checkpoints-imda-bs=384-lr=1e-5",
+    output_dir="wav2vec2-checkpoints-audiomentations-from2337",
     overwrite_output_dir =True,
     per_device_train_batch_size=per_gpu_bs,
     gradient_accumulation_steps=math.ceil(effective_bs/per_gpu_bs),
-    learning_rate=1e-5,
-    num_train_epochs=60,
+    learning_rate=1e-6,
+    num_train_epochs=20,
     gradient_checkpointing=False,
     fp16=True,
     # bf16=True,  # for A100
     fp16_full_eval=True,
     # bf16_full_eval=True,  # for A100
-    group_by_length=True,  # slows down
+    group_by_length=True,
     evaluation_strategy="epoch",
     save_strategy='epoch',  # epoch
     save_safetensors=True,
@@ -108,15 +159,15 @@ training_args = TrainingArguments(
     load_best_model_at_end=True,  # True
     adam_beta1=0.9,
     adam_beta2=0.98,  # follow fairseq fintuning config
-
-    warmup_ratio=0., # check whether IMDA data works first
-
-#    warmup_ratio=0.22, # follow Ranger21
+    warmup_ratio=0.1, # follow Ranger21
     weight_decay=1e-4,  # follow Ranger21
     metric_for_best_model="wer",
     greater_is_better=False,
     report_to=['tensorboard'],
-    dataloader_num_workers=8 if os.name != 'nt' else 1) # since num threads is 16
+    remove_unused_columns=False,
+    dataloader_num_workers=8 if os.name != 'nt' else 1,
+    # resume_from_checkpoint=checkpoint_name
+) # since num threads is 16
 
 class CTCTrainer(Trainer):
     def training_step(self, model: torch.nn.Module, inputs: Dict[str, Union[torch.Tensor, Any]]) -> torch.Tensor:
@@ -176,6 +227,7 @@ trainer = CTCTrainer(
 if os.name != 'nt':  # windows does not support torch.compile yet
     # pass
     trainer.model_wrapped, trainer.optimizer, trainer.lr_scheduler = accelerator.prepare(trainer.model_wrapped, trainer.optimizer, trainer.lr_scheduler)
+# trainer.train(checkpoint_name)  # resume from checkpoint
 trainer.train()
 if os.name != 'nt':
     accelerator.wait_for_everyone()

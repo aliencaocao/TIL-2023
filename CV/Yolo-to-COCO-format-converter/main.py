@@ -1,12 +1,15 @@
-import argparse
-import json
 from pathlib import Path
 
+from create_annotations import (
+    create_image_annotation,
+    create_annotation_from_yolo_format,
+    coco_format,
+)
 import cv2
-import imagesize
+import argparse
+import json
 import numpy as np
-
-from create_annotations import (coco_format, create_annotation_from_yolo_format, create_image_annotation)
+import imagesize
 
 #################################################
 # Change the classes depend on your own dataset.#
@@ -15,9 +18,7 @@ from create_annotations import (coco_format, create_annotation_from_yolo_format,
 
 YOLO_DARKNET_SUB_DIR = "relabelled"
 
-classes = [
-    "plushie",
-]
+classes = ["plushie"]
 
 
 def get_images_info_and_annotations(opt):
@@ -49,9 +50,9 @@ def get_images_info_and_annotations(opt):
 
         label_file_name = f"{file_path.stem}.txt"
         if opt.yolo_subdir:
-            annotations_path = file_path.parent / YOLO_DARKNET_SUB_DIR / label_file_name
+            annotations_path = file_path.parent.parent / YOLO_DARKNET_SUB_DIR / label_file_name
         else:
-            annotations_path = file_path.parent / label_file_name
+            annotations_path = file_path.parent.parent / label_file_name
 
         if not annotations_path.exists():
             continue  # The image may not have any applicable annotation txt file.
@@ -198,7 +199,7 @@ def get_args():
 
 def main(opt):
     output_name = opt.output
-    output_path = output_name
+    output_path = "output/" + output_name
 
     print("Start!")
 
@@ -228,3 +229,4 @@ def main(opt):
 if __name__ == "__main__":
     options = get_args()
     main(options)
+

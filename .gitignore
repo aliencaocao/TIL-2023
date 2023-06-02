@@ -3,6 +3,7 @@
 *.onnx
 *.pt
 *.pth
+*.ckpt
 *.bin
 *.trt
 *.safetensors
@@ -14,7 +15,7 @@ CV/RT-DETR/output_inference
 ASR/huggingface
 ASR/checkpoints
 ASR/wav2vec2-checkpoints*
-ASR/whisper-checkpoints
+ASR/whisper-checkpoints*
 ASR/onnx_model
 ASR/musan_noise
 ASR/IMDA
@@ -29,3 +30,4 @@ ASR/train_augmented_without_musan
 ASR/test
 ASR/train
 ASR/model
+CV/SOLIDER-REID/log_currentbest*

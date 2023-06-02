@@ -1,20 +1,16 @@
 # TRAINING
 python train.py --config_file TIL.yml MODEL.PRETRAIN_CHOICE 'self' MODEL.PRETRAIN_PATH 'swin_base_msmt17.pth' MODEL.SEMANTIC_WEIGHT 0.1
 
-# PLOTTING THE VAL SET SEPARATION CHART
-python plot_val_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log/trial 1/transformer_1_map0.9286209637078827.pth' MODEL.SEMANTIC_WEIGHT 0.2
-
-python plot_val_separation_chart.py --config_file TIL.yml TEST.WEIGHT 'log_SGD_continue_1e-4/transformer_61_map0.9101428766973926_acc0.5153370499610901.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR 'log_SGD_continue_1e-4'
+python train.py --config_file TIL.yml MODEL.PRETRAIN_CHOICE 'self' MODEL.PRETRAIN_PATH 'log_SGD_500epoch_5e-3LR_expanded/transformer_189_map0.936082144024757_acc0.8284107446670532.pth' MODEL.SEMANTIC_WEIGHT 0.1
 
 
-# PLOTTING THE TEST SET SEPARATION CHART
-python plot_test_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log_SGD_continue_1e-4/transformer_29_map0.9159278553764464_acc0.5036038160324097.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR './log_SGD_continue_1e-4/' DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test_old/'
+python plot_val_separation_chart.py --config_file TIL.yml  MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR ../RT-DETR/dataset/reid/
+
+python plot_test_separation_chart.py --config_file TIL.yml MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR ../RT-DETR/dataset/reid/test_old
+
+python infer.py --batched True --config_file TIL.yml MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR ../RT-DETR/dataset/reid/test_old
 
 
-# INFERENCE
-python infer.py --config_file TIL.yml TEST.WEIGHT 'log\trial 1\transformer_1_map0.9286209637078827.pth' MODEL.SEMANTIC_WEIGHT 0.2 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test/'
+# Visualization of REID preds
 
-python infer.py --config_file TIL.yml TEST.WEIGHT './log_SGD_continue_1e-4/transformer_29_map0.9159278553764464_acc0.5036038160324097.pth' MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test/' OUTPUT_DIR './log_SGD_continue_1e-4/'
-
-# Batched Inferenece
-python infer.py --config_file TIL.yml --batched True TEST.WEIGHT './log_SGD_continue_1e-4/transformer_29_map0.9159278553764464_acc0.5036038160324097.pth' MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test_old/'
+python inspect_reid_preds.py --suspects_dir="../RT-DETR/dataset/reid/suspects" --test_set_img_dir="../RT-DETR/dataset/test/images" --preds_path="./submissions/wbf_0.88x no aug best conf 0.5 no reid lb 0.306_0.882 manyaug best conf 0.7 no reid lb 0.30378 lb 0.307922 REID lb 0.6693.csv" --output_dir="./log_currentbest669_transformer_29_wbf"
