@@ -4,42 +4,11 @@ python train.py --config_file TIL.yml MODEL.PRETRAIN_CHOICE 'self' MODEL.PRETRAI
 python train.py --config_file TIL.yml MODEL.PRETRAIN_CHOICE 'self' MODEL.PRETRAIN_PATH 'log_SGD_500epoch_5e-3LR_expanded/transformer_189_map0.936082144024757_acc0.8284107446670532.pth' MODEL.SEMANTIC_WEIGHT 0.1
 
 
-# PLOTTING THE VAL SET SEPARATION CHART
-python plot_val_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log/trial 1/transformer_1_map0.9286209637078827.pth' MODEL.SEMANTIC_WEIGHT 0.2 
+python plot_val_separation_chart.py --config_file TIL.yml  MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR ../RT-DETR/dataset/reid/
 
-python plot_val_separation_chart.py --config_file TIL.yml TEST.WEIGHT 'log_SGD_continue_1e-4/transformer_61_map0.9101428766973926_acc0.5153370499610901.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR 'log_SGD_continue_1e-4'
+python plot_test_separation_chart.py --config_file TIL.yml MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR ../RT-DETR/dataset/reid/test_old
 
-python plot_val_separation_chart.py --config_file TIL.yml TEST.WEIGHT 'log_SGD_500epoch_5e-3LR_expanded_autoaugment/transformer_91_map0.9513378015462323_acc0.5185467600822449.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR 'log_SGD_500epoch_5e-3LR_expanded_autoaugment' DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/'
-
-
-python plot_val_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR 'log_SGD_500epoch_continue_1e-4LR_expanded/21/'
-
-# PLOTTING THE TEST SET SEPARATION CHART
-python plot_test_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log_SGD_continue_1e-4/transformer_29_map0.9159278553764464_acc0.5036038160324097.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR './log_SGD_continue_1e-4/' DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test_old/'
-
-python plot_test_separation_chart.py --config_file TIL.yml TEST.WEIGHT './log_SGD_500epoch_continue_1e-4LR_expanded/transformer_14_map0.9432788816357427_acc0.8542302250862122.pth' MODEL.SEMANTIC_WEIGHT 0.1 OUTPUT_DIR './log_SGD_500epoch_continue_1e-4LR_expanded/14_test' DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test_old/'
-
-
-
-# INFERENCE
-python infer.py --config_file TIL.yml TEST.WEIGHT 'log\trial 1\transformer_1_map0.9286209637078827.pth' MODEL.SEMANTIC_WEIGHT 0.2 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test/'
-
-python infer.py --config_file TIL.yml TEST.WEIGHT './log_SGD_continue_1e-4/transformer_29_map0.9159278553764464_acc0.5036038160324097.pth' MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test/' OUTPUT_DIR './testing_123/'
-
-# Batched Inferenece
-python infer.py --config_file TIL.yml --batched True TEST.WEIGHT './log_SGD_continue_1e-4/transformer_29_map0.9159278553764464_acc0.5036038160324097.pth' MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test_old/'
-
-
-
-14 val
-python infer.py --config_file TIL.yml --batched True TEST.WEIGHT './log_SGD_500epoch_continue_1e-4LR_expanded/transformer_14_map0.9432788816357427_acc0.8542302250862122.pth' MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test_old/' TEST.THRESHOLD 0.8348318458578012 OUTPUT_DIR './log_SGD_500epoch_continue_1e-4LR_expanded/14_val'
-
-21 val
-python infer.py --config_file TIL.yml --batched True TEST.WEIGHT './log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth' MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test_old/' TEST.THRESHOLD 0.8341062655486188 OUTPUT_DIR './log_SGD_500epoch_continue_1e-4LR_expanded/21_val'
-
-14 test
-python infer.py --config_file TIL.yml --batched True TEST.WEIGHT './log_SGD_500epoch_continue_1e-4LR_expanded/transformer_14_map0.9432788816357427_acc0.8542302250862122.pth' MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR '../RT-DETR/dataset/reid/test_old/' TEST.THRESHOLD 0.8009485408629474 OUTPUT_DIR './log_SGD_500epoch_continue_1e-4LR_expanded/14_test'
-
+python infer.py --batched True --config_file TIL.yml MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR ../RT-DETR/dataset/reid/test_old
 
 
 # Visualization of REID preds
