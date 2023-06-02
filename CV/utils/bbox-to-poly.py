@@ -17,8 +17,8 @@ def add_segmentation(ann_file):
     return json_data
 
 ann_file_paths = [
-    "/home/alc/TIL-2023/CV/RT-DETR/dataset/train/train.json",
-    "/home/alc/TIL-2023/CV/RT-DETR/dataset/val/val.json",
+    "../RT-DETR/dataset/train/train.json",
+    "../RT-DETR/dataset/val/val.json",
 ]
 
 for ann_file in ann_file_paths:

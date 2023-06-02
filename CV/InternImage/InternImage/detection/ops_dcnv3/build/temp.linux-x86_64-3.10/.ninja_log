@@ -1,4 +1,0 @@
-# ninja log v5
-0	3680	1685597514567799066	/home/alc/TIL-2023/CV/InternImage/InternImage/detection/ops_dcnv3/build/temp.linux-x86_64-3.10/home/alc/TIL-2023/CV/InternImage/InternImage/detection/ops_dcnv3/src/cpu/dcnv3_cpu.o	caba00236a3d9559
-0	11626	1685597522503736363	/home/alc/TIL-2023/CV/InternImage/InternImage/detection/ops_dcnv3/build/temp.linux-x86_64-3.10/home/alc/TIL-2023/CV/InternImage/InternImage/detection/ops_dcnv3/src/vision.o	2c5deed50c3785d6
-0	25705	1685597536591622783	/home/alc/TIL-2023/CV/InternImage/InternImage/detection/ops_dcnv3/build/temp.linux-x86_64-3.10/home/alc/TIL-2023/CV/InternImage/InternImage/detection/ops_dcnv3/src/cuda/dcnv3_cuda.o	d5dcc137e0787c77

@@ -7,7 +7,7 @@ from pathlib import Path
 from PIL import Image
 from tqdm import tqdm
 
-pred_path = "../RT-DETR/submissions/wbf_0.88x no aug best conf 0.5 no reid lb 0.306_0.882 manyaug best conf 0.7 no reid lb 0.30378 lb 0.307922.csv"
+pred_path = "../InternImage/submissions/epoch 12 conf 0.99.csv"
 preds_csv_path = Path(pred_path)
 test_imgs_path = Path("../RT-DETR/dataset/test/images/")
 output_path = Path("../RT-DETR/dataset/reid/test_old/")

@@ -3,6 +3,7 @@
 *.onnx
 *.pt
 *.pth
+*.ckpt
 *.bin
 *.trt
 *.safetensors
