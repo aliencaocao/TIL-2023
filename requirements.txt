@@ -32,5 +32,4 @@ timm
 mmcv-full
 yacs
 language_tool_python
-ensemble-boxes
 audiomentations
