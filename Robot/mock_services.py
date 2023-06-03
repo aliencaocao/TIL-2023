@@ -45,7 +45,7 @@ class NLPService:
     This is provided for testing purposes and should be replaced by your actual service implementation.
     '''
 
-    def __init__(self, model_dir: str):
+    def __init__(self, preprocessor_dir: str = 'wav2vec2-conformer', model_dir: str = 'wav2vec2-conformer.trt'):
         '''
         Parameters
         ----------

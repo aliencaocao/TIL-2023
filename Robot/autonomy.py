@@ -10,22 +10,32 @@ SIMULATOR_MODE = True  # Change to False for real robomaster
 if SIMULATOR_MODE:
     from tilsdk.mock_robomaster.robot import Robot  # Use this for the simulator
     from mock_services import CVService, NLPService
+    from nlp_service import NLPService
 else:
     from robomaster.robot import Robot  # Use this for real robot
     from cv_service import CVService
     from nlp_service import NLPService
 
 # Setup logging in a nice readable format
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(level=logging.DEBUG,
                     format='[%(levelname)s][%(asctime)s][%(name)s]: %(message)s',
                     datefmt='%H:%M:%S')
+formatter = logging.Formatter(fmt='[%(levelname)s][%(asctime)s][%(name)s]: %(message)s', datefmt='%H:%M:%S')
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
+loggers = [logging.getLogger(name) for name in [__name__, 'NLPService', 'CVService']]
+logger = loggers[0]  # the main one
+logger.name = 'Main'
+for l in loggers:
+    l.propagate = False
+    l.addHandler(handler)
+    l.setLevel(logging.DEBUG)
 
-# Define config variables in an easily accessible location
-# You may consider using a config file
-NLP_PREPROCESSOR_DIR = 'finals_audio_model'
-NLP_MODEL_DIR = 'model.onnx'
-CV_CONFIG_DIR = 'vfnet.py'
-CV_MODEL_DIR = 'epoch_13.pth'
+# TODO: move the models to the robot folder for finals
+NLP_PREPROCESSOR_DIR = '../ASR/wav2vec2-conformer'
+NLP_MODEL_DIR = '../ASR/wav2vec2-conformer.trt'
+CV_CONFIG_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py'
+CV_MODEL_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/InternImage-L epoch_12 stripped.pth'
 prev_img_rpt_time = 0  # In global scope to allow convenient usage of global keyword in do_cv()
 
 
@@ -38,14 +48,14 @@ def main():
     # Initialize services
     if SIMULATOR_MODE:
         cv_service = CVService(model_dir=CV_MODEL_DIR)
-        nlp_service = NLPService(model_dir=NLP_MODEL_DIR)
+        nlp_service = NLPService(preprocessor_dir=NLP_PREPROCESSOR_DIR, model_dir=NLP_MODEL_DIR)
         loc_service = LocalizationService(host='localhost', port=5566)  # for simulator
         rep_service = ReportingService(host='localhost', port=5566)  # only avail on simulator
     else:
         cv_service = CVService(config_file=CV_CONFIG_DIR, checkpoint_file=CV_MODEL_DIR)
         nlp_service = NLPService(preprocessor_dir=NLP_PREPROCESSOR_DIR, model_dir=NLP_MODEL_DIR)
         loc_service = LocalizationService(host='192.168.20.56', port=5521)  # for real robot
-        # rep_service = ??? Lost the ReportingService config for the real robot
+        # No rep_service needed for real robot
 
     # Initialize variables
     seen_clues = set()
@@ -82,11 +92,10 @@ def main():
             # Submit targets
             if targets:
                 prev_img_rpt_time = time.time()
-                rpt = rep_service.report(pose, img, targets)
-                logging.getLogger('Main').info('{} targets detected.'.format(len(targets)))
+                rep_service.report(pose, img, targets)
+                logger.info('{} targets detected.'.format(len(targets)))
 
-                # Movement-related config and controls
-
+    # Movement-related config and controls
     REACHED_THRESHOLD_M = 0.3  # TODO: Participant may tune, in meters
     ANGLE_THRESHOLD_DEG = 25.0  # TODO: Participant may tune.
     tracker = PIDController(Kp=(0.35, 0.2), Ki=(0.1, 0.0), Kd=(0, 0))
@@ -143,7 +152,7 @@ def main():
         if clues:
             new_lois, maybe_useful_lois = nlp_service.locations_from_clues(clues)  # new locations of interest 
             if len(new_lois):
-                logging.getLogger('Main').info('New location(s) of interest: {}.'.format(new_lois))
+                logger.info('New location(s) of interest: {}.'.format(new_lois))
             update_locations(lois, new_lois)
             update_locations(maybe_lois, maybe_useful_lois)
             seen_clues.update([c.clue_id for c in clues])
@@ -157,14 +166,14 @@ def main():
             # Firstly visit those deemed fake clues by NLP service (incase NLP service was wrong)
             # Then explore the arena
             if len(lois) == 0:
-                logging.getLogger('Main').info('No more locations of interest.')
+                logger.info('No more locations of interest.')
                 if len(maybe_lois):
-                    logging.getLogger('Main').info('Getting first of {} maybe_lois.'.format(len(maybe_lois)))
+                    logger.info('Getting first of {} maybe_lois.'.format(len(maybe_lois)))
                     maybe_lois.sort(key=lambda l: euclidean_distance(l, pose), reverse=True)
                     nearest_maybe = maybe_lois.pop()
                     lois.append(nearest_maybe)
                 else:
-                    logging.getLogger('Main').info('Exploring the arena')
+                    logger.info('Exploring the arena')
                     explore_next = planner.get_explore(pose[:2], debug=False)  # Debug plt is currently broken
                     print("Expl next", explore_next)
                     if explore_next is None:
@@ -175,19 +184,19 @@ def main():
 
             # Get new LOI
             curr_loi = lois.pop()
-            logging.getLogger('Main').info('Current LOI set to: {}'.format(curr_loi))
+            logger.info('Current LOI set to: {}'.format(curr_loi))
 
             # Plan a path to the new LOI
-            logging.getLogger('Main').info('Planning path to: {}'.format(curr_loi))
+            logger.info('Planning path to: {}'.format(curr_loi))
 
             path = planner.plan(pose[:2], curr_loi, display=True)
             if path is None:
-                logging.getLogger('Main').info('No possible path found, location skipped')
+                logger.info('No possible path found, location skipped')
                 curr_loi = None
             else:
                 path.reverse()  # reverse so closest wp is last so that pop() is cheap , waypoint
                 curr_wp = None
-                logging.getLogger('Main').info('Path planned.')
+                logger.info('Path planned.')
         else:
             # There is a current LOI objective.
             # Continue with navigation along current path.
@@ -316,7 +325,7 @@ def main():
                 continue
 
     robot.chassis.drive_speed(x=0.0, y=0.0, z=0.0)  # set stop for safety
-    logging.getLogger('Main').info('Mission Terminated.')
+    logger.info('Mission Terminated.')
 
 
 if __name__ == '__main__':
