@@ -26,8 +26,10 @@ class NLPService:
         '''
         Parameters
         ----------
+        preprocessor_dir : str
+            Path of preprocessor folder.
         model_dir : str
-            Path of model file to load.
+            Path of model weights.
         '''
         logger.info('Initializing NLP service...')
         logger.debug(f'Loading Wav2Vec2Processor from {preprocessor_dir}...')

@@ -10,15 +10,19 @@ class CVService:
     This is provided for testing purposes and should be replaced by your actual service implementation.
     '''
 
-    def __init__(self, model_dir: str):
+    def __init__(self, config: str, model: str, reid_model: str, reid_config: str):
         '''
         Parameters
         ----------
-        model_dir : str
-            Path of model file to load.
+        config : str
+            Path to mmdet config file.
+        model : str
+            Path to model checkpoint.
+        reid_model : str
+            Path to REID model checkpoint.
+        reid_config : str
+            Path to REID model yml config.
         '''
-        # Does nothing.
-        pass
 
     def targets_from_image(self, img: Any) -> List[DetectedObject]:
         '''Process image and return targets.
@@ -40,9 +44,13 @@ class CVService:
 
 
 class NLPService:
-    '''Mock NLP Service.
-    
-    This is provided for testing purposes and should be replaced by your actual service implementation.
+    '''
+    Parameters
+    ----------
+    preprocessor_dir : str
+        Path of preprocessor folder.
+    model_dir : str
+        Path of model weights.
     '''
 
     def __init__(self, preprocessor_dir: str = 'wav2vec2-conformer', model_dir: str = 'wav2vec2-conformer.trt'):

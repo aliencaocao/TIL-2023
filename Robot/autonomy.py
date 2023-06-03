@@ -10,7 +10,6 @@ SIMULATOR_MODE = True  # Change to False for real robomaster
 if SIMULATOR_MODE:
     from tilsdk.mock_robomaster.robot import Robot  # Use this for the simulator
     from mock_services import CVService, NLPService
-    from nlp_service import NLPService
 else:
     from robomaster.robot import Robot  # Use this for real robot
     from cv_service import CVService
@@ -34,8 +33,10 @@ for l in loggers:
 # TODO: move the models to the robot folder for finals
 NLP_PREPROCESSOR_DIR = '../ASR/wav2vec2-conformer'
 NLP_MODEL_DIR = '../ASR/wav2vec2-conformer.trt'
-CV_CONFIG_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py'
-CV_MODEL_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/InternImage-L epoch_12 stripped.pth'
+OD_CONFIG_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py'
+OD_MODEL_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/InternImage-L epoch_12 stripped.pth'
+REID_MODEL_DIR = '../CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth'
+REID_CONFIG_DIR = '../CV/SOLIDER-REID/TIL.yml'
 prev_img_rpt_time = 0  # In global scope to allow convenient usage of global keyword in do_cv()
 
 
@@ -47,13 +48,13 @@ def main():
 
     # Initialize services
     if SIMULATOR_MODE:
-        cv_service = CVService(model_dir=CV_MODEL_DIR)
-        nlp_service = NLPService(preprocessor_dir=NLP_PREPROCESSOR_DIR, model_dir=NLP_MODEL_DIR)
+        cv_service = CVService(CV_CONFIG_DIR, CV_MODEL_DIR, REID_MODEL_DIR, REID_CONFIG_DIR)
+        nlp_service = NLPService(NLP_PREPROCESSOR_DIR, NLP_MODEL_DIR)
         loc_service = LocalizationService(host='localhost', port=5566)  # for simulator
         rep_service = ReportingService(host='localhost', port=5566)  # only avail on simulator
     else:
-        cv_service = CVService(config_file=CV_CONFIG_DIR, checkpoint_file=CV_MODEL_DIR)
-        nlp_service = NLPService(preprocessor_dir=NLP_PREPROCESSOR_DIR, model_dir=NLP_MODEL_DIR)
+        cv_service = CVService(CV_CONFIG_DIR, CV_MODEL_DIR, REID_MODEL_DIR, REID_CONFIG_DIR)
+        nlp_service = NLPService(NLP_PREPROCESSOR_DIR, NLP_MODEL_DIR)
         loc_service = LocalizationService(host='192.168.20.56', port=5521)  # for real robot
         # No rep_service needed for real robot
 
