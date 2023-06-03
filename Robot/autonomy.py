@@ -1,18 +1,11 @@
-import os
-import sys
-
-os.environ['PYTHONPATH'] = os.environ.get('PYTHONPATH', '') + ':' + os.path.join(os.getcwd(), 'site-packages')
-sys.path.insert(0, os.path.join(os.getcwd(), 'site-packages'))
-print(sys.path)
-
 import time
-import logging
-from typing import List
+
 from tilsdk import *  # import the SDK
 from tilsdk.utilities import PIDController, SimpleMovingAverage  # import optional useful things
+
 from planner import MyPlanner
 
-SIMULATOR_MODE = True # Change to False for real robomaster
+SIMULATOR_MODE = True  # Change to False for real robomaster
 
 if SIMULATOR_MODE:
     from tilsdk.mock_robomaster.robot import Robot  # Use this for the simulator
@@ -22,12 +15,10 @@ else:
     from cv_service import CVService
     from nlp_service import NLPService
 
-
 # Setup logging in a nice readable format
 logging.basicConfig(level=logging.INFO,
                     format='[%(levelname)s][%(asctime)s][%(name)s]: %(message)s',
                     datefmt='%H:%M:%S')
-
 
 # Define config variables in an easily accessible location
 # You may consider using a config file
@@ -35,7 +26,7 @@ NLP_PREPROCESSOR_DIR = 'finals_audio_model'
 NLP_MODEL_DIR = 'model.onnx'
 CV_CONFIG_DIR = 'vfnet.py'
 CV_MODEL_DIR = 'epoch_13.pth'
-prev_img_rpt_time = 0 # In global scope to allow convenient usage of global keyword in do_cv()
+prev_img_rpt_time = 0  # In global scope to allow convenient usage of global keyword in do_cv()
 
 
 def main():
@@ -43,7 +34,6 @@ def main():
     robot = Robot()
     robot.initialize(conn_type="sta")
     robot.camera.start_video_stream(display=False, resolution='720p')
-
 
     # Initialize services
     if SIMULATOR_MODE:
@@ -57,7 +47,6 @@ def main():
         loc_service = LocalizationService(host='192.168.20.56', port=5521)  # for real robot
         # rep_service = ??? Lost the ReportingService config for the real robot
 
-
     # Initialize variables
     seen_clues = set()
     curr_loi: RealLocation = None
@@ -67,7 +56,6 @@ def main():
     curr_wp: RealLocation = None
     pose_filter = SimpleMovingAverage(n=10)
     map_: SignedDistanceGrid = loc_service.get_map()
-
 
     # Define helper functions
     # Filter function to exclude clues seen before   
@@ -82,7 +70,7 @@ def main():
                     old.append(loc)
 
     # To run CV inference and report targets found
-    def do_cv(): 
+    def do_cv():
         global prev_img_rpt_time
         # print('pirt',prev_img_rpt_time)
         if not prev_img_rpt_time or time.time() - prev_img_rpt_time >= 1:  # throttle to 1 submission per second, and only read img if necessary
@@ -95,10 +83,10 @@ def main():
             if targets:
                 prev_img_rpt_time = time.time()
                 rpt = rep_service.report(pose, img, targets)
-                logging.getLogger('Main').info('{} targets detected.'.format(len(targets)))    
+                logging.getLogger('Main').info('{} targets detected.'.format(len(targets)))
 
+                # Movement-related config and controls
 
-    # Movement-related config and controls
     REACHED_THRESHOLD_M = 0.3  # TODO: Participant may tune, in meters
     ANGLE_THRESHOLD_DEG = 25.0  # TODO: Participant may tune.
     tracker = PIDController(Kp=(0.35, 0.2), Ki=(0.1, 0.0), Kd=(0, 0))
@@ -113,9 +101,8 @@ def main():
     log_x = []
     log_y = []
     log_time = []
-    stuck_threshold_time_s = 15 #Minimum seconds to be considered stuck
-    stuck_threshold_area_m = 0.15 #Considered stuck if it stays within a 15cm*15cm square
-
+    stuck_threshold_time_s = 15  # Minimum seconds to be considered stuck
+    stuck_threshold_area_m = 0.15  # Considered stuck if it stays within a 15cm*15cm square
 
     # Initialise planner
     # Planner-related config here
@@ -129,9 +116,8 @@ def main():
                         path_opt_max_safe_dist_cm=24,
                         explore_consider_nearest=4,
                         biggrid_size_m=0.8)
-    
 
-    #Start run
+    # Start run
     rep_service.start_run()
 
     # Main loop
@@ -146,8 +132,8 @@ def main():
         if not pose:
             # no new data, continue to next iteration.
             continue
-        
-        #Set current location visit value to 1 if it is not 0. Will not set it to 2 or higher values
+
+        # Set current location visit value to 1 if it is not 0. Will not set it to 2 or higher values
         planner.visit(pose[:2])
 
         # Filter out clues that were seen before
@@ -164,7 +150,7 @@ def main():
 
         # do_cv() # Debug
 
-        #Reached current destination OR just started. Get next location of interest (i.e. destination to visit)
+        # Reached current destination OR just started. Get next location of interest (i.e. destination to visit)
         if not curr_loi:
 
             # If no locations of interests from clues left,
@@ -179,12 +165,12 @@ def main():
                     lois.append(nearest_maybe)
                 else:
                     logging.getLogger('Main').info('Exploring the arena')
-                    explore_next = planner.get_explore(pose[:2], debug=False) #Debug plt is currently broken
-                    print("Expl next",explore_next)
+                    explore_next = planner.get_explore(pose[:2], debug=False)  # Debug plt is currently broken
+                    print("Expl next", explore_next)
                     if explore_next is None:
                         break
                     lois.append(explore_next)
-            else: # >=1 LOI, sort to find the nearest one euclidean as heuristic. Possible todo: choose the nearest one based on planned path length instead (slower tho)
+            else:  # >=1 LOI, sort to find the nearest one euclidean as heuristic. Possible todo: choose the nearest one based on planned path length instead (slower tho)
                 lois.sort(key=lambda l: euclidean_distance(l, pose), reverse=True)
 
             # Get new LOI
@@ -210,40 +196,39 @@ def main():
                 if not curr_wp:
                     curr_wp = path.pop()
                     logging.getLogger('Navigation').info('New waypoint: {}'.format(curr_wp))
-                    if use_stuck_detection: #Reset lists
+                    if use_stuck_detection:  # Reset lists
                         log_x.clear()
                         log_y.clear()
                         log_time.clear()
 
-                #Log location (for stuck detection purpose), delete old logs
+                # Log location (for stuck detection purpose), delete old logs
                 if use_stuck_detection:
                     log_x.append(pose[0])
                     log_y.append(pose[1])
                     now = time.time()
                     log_time.append(now)
 
-                    #Remove records from more than 5 seconds before the time window examined to determine if stuck
+                    # Remove records from more than 5 seconds before the time window examined to determine if stuck
                     while len(log_time) and log_time[0] < now - (stuck_threshold_time_s + 5):
-                        log_time.pop(0) #Technically O(N^2) but shouldn't matter due to small n (<100)
+                        log_time.pop(0)  # Technically O(N^2) but shouldn't matter due to small n (<100)
                         log_x.pop(0)
                         log_y.pop(0)
 
                     # assert len(log_time) == len(log_x) == len(log_y)
                     # print(len(log_time)) It stabilises around 80 in the simulator for threshold = 10s
-                    
-                    #Stuck detection: Stuck if the robo is within a /0.15/m*/0.15/m box for the past /10/-/15/ seconds
+
+                    # Stuck detection: Stuck if the robo is within a /0.15/m*/0.15/m box for the past /10/-/15/ seconds
                     if ((log_time[0] < now - stuck_threshold_time_s)
-                    and (max(log_x) - min(log_x) <= stuck_threshold_area_m) \
-                    and (max(log_y) - min(log_y) <= stuck_threshold_area_m)):
-                        #Stuck! Try to unstuck by driving backwards at 0.5m/s for 2s.
-                        #Then continue to next iteration for simplicity of code
+                            and (max(log_x) - min(log_x) <= stuck_threshold_area_m) \
+                            and (max(log_y) - min(log_y) <= stuck_threshold_area_m)):
+                        # Stuck! Try to unstuck by driving backwards at 0.5m/s for 2s.
+                        # Then continue to next iteration for simplicity of code
                         print("STUCK DETECTED, DRIVING BACKWARDS")
                         robot.chassis.drive_speed(x=-0.5, z=0)
                         time.sleep(2)
                         robot.chassis.drive_speed(x=0, z=0)
                         tracker.reset()
                         continue
-
 
                 # Calculate distance and heading to waypoint
                 dist_to_wp = euclidean_distance(pose, curr_wp)
