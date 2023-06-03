@@ -1,8 +1,7 @@
-from typing import List, Any
-from tilsdk.cv.types import *
-from tilsdk.localization.types import *
-from tilsdk.cv import DetectedObject, BoundingBox
 from typing import Iterable, List
+
+from tilsdk.cv import BoundingBox, DetectedObject
+from tilsdk.localization.types import *
 
 
 class CVService:
@@ -39,13 +38,14 @@ class CVService:
         obj = DetectedObject("1", "fallen", bbox)
         return [obj]
 
+
 class NLPService:
     '''Mock NLP Service.
     
     This is provided for testing purposes and should be replaced by your actual service implementation.
     '''
 
-    def __init__(self, model_dir:str):
+    def __init__(self, model_dir: str):
         '''
         Parameters
         ----------
@@ -54,7 +54,7 @@ class NLPService:
         '''
         pass
 
-    def locations_from_clues(self, clues:Iterable[Clue]) -> List[RealLocation]:
+    def locations_from_clues(self, clues: Iterable[Clue]) -> List[RealLocation]:
         '''Process clues and get locations of interest.
         
         Mock returns location of all clues.

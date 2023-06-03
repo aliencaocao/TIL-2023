@@ -1,12 +1,10 @@
-from typing import List, Tuple, Dict
 import math
-import pyastar2d
-import numpy as np
 import time
+
+import pyastar2d
+from skimage.draw import line as bresenham_sk
 from tilsdk.localization import *
-from matplotlib import pyplot as plt
-import uuid
-from bresenham import bresenham #Algo to find all grid cells intersected by a line
+
 
 class MyPlanner:
     def __init__(self, map_: SignedDistanceGrid = None, waypoint_sparsity_m=0.5, path_opt_min_straight_deg=170, path_opt_max_safe_dist_cm=24, explore_consider_nearest=4, biggrid_size_m=0.8):
@@ -33,7 +31,7 @@ class MyPlanner:
             When there are no clues, the planner will try to explore every square of this big grid.
         '''
         # ALL grids (including big_grid) use [y][x] convention
-        
+
         self.map = map_
         self.passable = self.map.grid > 0
         self.bgrid = self.transform_add_border(self.map.grid.copy())  # Grid which takes the walls outside the grid into account
@@ -49,12 +47,12 @@ class MyPlanner:
         self.bg_jdim = math.ceil(7 / biggrid_size_m)  # j:x. Number of columns of the big grid to cover the whole map.
         self.big_grid = [[0 for j in range(self.bg_jdim)] for i in range(self.bg_idim)]  # Big_grid stores whether each (biggrid_size_m*biggrid_size_m)m square of the arena has been visited
         self.big_grid_centre = [[0 for j in range(self.bg_jdim)] for i in range(self.bg_idim)]
-        
-        self.path = None
-        self.plt_init = False # Whether the path visualisation pyplot for debug has been initialised
-        self.scat = None # For storing the scatterplot pyplot for path visualisation
 
-        #Store the centres of the big_grid squares; if these locations are walls, find the next nearest location
+        self.path = None
+        self.plt_init = False  # Whether the path visualisation pyplot for debug has been initialised
+        self.scat = None  # For storing the scatterplot pyplot for path visualisation
+
+        # Store the centres of the big_grid squares; if these locations are walls, find the next nearest location
         for i in range(self.bg_idim):
             for j in range(self.bg_jdim):
                 # Find the closest free location to centre of this big grid square
@@ -81,7 +79,7 @@ class MyPlanner:
         for i in range(a):
             for j in range(b):
                 grid[i][j] = min(grid[i][j], i + 1, a - i, j + 1, b - j)
-                #The unit is pixels, so it is independent of the scale
+                # The unit is pixels, so it is independent of the scale
         return grid
 
     def transform_for_astar(self, grid):
@@ -93,21 +91,21 @@ class MyPlanner:
         for i in range(grid.shape[0]):
             for j in range(grid.shape[1]):
                 if grid2[i][j] > 0:
-                    #Convert unit of grid2 from pixel to cm
-                    grid2[i][j] *= self.map.scale/0.01
-                    #We set areas further than 29cm away from walls/border to be of equal cost so that the robot can take a straight path when far from walls.
-                    #The map is dilated 25.5cm (ROBOT_RADIUS_M=0.17),
-                    #So a total clearance of 54c.5m shld be a very safe distance compared to robot length of 39cm/half length of 19.5cm.
+                    # Convert unit of grid2 from pixel to cm
+                    grid2[i][j] *= self.map.scale / 0.01
+                    # We set areas further than 29cm away from walls/border to be of equal cost so that the robot can take a straight path when far from walls.
+                    # The map is dilated 25.5cm (ROBOT_RADIUS_M=0.17),
+                    # So a total clearance of 54c.5m shld be a very safe distance compared to robot length of 39cm/half length of 19.5cm.
                     grid2[i][j] = 1 + k / min(grid2[i][j], 29)
                 else:
                     grid2[i][j] = np.inf
         return grid2.astype("float32")
 
-    def big_grid_of(self, l: RealLocation):  
+    def big_grid_of(self, l: RealLocation):
         # Returns the big grid array indices of a real location
         return int(l[0] // self.biggrid_size_m), int(l[1] // self.biggrid_size_m)
 
-    def visit(self, l: RealLocation): #Mark big_grid square as visited
+    def visit(self, l: RealLocation):  # Mark big_grid square as visited
         indices = self.big_grid_of(l)
         # print("Location:", l)
         # print("indices:", indices)
@@ -116,7 +114,7 @@ class MyPlanner:
         indices = (min(indices[0], self.bg_jdim - 1), min(indices[1], self.bg_idim - 1))
         self.big_grid[indices[1]][indices[0]] = max(1, self.big_grid[indices[1]][indices[0]])
 
-    def get_explore(self, l: RealLocation, debug: bool = False):  
+    def get_explore(self, l: RealLocation, debug: bool = False):
         # Call this to get a location to go to if there are no locations of interest left
         # debug: Whether to plot maps and show info
         # explore_consider_nearest (in __init__): Consider the astar paths of this number of the closest unvisited cells by euclidean distance
@@ -171,8 +169,8 @@ class MyPlanner:
 
     def nearest_clear(self, loc, passable):
         '''Utility function to find the nearest clear cell to a blocked cell'''
-        loc = min(loc[0],self.map.grid.shape[0]-1),min(loc[1],self.map.grid.shape[1]-1)
-        loc = max(loc[0],0),max(loc[1],0)
+        loc = min(loc[0], self.map.grid.shape[0] - 1), min(loc[1], self.map.grid.shape[1] - 1)
+        loc = max(loc[0], 0), max(loc[1], 0)
         if not passable[loc]:
             best = (1e18, (-1, -1))
             for i in range(self.map.height):  # y
@@ -206,7 +204,7 @@ class MyPlanner:
         self.path = self.plan_grid(self.map.real_to_grid(start), self.map.real_to_grid(goal), whole_path)
         if self.path is None:
             return None
-        self.path = self.path + self.path[-1:] # Duplicate destination wp to avoid bug in main loop which happens for the final waypoint as the path list is empty
+        self.path = self.path + self.path[-1:]  # Duplicate destination wp to avoid bug in main loop which happens for the final waypoint as the path list is empty
         if display:
             gridpath = [self.map.real_to_grid(x) if isinstance(x, RealLocation) else x for x in self.path]
             self.gridpathx = [x[0] for x in gridpath]
@@ -259,43 +257,43 @@ class MyPlanner:
         coeff = int(self.waypoint_sparsity_m / self.map.scale)  # default sparsity 0.5 = 50cm --> 50 for 0.01, 10 for 0.05
         path = list(path)
         if whole_path:
-            path = [(x[1], x[0]) for x in path] #Before: x,y; after: y,x
+            path = [(x[1], x[0]) for x in path]  # Before: x,y; after: y,x
             return path
         else:
             coeff = max(coeff, 1)
             path = path[:1] + path[:-1:coeff] + path[-1:]  # Take the 1st, last, and every nth waypoint in the middle
             # Duplication of last waypoint to accomodate how main loop works has been moved to plan()
-            path = self.optimize_path(path)  
-            path = [(x[1], x[0]) for x in path] #Before: x,y; after: y,x
+            path = self.optimize_path(path)
+            path = [(x[1], x[0]) for x in path]  # Before: x,y; after: y,x
             return path
-    
+
     def min_clearance_along_path(self, i1, j1, i2, j2):
         min_clearance = 1000
-        #print("blist:",list(bresenham(i1, j1, i2, j2)))
-        for i,j in list(bresenham(i1, j1, i2, j2)):
-            min_clearance = min(min_clearance, self.bgrid[i][j] * self.map.scale/0.01)
+        # print('blist:', np.column_stack(bresenham_sk(i1, j1, i2, j2)))
+        for i, j in np.column_stack(bresenham_sk(i1, j1, i2, j2)):
+            min_clearance = min(min_clearance, self.bgrid[i][j] * self.map.scale / 0.01)
         return min_clearance
 
     def optimize_path(self, path: List[GridLocation]) -> List[GridLocation]:
         new_path = [path[0]]  # starting point always in path
         for i in range(1, len(path) - 1, 1):
             mcap = min(self.min_clearance_along_path(new_path[-1][0], new_path[-1][1], path[i][0], path[i][1]),
-                    self.min_clearance_along_path(path[i+1][0], path[i+1][1], path[i][0], path[i][1]))
-            #print("MCAP:",mcap)
+                       self.min_clearance_along_path(path[i + 1][0], path[i + 1][1], path[i][0], path[i][1]))
+            # print("MCAP:",mcap)
 
             d1 = (path[i][0] - new_path[-1][0], path[i][1] - new_path[-1][1])
             d2 = (path[i + 1][0] - path[i][0], path[i + 1][1] - path[i][1])
-            d1_deg = math.degrees(math.atan2(d1[0],d1[1]))
-            d2_deg = math.degrees(math.atan2(d2[0],d2[1]))
+            d1_deg = math.degrees(math.atan2(d1[0], d1[1]))
+            d2_deg = math.degrees(math.atan2(d2[0], d2[1]))
             deg_diff = abs(d1_deg - d2_deg)
             deg_diff = min(deg_diff, 360 - deg_diff)
-            #print("ANGLES: ", d1_deg, d2_deg, "DEG DIFF:", deg_diff)
+            # print("ANGLES: ", d1_deg, d2_deg, "DEG DIFF:", deg_diff)
             deg_tolerance = 180 - self.path_opt_min_straight_deg
 
-            if mcap <= self.path_opt_max_safe_dist_cm and deg_diff > deg_tolerance: 
+            if mcap <= self.path_opt_max_safe_dist_cm and deg_diff > deg_tolerance:
                 new_path.append(path[i])
             else:
-                pass #Skip this point if the angle formed with the next and prev points is more than 180 - X degrees OR the whole path >29cm from any wall
+                pass  # Skip this point if the angle formed with the next and prev points is more than 180 - X degrees OR the whole path >29cm from any wall
         new_path.append(path[-1])  # add last point
         return new_path
 
@@ -305,14 +303,15 @@ class MyPlanner:
             im = plt.imshow(pathmap)
             bar = plt.colorbar(im, extend='max')
             plt.title("Path: white -> start, black -> end.\nColorbar shows log(astar_grid) vals.")
-            self.scat = plt.scatter(self.gridpathx, self.gridpathy, c=np.arange(len(self.gridpathx)), s = 25, cmap='Greys')
+            self.scat = plt.scatter(self.gridpathx, self.gridpathy, c=np.arange(len(self.gridpathx)), s=25, cmap='Greys')
             self.plt_init = True
         else:
             self.scat.remove()
-            self.scat = plt.scatter(self.gridpathx, self.gridpathy, c=np.arange(len(self.gridpathx)), s = 25, cmap='Greys')
+            self.scat = plt.scatter(self.gridpathx, self.gridpathy, c=np.arange(len(self.gridpathx)), s=25, cmap='Greys')
         self.visualise_update()
 
-    def visualise_update(self):
+    @staticmethod
+    def visualise_update():
         plt.pause(0.05)
         plt.draw()
         # plt.savefig(f"path_{str(uuid.uuid4())[:5]}.png")
@@ -327,18 +326,20 @@ if __name__ == '__main__':
     map_ = map_.dilated(1.5 * ROBOT_RADIUS_M / map_.scale)
     planner = MyPlanner(map_, waypoint_sparsity_m=0.4, path_opt_max_safe_dist_cm=24, path_opt_min_straight_deg=165, explore_consider_nearest=4, biggrid_size_m=0.8)
 
-    def test_path(a,b,c,d):
-        path = planner.plan(start=RealLocation(a,b),goal=RealLocation(c,d),whole_path=False,display=True)
-    
+
+    def test_path(a, b, c, d):
+        path = planner.plan(start=RealLocation(a, b), goal=RealLocation(c, d), whole_path=False, display=True)
+
+
     # test_path(1,1,5,1)
     # plt.savefig("280523_o24_k500.png")
 
     for i in range(50):
-        a = np.random.uniform(0.0,7.0)
-        b = np.random.uniform(0.0,7.0)
-        c = np.random.uniform(0.0,7.0)
-        d = np.random.uniform(0.0,7.0)
-        test_path(a,b,c,d)
+        a = np.random.uniform(0.0, 7.0)
+        b = np.random.uniform(0.0, 7.0)
+        c = np.random.uniform(0.0, 7.0)
+        d = np.random.uniform(0.0, 7.0)
+        test_path(a, b, c, d)
         time.sleep(1)
 
     # im = plt.imshow(planner.astar_grid)

@@ -85,10 +85,10 @@ class TRTInference:
 
     def warmup(self, blob, n=50):
         for _ in range(n):
-            _ = self(blob)
+            self(blob)
 
     def __del__(self):
         try:
             self.device_ctx.pop()
-        except cuda.LogicError as _:
+        except cuda.LogicError:
             pass

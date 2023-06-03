@@ -1,10 +1,9 @@
-from typing import Iterable, List
-from tilsdk.localization.types import *
-import onnxruntime as ort
 import io
-import time
+from typing import Iterable
+
 import librosa
-import numpy as np
+import onnxruntime as ort
+from tilsdk.localization.types import *
 from transformers import Wav2Vec2FeatureExtractor  # local import
 
 
@@ -65,7 +64,7 @@ class MockNLPService:
     This is provided for testing purposes and should be replaced by your actual service implementation.
     '''
 
-    def __init__(self, model_dir:str):
+    def __init__(self, model_dir: str):
         '''
         Parameters
         ----------
@@ -74,7 +73,7 @@ class MockNLPService:
         '''
         pass
 
-    def locations_from_clues(self, clues:Iterable[Clue]) -> List[RealLocation]:
+    def locations_from_clues(self, clues: Iterable[Clue]) -> List[RealLocation]:
         '''Process clues and get locations of interest.
         
         Mock returns location of all clues.

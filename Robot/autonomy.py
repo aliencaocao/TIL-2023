@@ -1,18 +1,9 @@
-import os
-import sys
-
-os.environ['PYTHONPATH'] = os.environ.get('PYTHONPATH', '') + ':' + os.path.join(os.getcwd(), 'site-packages')
-sys.path.insert(0, os.path.join(os.getcwd(), 'site-packages'))
-print(sys.path)
-
 import time
-import logging
-from typing import List
 
 from tilsdk import *  # import the SDK
 from tilsdk.utilities import PIDController, SimpleMovingAverage  # import optional useful things
 
-SIMULATOR_MODE = True # Change to False for real robomaster
+SIMULATOR_MODE = True  # Change to False for real robomaster
 
 if SIMULATOR_MODE:
     from tilsdk.mock_robomaster.robot import Robot  # Use this for the simulator
@@ -21,7 +12,6 @@ else:
     from robomaster.robot import Robot  # Use this for real robot
     from cv_service import CVService
     from nlp_service import NLPService
-
 
 from planner import MyPlanner
 
@@ -74,26 +64,25 @@ def main():
         nlp_service = NLPService(model_dir=NLP_MODEL_DIR)
         loc_service = LocalizationService(host='localhost', port=5566)  # for simulator
         rep_service = ReportingService(host='localhost', port=5566)  # only avail on simulator
-        
+
     else:
         cv_service = CVService(config_file=CV_CONFIG_DIR, checkpoint_file=CV_MODEL_DIR)
         nlp_service = NLPService(preprocessor_dir=NLP_PREPROCESSOR_DIR, model_dir=NLP_MODEL_DIR)
         loc_service = LocalizationService(host='192.168.20.56', port=5521)  # for real robot
-    
 
     robot = Robot()
     robot.initialize(conn_type="sta")
     robot.camera.start_video_stream(display=False, resolution='720p')
 
-    #Start run
-    rep_service.start_run()  # only avail on simulator
+    if SIMULATOR_MODE:
+        rep_service.start_run()  # only avail on simulator
 
     # Initialize planner
     map_: SignedDistanceGrid = loc_service.get_map()
     map_ = map_.dilated(1.5 * ROBOT_RADIUS_M / map_.scale)
 
-    #Robot getting stuck? Besides tuning PID, consider decreasing waypoint_sparsity 
-    #and increasing the 29cm threshold in Planner.transform_for_astar()
+    # Robot getting stuck? Besides tuning PID, consider decreasing waypoint_sparsity
+    # and increasing the 29cm threshold in Planner.transform_for_astar()
     planner = MyPlanner(map_,
                         waypoint_sparsity_m=0.4,
                         path_opt_min_straight_deg=160,
@@ -109,19 +98,18 @@ def main():
     maybe_lois: List[RealLocation] = []
     curr_wp: RealLocation = None
 
-    #Prevent bug with endless spinning
+    # Prevent bug with endless spinning
     use_spin_direction_lock = False
     spin_direction_lock = False
     spin_sign = 0  # -1 or 1 when spin_direction_lock is active
 
-    #Detect stuck and unstuck. New, needs IRL testing 
+    # TODO: Detect stuck and unstuck. New, needs IRL testing
     use_stuck_detection = True
     log_x = []
     log_y = []
     log_time = []
-    stuck_threshold_time_s = 15 #Minimum seconds to be considered stuck
-    stuck_threshold_area_m = 0.15 #Considered stuck if it stays within a 15cm*15cm square
-
+    stuck_threshold_time_s = 15  # Minimum seconds to be considered stuck
+    stuck_threshold_area_m = 0.15  # Considered stuck if it stays within a 15cm*15cm square
 
     # Initialize pose filter
     pose_filter = SimpleMovingAverage(n=10)
@@ -201,7 +189,7 @@ def main():
                         log_y.clear()
                         log_time.clear()
 
-                #Log location (for stuck detection purpose), delete old logs
+                # Log location (for stuck detection purpose), delete old logs
                 if use_stuck_detection:
                     log_x.append(pose[0])
                     log_y.append(pose[1])
@@ -209,25 +197,24 @@ def main():
                     log_time.append(now)
 
                     while len(log_time) and log_time[0] < now - (stuck_threshold_time_s + 5):
-                        log_time.pop(0) #Inefficient but shouldn't matter due to small n (<100)
+                        log_time.pop(0)  # Inefficient but shouldn't matter due to small n (<100)
                         log_x.pop(0)
                         log_y.pop(0)
 
-                    #assert len(log_time) == len(log_x) == len(log_y)
-                    #print(len(log_time))
-                    
-                    #Stuck detection
+                    # assert len(log_time) == len(log_x) == len(log_y)
+                    # print(len(log_time))
+
+                    # Stuck detection
                     if ((log_time[0] < now - stuck_threshold_time_s)
-                    and (max(log_x) - min(log_x) <= stuck_threshold_area_m) \
-                    and (max(log_y) - min(log_y) <= stuck_threshold_area_m)):
-                        #Stuck! Try to unstuck by driving backwards at 0.5m/s for 2s.
-                        #Then continue to next iteration for simplicity of code
+                            and (max(log_x) - min(log_x) <= stuck_threshold_area_m)
+                            and (max(log_y) - min(log_y) <= stuck_threshold_area_m)):
+                        # Stuck! Try to unstuck by driving backwards at 0.5m/s for 2s.
+                        # Then continue to next iteration for simplicity of code
                         print("STUCK DETECTED, DRIVING BACKWARDS")
                         robot.chassis.drive_speed(x=-0.5, z=0)
                         time.sleep(2)
                         robot.chassis.drive_speed(x=0, z=0)
                         continue
-
 
                 # Calculate distance and heading to waypoint
                 dist_to_wp = euclidean_distance(pose, curr_wp)

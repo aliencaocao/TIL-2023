@@ -1,9 +1,9 @@
-from typing import List, Any
-from tilsdk.cv.types import *
-from tilsdk.cv import DetectedObject, BoundingBox
-from mmdet.apis import init_detector, inference_detector
+from typing import Any, List
+
 from mmcv.cnn import fuse_conv_bn
 from mmcv.runner import wrap_fp16_model
+from mmdet.apis import inference_detector, init_detector
+from tilsdk.cv import BoundingBox, DetectedObject
 
 
 class CVService:
@@ -36,8 +36,8 @@ class CVService:
             Detected targets.
         '''
         h, w, c = img.shape
-        img = img[int(h*3/10):int(h*9/10), int(w*1/10):int(w*9/10), :]  # zoom 30% crop on top, 10% on bottom, 10% on left and right
-        
+        img = img[int(h * 3 / 10):int(h * 9 / 10), int(w * 1 / 10):int(w * 9 / 10), :]  # zoom 30% crop on top, 10% on bottom, 10% on left and right
+
         result = inference_detector(self.model, img)
         detections = []
 
@@ -49,7 +49,7 @@ class CVService:
                     detections.append(DetectedObject(
                         id=current_detection_id,
                         cls=1 - class_id,
-                        bbox=BoundingBox(x=(x1+x2)/2+w/10, y=(y1+y2)/2+h*3/10, w=x2-x1, h=y2-y1),
+                        bbox=BoundingBox(x=(x1 + x2) / 2 + w / 10, y=(y1 + y2) / 2 + h * 3 / 10, w=x2 - x1, h=y2 - y1),
                     ))
                     print(f'Detected {"fallen" if class_id == 0 else "standing"}, conf {_confidence}')
                     current_detection_id += 1

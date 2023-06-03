@@ -1,22 +1,10 @@
-import os
-import sys
-os.environ['PYTHONPATH'] = os.environ.get('PYTHONPATH', '') + ':' + os.path.join(os.getcwd(), 'site-packages')
-sys.path.insert(0, os.path.join(os.getcwd(), 'site-packages'))
-print(sys.path)
-
 import inspect
-import time
-import logging
-from typing import List
 
 from tilsdk import *  # import the SDK
-from tilsdk.utilities import PIDController, SimpleMovingAverage  # import optional useful things
-from tilsdk.mock_robomaster.robot import Robot  # Use this for the simulator
-from robomaster.robot import Robot  # Use this for real robot
+from tilsdk.utilities import PIDController  # import optional useful things
 
-from cv_service import CVService, MockCVService
-from nlp_service import NLPService, MockNLPService
-from planner import MyPlanner
+from cv_service import CVService
+from nlp_service import NLPService
 
 # Setup logging in a nice readable format
 logging.basicConfig(level=logging.INFO,
@@ -37,6 +25,7 @@ prev_img_rpt_time = 0
 
 cv_service = CVService(config_file=CV_CONFIG_DIR, checkpoint_file=CV_MODEL_DIR)
 import cv2
+
 img = cv2.imread('sample.png', 3)
 print(cv_service.targets_from_image(img))
 nlp_service = NLPService(preprocessor_dir=NLP_PREPROCESSOR_DIR, model_dir=NLP_MODEL_DIR)
@@ -44,6 +33,7 @@ print(nlp_service.predict(open('sample.wav', 'rb').read()))
 
 import numpy as np
 import pyastar2d
+
 print(inspect.getfile(pyastar2d))
 weights = np.array([[1, 3, 3, 3, 3],
                     [2, 1, 3, 3, 3],

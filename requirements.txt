@@ -14,7 +14,6 @@ kenlm @ git+https://github.com/kpu/kenlm
 jiwer
 accelerate
 # transformer_engine @ git+https://github.com/NVIDIA/TransformerEngine.git@stable
-pytorch_optimizer
 librosa
 soundfile
 safetensors
@@ -33,3 +32,5 @@ mmcv-full
 yacs
 language_tool_python
 audiomentations
+scikit-image
+pyastar2d

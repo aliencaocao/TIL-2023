@@ -37,7 +37,7 @@ clues:
     location:
       x: 4.0
       y: 3.0
-    audio_file: './data/audio/SM4_F48_A0100.wav'
+    audio_file: './data/audio/evala_00001.wav'
 
 # targets
 targets:
@@ -46,4 +46,4 @@ targets:
       x: 2.0
       y: 2.0
       r: 0.2
-    image_file: './data/imgs/fallen_person.jpeg'
+    image_file: './data/imgs/image_0000.png'
