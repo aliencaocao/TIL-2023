@@ -17,7 +17,7 @@ start_pose:
   z: 0.0
 use_noisy_pose: off
 robot_phy_length: 0.32
-pos_noise_stddev: 0.05
+position_noise_stddev: 0.05
 
 # localization proxy
 proxy_real_robot: off

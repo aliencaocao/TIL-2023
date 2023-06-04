@@ -345,7 +345,7 @@ if __name__ == '__main__':
         c = np.random.uniform(0.0, 7.0)
         d = np.random.uniform(0.0, 7.0)
         test_path(a, b, c, d)
-        time.sleep(1)
+        time.sleep(2)
 
     # im = plt.imshow(planner.astar_grid)
     # bar = plt.colorbar(im)

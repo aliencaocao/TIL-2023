@@ -48,12 +48,12 @@ def main():
 
     # Initialize services
     if SIMULATOR_MODE:
-        cv_service = CVService(CV_CONFIG_DIR, CV_MODEL_DIR, REID_MODEL_DIR, REID_CONFIG_DIR)
+        cv_service = CVService(OD_CONFIG_DIR, OD_MODEL_DIR, REID_MODEL_DIR, REID_CONFIG_DIR)
         nlp_service = NLPService(NLP_PREPROCESSOR_DIR, NLP_MODEL_DIR)
         loc_service = LocalizationService(host='localhost', port=5566)  # for simulator
         rep_service = ReportingService(host='localhost', port=5566)  # only avail on simulator
     else:
-        cv_service = CVService(CV_CONFIG_DIR, CV_MODEL_DIR, REID_MODEL_DIR, REID_CONFIG_DIR)
+        cv_service = CVService(OD_CONFIG_DIR, OD_MODEL_DIR, REID_MODEL_DIR, REID_CONFIG_DIR)
         nlp_service = NLPService(NLP_PREPROCESSOR_DIR, NLP_MODEL_DIR)
         loc_service = LocalizationService(host='192.168.20.56', port=5521)  # for real robot
         # No rep_service needed for real robot
@@ -111,7 +111,7 @@ def main():
     log_x = []
     log_y = []
     log_time = []
-    stuck_threshold_time_s = 15  # Minimum seconds to be considered stuck
+    stuck_threshold_time_s = 15 # Minimum seconds to be considered stuck
     stuck_threshold_area_m = 0.15  # Considered stuck if it stays within a 15cm*15cm square
 
     # Initialise planner
@@ -122,7 +122,7 @@ def main():
     planner = MyPlanner(map_,
                         waypoint_sparsity_m=0.4,
                         astargrid_threshold_dist_cm=29,
-                        path_opt_min_straight_deg=160,
+                        path_opt_min_straight_deg=165,
                         path_opt_max_safe_dist_cm=24,
                         explore_consider_nearest=4,
                         biggrid_size_m=0.8)
@@ -143,7 +143,7 @@ def main():
             # no new data, continue to next iteration.
             continue
 
-        # Set current location visit value to 1 if it is not 0. Will not set it to 2 or higher values
+        # Set current location visit value to 1 if it is 0. Will not set it to 2 or higher values
         planner.visit(pose[:2])
 
         # Filter out clues that were seen before
@@ -151,11 +151,11 @@ def main():
 
         # Process clues using NLP and determine any new locations of interest
         if clues:
-            new_lois, maybe_useful_lois = nlp_service.locations_from_clues(clues)  # new locations of interest 
+            new_lois, new_maybe_lois = nlp_service.locations_from_clues(clues)  # new locations of interest 
             if len(new_lois):
                 logger.info('New location(s) of interest: {}.'.format(new_lois))
             update_locations(lois, new_lois)
-            update_locations(maybe_lois, maybe_useful_lois)
+            update_locations(maybe_lois, new_maybe_lois)
             seen_clues.update([c.clue_id for c in clues])
 
         # do_cv() # Debug
@@ -166,9 +166,11 @@ def main():
             # If no locations of interests from clues left,
             # Firstly visit those deemed fake clues by NLP service (incase NLP service was wrong)
             # Then explore the arena
+
+            #TODO: choose the nearest one based on planned path length instead of Euclidean distance
             if len(lois) == 0:
                 logger.info('No more locations of interest.')
-                if len(maybe_lois):
+                if len(maybe_lois): 
                     logger.info('Getting first of {} maybe_lois.'.format(len(maybe_lois)))
                     maybe_lois.sort(key=lambda l: euclidean_distance(l, pose), reverse=True)
                     nearest_maybe = maybe_lois.pop()
@@ -180,7 +182,7 @@ def main():
                     if explore_next is None:
                         break
                     lois.append(explore_next)
-            else:  # >=1 LOI, sort to find the nearest one euclidean as heuristic. Possible todo: choose the nearest one based on planned path length instead (slower tho)
+            else:  # >=1 LOI, sort to find the nearest one euclidean as heuristic.
                 lois.sort(key=lambda l: euclidean_distance(l, pose), reverse=True)
 
             # Get new LOI
@@ -189,11 +191,11 @@ def main():
 
             # Plan a path to the new LOI
             logger.info('Planning path to: {}'.format(curr_loi))
-
             path = planner.plan(pose[:2], curr_loi, display=True)
+
             if path is None:
                 logger.info('No possible path found, location skipped')
-                curr_loi = None
+                curr_loi = None #TODO: Make sure planner get_explore() is robust against enclosed area
             else:
                 path.reverse()  # reverse so closest wp is last so that pop() is cheap , waypoint
                 curr_wp = None
@@ -227,15 +229,15 @@ def main():
                     # assert len(log_time) == len(log_x) == len(log_y)
                     # print(len(log_time)) It stabilises around 80 in the simulator for threshold = 10s
 
-                    # Stuck detection: Stuck if the robo is within a /0.15/m*/0.15/m box for the past /10/-/15/ seconds
+                    # Stuck detection: Stuck if the robo is within a /0.15/m*/0.15/m box for the past /15/-/20/ seconds
                     if ((log_time[0] < now - stuck_threshold_time_s)
                             and (max(log_x) - min(log_x) <= stuck_threshold_area_m) \
                             and (max(log_y) - min(log_y) <= stuck_threshold_area_m)):
                         # Stuck! Try to unstuck by driving backwards at 0.5m/s for 2s.
                         # Then continue to next iteration for simplicity of code
                         print("STUCK DETECTED, DRIVING BACKWARDS")
-                        robot.chassis.drive_speed(x=-0.5, z=0)
-                        time.sleep(2)
+                        robot.chassis.drive_speed(x=-0.3, z=0)
+                        time.sleep(3)
                         robot.chassis.drive_speed(x=0, z=0)
                         tracker.reset()
                         continue
@@ -276,6 +278,8 @@ def main():
                 # logging.getLogger('Navigation').info('dist: {} ang:{} vel:{}'.format(dist_to_wp,ang_diff,vel_cmd))
 
                 # reduce x velocity
+                # Pose: (x, y, angle)
+                # Vel_cmd: (speed, angle)
                 vel_cmd[0] *= np.cos(np.radians(ang_diff))
 
                 # If robot is facing the wrong direction, turn to face waypoint first before moving forward.
