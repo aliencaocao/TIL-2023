@@ -22,8 +22,9 @@ logging.basicConfig(level=logging.INFO,
 formatter = logging.Formatter(fmt='[%(levelname)s][%(asctime)s][%(name)s]: %(message)s', datefmt='%H:%M:%S')
 handler = logging.StreamHandler()
 handler.setFormatter(formatter)
-loggers = [logging.getLogger(name) for name in [__name__, 'NLPService', 'CVService']]
+loggers = [logging.getLogger(name) for name in [__name__, 'NLPService', 'CVService', 'Navigation']]
 logger = loggers[0]  # the main one
+NavLogger = loggers[3]  # the navigation one
 logger.name = 'Main'
 for l in loggers:
     l.propagate = False
@@ -83,7 +84,7 @@ def main():
     # To run CV inference and report targets found
     def do_cv():
         global prev_img_rpt_time
-        # print('pirt',prev_img_rpt_time)
+        # logger.debug('pirt',prev_img_rpt_time)
         if not prev_img_rpt_time or time.time() - prev_img_rpt_time >= 1:  # throttle to 1 submission per second, and only read img if necessary
             img = robot.camera.read_cv2_image(strategy='newest')
 
@@ -167,7 +168,8 @@ def main():
             # Firstly visit those deemed fake clues by NLP service (incase NLP service was wrong)
             # Then explore the arena
 
-            if len(lois) == 0:
+            #TODO: choose the nearest one based on planned path length instead of Euclidean distance
+            if not lois:
                 logger.info('No more locations of interest.')
                 if len(maybe_lois): 
                     logger.info('Getting first of {} maybe_lois.'.format(len(maybe_lois)))
@@ -177,7 +179,7 @@ def main():
                 else:
                     logger.info('Exploring the arena')
                     explore_next = planner.get_explore(pose[:2], debug=False)  # Debug plt is currently broken
-                    print("Expl next", explore_next)
+                    logger.debug("Expl next", explore_next)
                     if explore_next is None:
                         break
                     lois.append(explore_next)
@@ -206,7 +208,7 @@ def main():
                 # Get next waypoint
                 if not curr_wp:
                     curr_wp = path.pop()
-                    logging.getLogger('Navigation').info('New waypoint: {}'.format(curr_wp))
+                    NavLogger.info('New waypoint: {}'.format(curr_wp))
                     if use_stuck_detection:  # Reset lists
                         log_x.clear()
                         log_y.clear()
@@ -226,7 +228,7 @@ def main():
                         log_y.pop(0)
 
                     # assert len(log_time) == len(log_x) == len(log_y)
-                    # print(len(log_time)) It stabilises around 80 in the simulator for threshold = 10s
+                    # logger.debug(len(log_time)) It stabilises around 80 in the simulator for threshold = 10s
 
                     # Stuck detection: Stuck if the robo is within a /0.15/m*/0.15/m box for the past /15/-/20/ seconds
                     if ((log_time[0] < now - stuck_threshold_time_s)
@@ -234,7 +236,7 @@ def main():
                             and (max(log_y) - min(log_y) <= stuck_threshold_area_m)):
                         # Stuck! Try to unstuck by driving backwards at 0.5m/s for 2s.
                         # Then continue to next iteration for simplicity of code
-                        print("STUCK DETECTED, DRIVING BACKWARDS")
+                        logger.info("STUCK DETECTED, DRIVING BACKWARDS")
                         robot.chassis.drive_speed(x=-0.3, z=0)
                         time.sleep(3)
                         robot.chassis.drive_speed(x=0, z=0)
@@ -255,18 +257,18 @@ def main():
 
                 if use_spin_direction_lock and spin_direction_lock:  # disabled
                     if spin_sign == 1 and ang_diff < 0:
-                        print("Spin direction lock, modifying ang_diff +360")
+                        logger.debug("Spin direction lock, modifying ang_diff +360")
                         ang_diff += 360
                     elif spin_sign == -1 and ang_diff > 0:
-                        print("Spin direction lock, modifying ang_diff -360")
+                        logger.debug("Spin direction lock, modifying ang_diff -360")
                         ang_diff -= 360
 
-                # logging.getLogger('Navigation').info('ang_to_wp: {}, hdg: {}, ang_diff: {}'.format(ang_to_wp, pose[2], ang_diff))
-                # logging.getLogger('Navigation').info('Pose: {}'.format(pose))
+                # NavLogger.info('ang_to_wp: {}, hdg: {}, ang_diff: {}'.format(ang_to_wp, pose[2], ang_diff))
+                # NavLogger.info('Pose: {}'.format(pose))
 
                 # Consider waypoint reached if within a threshold distance
                 if dist_to_wp < (REACHED_THRESHOLD_M / 2 if len(path) <= 1 else REACHED_THRESHOLD_M):
-                    logging.getLogger('Navigation').info('Reached wp: {}'.format(curr_wp))
+                    NavLogger.info('Reached wp: {}'.format(curr_wp))
                     tracker.reset()
                     curr_wp = None
                     continue
@@ -274,7 +276,7 @@ def main():
                 # Determine velocity commands given distance and heading to waypoint
                 vel_cmd = tracker.update((dist_to_wp, ang_diff))
 
-                # logging.getLogger('Navigation').info('dist: {} ang:{} vel:{}'.format(dist_to_wp,ang_diff,vel_cmd))
+                # NavLogger.info('dist: {} ang:{} vel:{}'.format(dist_to_wp,ang_diff,vel_cmd))
 
                 # reduce x velocity
                 # Pose: (x, y, angle)
@@ -295,7 +297,7 @@ def main():
                 robot.chassis.drive_speed(x=vel_cmd[0], z=vel_cmd[1])
 
             else:
-                print('End of path. Spinning now.')
+                logger.debug('End of path. Spinning now.')
                 curr_loi = None
 
                 starting_angle = pose[2]
@@ -305,11 +307,11 @@ def main():
                 robot.chassis.drive_speed(x=0, z=first_turn_angle)
                 time.sleep(1)
                 robot.chassis.drive_speed(x=0, z=0)
-                print("First_turn_angle", first_turn_angle)
+                logger.debug("First_turn_angle", first_turn_angle)
 
                 current_angle = (starting_angle - first_turn_angle) % 360
 
-                print("Doing angle", current_angle)
+                logger.debug("Doing angle", current_angle)
                 time.sleep(2)
                 do_cv()
 
@@ -319,11 +321,11 @@ def main():
                     robot.chassis.drive_speed(x=0, z=0)
                     current_angle = (current_angle - 45) % 360
 
-                    print("Doing angle", current_angle)
+                    logger.debug("Doing angle", current_angle)
                     time.sleep(2)
                     do_cv()
 
-                print('Done spinning. Moving on.')
+                logger.debug('Done spinning. Moving on.')
                 # Reset the pose_filter
                 pose_filter = SimpleMovingAverage(n=10)
                 continue
