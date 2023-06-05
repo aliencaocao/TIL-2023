@@ -16,7 +16,7 @@ else:
     from nlp_service import NLPService
 
 # Setup logging in a nice readable format
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.INFO,
                     format='[%(levelname)s][%(asctime)s][%(name)s]: %(message)s',
                     datefmt='%H:%M:%S')
 formatter = logging.Formatter(fmt='[%(levelname)s][%(asctime)s][%(name)s]: %(message)s', datefmt='%H:%M:%S')
@@ -124,7 +124,7 @@ def main():
                         astargrid_threshold_dist_cm=29,
                         path_opt_min_straight_deg=165,
                         path_opt_max_safe_dist_cm=24,
-                        explore_consider_nearest=4,
+                        consider_nearest=4,
                         biggrid_size_m=0.8)
 
     # Start run
@@ -167,13 +167,12 @@ def main():
             # Firstly visit those deemed fake clues by NLP service (incase NLP service was wrong)
             # Then explore the arena
 
-            #TODO: choose the nearest one based on planned path length instead of Euclidean distance
             if len(lois) == 0:
                 logger.info('No more locations of interest.')
                 if len(maybe_lois): 
                     logger.info('Getting first of {} maybe_lois.'.format(len(maybe_lois)))
-                    maybe_lois.sort(key=lambda l: euclidean_distance(l, pose), reverse=True)
-                    nearest_maybe = maybe_lois.pop()
+                    maybe_lois = planner.robo_path_dist_sort(pose[:2], maybe_lois)
+                    nearest_maybe = maybe_lois.pop(0)
                     lois.append(nearest_maybe)
                 else:
                     logger.info('Exploring the arena')
@@ -183,10 +182,10 @@ def main():
                         break
                     lois.append(explore_next)
             else:  # >=1 LOI, sort to find the nearest one euclidean as heuristic.
-                lois.sort(key=lambda l: euclidean_distance(l, pose), reverse=True)
+                lois = planner.robo_path_dist_sort(pose[:2], lois)
 
             # Get new LOI
-            curr_loi = lois.pop()
+            curr_loi = lois.pop(0)
             logger.info('Current LOI set to: {}'.format(curr_loi))
 
             # Plan a path to the new LOI

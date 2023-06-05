@@ -7,7 +7,7 @@ from tilsdk.localization import *
 
 
 class MyPlanner:
-    def __init__(self, map_: SignedDistanceGrid = None, waypoint_sparsity_m=0.5, astargrid_threshold_dist_cm=29, path_opt_min_straight_deg=170, path_opt_max_safe_dist_cm=24, explore_consider_nearest=4, biggrid_size_m=0.8):
+    def __init__(self, map_: SignedDistanceGrid = None, waypoint_sparsity_m=0.5, astargrid_threshold_dist_cm=29, path_opt_min_straight_deg=170, path_opt_max_safe_dist_cm=24, consider_nearest=4, biggrid_size_m=0.8):
         '''
         Parameters
         ----------
@@ -39,7 +39,7 @@ class MyPlanner:
         self.path_opt_min_straight_deg = path_opt_min_straight_deg
         self.path_opt_max_safe_dist_cm = path_opt_max_safe_dist_cm
         self.biggrid_size_m = biggrid_size_m
-        self.explore_consider_nearest = explore_consider_nearest
+        self.consider_nearest = consider_nearest
 
         self.map = map_
         self.passable = self.map.grid > 0
@@ -117,11 +117,31 @@ class MyPlanner:
         indices = (min(indices[0], self.bg_jdim - 1), min(indices[1], self.bg_idim - 1))
         self.big_grid[indices[1]][indices[0]] = max(1, self.big_grid[indices[1]][indices[0]])
 
+    def pathlen(self, a, b): #Length in pixels of path from a to b (1e18 if no path possible)
+        path = self.plan(a, b, whole_path=True)
+        return 1e18 if path == None else len(path)
+
+    def robo_path_dist_sort(self, l: RealLocation, places: List[RealLocation]):
+        #Sort list of locations by planned path length from the current robo location. Quite slow (up to ~5s)
+        if len(places) <= 1:
+            return places
+        else:
+            further_places_temp = []
+            if len(places) > self.consider_nearest:
+                places.sort(key = lambda place:self.heuristic(l, place))
+                further_places_temp = places[self.consider_nearest:]
+                places = places[:self.consider_nearest]
+            print("Doing PlanSort now")                
+            places.sort(key = lambda place:self.pathlen(l, place))
+            places.extend(further_places_temp)
+            print("places after sort:", places)
+            return places
+
     def get_explore(self, l: RealLocation, debug: bool = False):
         # DEBUG PLT IS CURRENTLY BROKEN!
         # Call this to get a location to go to if there are no locations of interest left
         # debug: Whether to plot maps and show info
-        # explore_consider_nearest (in __init__): Consider the astar paths of this number of the closest unvisited cells by euclidean distance
+        # consider_nearest (in __init__): Consider the astar paths of this number of the closest unvisited cells by euclidean distance
         # Larger number gives better performance but slower
         m = 100
         for i in range(self.bg_idim):
@@ -137,7 +157,7 @@ class MyPlanner:
         if len(distance) == 0:
             return None
 
-        distance = distance[:min(self.explore_consider_nearest, len(distance))]
+        distance = distance[:min(self.consider_nearest, len(distance))]
         for i in range(len(distance)):
             loc = self.big_grid_centre[distance[i][1][0]][distance[i][1][1]]
             if debug:
@@ -149,7 +169,7 @@ class MyPlanner:
 
         distance.sort()
         if debug:
-            print("Closest guys", distance[:min(5, len(distance))])
+            print("Closest guys", distance[:min(self.consider_nearest, len(distance))])
 
         closest = distance[0]
         self.big_grid[closest[1][0]][closest[1][1]] += 1
@@ -329,7 +349,7 @@ if __name__ == '__main__':
     print("Got map from loc")
     ROBOT_RADIUS_M = 0.17
     map_ = map_.dilated(1.5 * ROBOT_RADIUS_M / map_.scale)
-    planner = MyPlanner(map_, waypoint_sparsity_m=0.4, astargrid_threshold_dist_cm=29, path_opt_max_safe_dist_cm=24, path_opt_min_straight_deg=165, explore_consider_nearest=4, biggrid_size_m=0.8)
+    planner = MyPlanner(map_, waypoint_sparsity_m=0.4, astargrid_threshold_dist_cm=29, path_opt_max_safe_dist_cm=24, path_opt_min_straight_deg=165, consider_nearest=4, biggrid_size_m=0.8)
 
 
     def test_path(a, b, c, d):
