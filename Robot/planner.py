@@ -55,27 +55,6 @@ class MyPlanner:
         self.plt_init = False  # Whether the path visualisation pyplot for debug has been initialised
         self.scat = None  # For storing the scatterplot pyplot for path visualisation
 
-        # Store the centres of the big_grid squares; if these locations are walls, find the next nearest location
-        for i in range(self.bg_idim):
-            for j in range(self.bg_jdim):
-                # Find the closest free location to centre of this big grid square
-                y_pos = min(4.9, i * self.biggrid_size_m + self.biggrid_size_m / 2)
-                x_pos = min(6.9, j * self.biggrid_size_m + self.biggrid_size_m / 2)
-
-                grid_loc = self.map.real_to_grid(RealLocation(x_pos, y_pos))
-                grid_loc = grid_loc[1], grid_loc[0]
-                nc = self.nearest_clear(grid_loc, self.passable)
-                # If the closest free location to the entre of the cell is in another cell,
-                # ignore this cell by marking it as visited
-                # This doesn't happen though
-                nc = nc[1], nc[0]
-                nc = self.map.grid_to_real(nc)
-                # print("gridctr",RealLocation(x_pos,y_pos),"nc",nc)
-                if self.big_grid_of(nc) != (j, i):
-                    self.big_grid[i][j] = 100
-                else:
-                    self.big_grid_centre[i][j] = nc
-
     def transform_add_border(self, og_grid):
         grid = og_grid.copy()
         a, b = grid.shape
@@ -103,84 +82,6 @@ class MyPlanner:
                 else:
                     grid2[i][j] = np.inf
         return grid2.astype("float32")
-
-    def big_grid_of(self, l: RealLocation):
-        # Returns the big grid array indices of a real location
-        return int(l[0] // self.biggrid_size_m), int(l[1] // self.biggrid_size_m)
-
-    def visit(self, l: RealLocation):  # Mark big_grid square as visited
-        indices = self.big_grid_of(l)
-        # print("Location:", l)
-        # print("indices:", indices)
-        # print("bg_idim:", self.bg_idim)
-        # print("bg_jdim:", self.bg_jdim)
-        indices = (min(indices[0], self.bg_jdim - 1), min(indices[1], self.bg_idim - 1))
-        self.big_grid[indices[1]][indices[0]] = max(1, self.big_grid[indices[1]][indices[0]])
-
-    def pathlen(self, a, b): #Length in pixels of path from a to b (1e18 if no path possible)
-        path = self.plan(a, b, whole_path=True)
-        return 1e18 if path == None else len(path)
-
-    def robo_path_dist_sort(self, l: RealLocation, places: List[RealLocation]):
-        #Sort list of locations by planned path length from the current robo location. Quite slow (up to ~5s)
-        if len(places) <= 1:
-            return places
-        else:
-            further_places_temp = []
-            if len(places) > self.consider_nearest:
-                places.sort(key = lambda place:self.heuristic(l, place))
-                further_places_temp = places[self.consider_nearest:]
-                places = places[:self.consider_nearest]
-            print("Doing PlanSort now")                
-            places.sort(key = lambda place:self.pathlen(l, place))
-            places.extend(further_places_temp)
-            print("places after sort:", places)
-            return places
-
-    def get_explore(self, l: RealLocation, debug: bool = False):
-        # DEBUG PLT IS CURRENTLY BROKEN!
-        # Call this to get a location to go to if there are no locations of interest left
-        # debug: Whether to plot maps and show info
-        # consider_nearest (in __init__): Consider the astar paths of this number of the closest unvisited cells by euclidean distance
-        # Larger number gives better performance but slower
-        m = 100
-        for i in range(self.bg_idim):
-            for j in range(self.bg_jdim):
-                m = min(m, self.big_grid[i][j])
-        distance = []
-        for i in range(self.bg_idim):
-            for j in range(self.bg_jdim):
-                if self.big_grid[i][j] == m:
-                    distance.append((self.heuristic(self.big_grid_centre[i][j], l), (i, j)))
-        distance.sort()
-
-        if len(distance) == 0:
-            return None
-
-        distance = distance[:min(self.consider_nearest, len(distance))]
-        for i in range(len(distance)):
-            loc = self.big_grid_centre[distance[i][1][0]][distance[i][1][1]]
-            if debug:
-                print("l, loc:", l, loc)
-            path = self.plan(l, loc, whole_path=True, display=debug)
-            distance[i] = (1e18 if path is None else len(path), distance[i][1])
-            if debug:
-                print("Path length:", distance[i][0])
-
-        distance.sort()
-        if debug:
-            print("Closest guys", distance[:min(self.consider_nearest, len(distance))])
-
-        closest = distance[0]
-        self.big_grid[closest[1][0]][closest[1][1]] += 1
-
-        if debug:
-            fig, ax = plt.subplots(1, 1)
-            ax.imshow(self.big_grid)
-            ax.set_title("Big grid now")
-            plt.show(block=False)
-            print("Done showing")
-        return self.big_grid_centre[closest[1][0]][closest[1][1]]
 
     def heuristic(self, a: GridLocation, b: GridLocation) -> float:
         '''Planning heuristic function.
@@ -348,7 +249,7 @@ if __name__ == '__main__':
     map_: SignedDistanceGrid = loc_service.get_map()
     print("Got map from loc")
     ROBOT_RADIUS_M = 0.17
-    map_ = map_.dilated(1.5 * ROBOT_RADIUS_M / map_.scale)
+    map_.grid -= 1.5 * ROBOT_RADIUS_M / map_.scale
     planner = MyPlanner(map_, waypoint_sparsity_m=0.4, astargrid_threshold_dist_cm=29, path_opt_max_safe_dist_cm=24, path_opt_min_straight_deg=165, consider_nearest=4, biggrid_size_m=0.8)
 
 

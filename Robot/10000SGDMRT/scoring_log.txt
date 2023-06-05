@@ -1,0 +1,13 @@
+[ INFO][20:54:40][werkzeug]: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5501
+ * Running on http://192.168.1.109:5501
+[ INFO][20:54:40][werkzeug]: [33mPress CTRL+C to quit[0m
+[ INFO][20:54:54][werkzeug]: 127.0.0.1 - - [05/Jun/2023 20:54:54] "[33mGET / HTTP/1.1[0m" 404 -
+[ INFO][20:54:54][werkzeug]: 127.0.0.1 - - [05/Jun/2023 20:54:54] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+[ INFO][20:54:56][werkzeug]: 127.0.0.1 - - [05/Jun/2023 20:54:56] "[33mGET / HTTP/1.1[0m" 404 -
+[ INFO][20:57:29][werkzeug]: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5501
+ * Running on http://192.168.1.109:5501
+[ INFO][20:57:29][werkzeug]: [33mPress CTRL+C to quit[0m

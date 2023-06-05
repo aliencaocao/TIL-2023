@@ -70,17 +70,6 @@ def main():
     map_: SignedDistanceGrid = loc_service.get_map()
 
     # Define helper functions
-    # Filter function to exclude clues seen before   
-    new_clues = lambda c: c.clue_id not in seen_clues
-
-    # To update locations of interest, ignoring those seen before.
-    def update_locations(old: List[RealLocation], new: List[RealLocation]) -> None:
-        if new:
-            for loc in new:
-                if loc not in old:
-                    logging.getLogger('update_locations').info('New location of interest: {}'.format(loc))
-                    old.append(loc)
-
     # To run CV inference and report targets found
     def do_cv():
         global prev_img_rpt_time
@@ -108,7 +97,7 @@ def main():
     spin_sign = 0  # -1 or 1 when spin_direction_lock is active
 
     # To detect stuck and perform unstucking. New, needs IRL testing 
-    use_stuck_detection = True
+    use_stuck_detection = False
     log_x = []
     log_y = []
     log_time = []
@@ -118,7 +107,7 @@ def main():
     # Initialise planner
     # Planner-related config here
     ROBOT_RADIUS_M = 0.17  # TODO: Participant may tune. 0.390 * 0.245 (L x W)
-    map_ = map_.dilated(1.5 * ROBOT_RADIUS_M / map_.scale)
+    map_.grid -= 1.5 * ROBOT_RADIUS_M / map_.scale # Same functionality as .dilated last year: expands the walls by 1.5 times the radius of the robo
 
     planner = MyPlanner(map_,
                         waypoint_sparsity_m=0.4,
@@ -136,58 +125,20 @@ def main():
         if path: planner.visualise_update()  # just for visualisation
 
         # Get new data
-        pose, clues = loc_service.get_pose()
+        pose = loc_service.get_pose()
         pose = pose_filter.update(pose)
         pose = RealPose(min(pose[0], 7), min(pose[1], 5), pose[2])  # prevents out of bounds errors
         pose = RealPose(max(pose[0], 0), max(pose[1], 0), pose[2])  # prevents out of bounds errors
         if not pose:
             # no new data, continue to next iteration.
             continue
-
-        # Set current location visit value to 1 if it is 0. Will not set it to 2 or higher values
-        planner.visit(pose[:2])
-
-        # Filter out clues that were seen before
-        clues = list(filter(new_clues, clues))
-
-        # Process clues using NLP and determine any new locations of interest
-        if clues:
-            new_lois, new_maybe_lois = nlp_service.locations_from_clues(clues)  # new locations of interest 
-            if len(new_lois):
-                logger.info('New location(s) of interest: {}.'.format(new_lois))
-            update_locations(lois, new_lois)
-            update_locations(maybe_lois, new_maybe_lois)
-            seen_clues.update([c.clue_id for c in clues])
-
+       
         # do_cv() # Debug
 
         # Reached current destination OR just started. Get next location of interest (i.e. destination to visit)
         if not curr_loi:
-
-            # If no locations of interests from clues left,
-            # Firstly visit those deemed fake clues by NLP service (incase NLP service was wrong)
-            # Then explore the arena
-
-            #TODO: choose the nearest one based on planned path length instead of Euclidean distance
-            if not lois:
-                logger.info('No more locations of interest.')
-                if len(maybe_lois): 
-                    logger.info('Getting first of {} maybe_lois.'.format(len(maybe_lois)))
-                    maybe_lois = planner.robo_path_dist_sort(pose[:2], maybe_lois)
-                    nearest_maybe = maybe_lois.pop(0)
-                    lois.append(nearest_maybe)
-                else:
-                    logger.info('Exploring the arena')
-                    explore_next = planner.get_explore(pose[:2], debug=False)  # Debug plt is currently broken
-                    logger.debug("Expl next", explore_next)
-                    if explore_next is None:
-                        break
-                    lois.append(explore_next)
-            else:  # >=1 LOI, sort to find the nearest one euclidean as heuristic.
-                lois = planner.robo_path_dist_sort(pose[:2], lois)
-
             # Get new LOI
-            curr_loi = lois.pop(0)
+            curr_loi = RealLocation(4,1)
             logger.info('Current LOI set to: {}'.format(curr_loi))
 
             # Plan a path to the new LOI
@@ -204,7 +155,7 @@ def main():
         else:
             # There is a current LOI objective.
             # Continue with navigation along current path.
-            if path:
+            if path: # [RealLocation(x,y)]
                 # Get next waypoint
                 if not curr_wp:
                     curr_wp = path.pop()
@@ -286,9 +237,9 @@ def main():
                 # If robot is facing the wrong direction, turn to face waypoint first before moving forward.
                 # Lock spin direction (has effect only if use_spin_direction_lock = True) as bug causing infinite spinning back and forth has been encountered before in the sim
                 if abs(ang_diff) > ANGLE_THRESHOLD_DEG:
+                    vel_cmd[0] = 0.0 # Robot can only rotate; set speed to 0
                     spin_direction_lock = True
                     spin_sign = np.sign(ang_diff)
-                    vel_cmd[0] = 0.0
                 else:
                     spin_direction_lock = False
                     spin_sign = 0
