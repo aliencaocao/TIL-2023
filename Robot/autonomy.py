@@ -1,8 +1,6 @@
 import time
-
 from tilsdk import *  # import the SDK
 from tilsdk.utilities import PIDController, SimpleMovingAverage  # import optional useful things
-
 from planner import MyPlanner
 
 SIMULATOR_MODE = True  # Change to False for real robomaster
@@ -60,14 +58,12 @@ def main():
         # No rep_service needed for real robot
 
     # Initialize variables
-    seen_clues = set()
     curr_loi: RealLocation = None
     path: List[RealLocation] = []
-    lois: List[RealLocation] = []
-    maybe_lois: List[RealLocation] = []
     curr_wp: RealLocation = None
     pose_filter = SimpleMovingAverage(n=10)
-    map_: SignedDistanceGrid = loc_service.get_map()
+    map_: SignedDistanceGrid = loc_service.get_map() # Currently, it is in the same format as the 2022 one. The docs says it's a new format.
+    #If they update get_map() to match the description in the docs, we will need to write a function to convert it back to the 2022 format.
 
     # Define helper functions
     # To run CV inference and report targets found
@@ -91,7 +87,7 @@ def main():
     ANGLE_THRESHOLD_DEG = 25.0  # TODO: Participant may tune.
     tracker = PIDController(Kp=(0.35, 0.2), Ki=(0.1, 0.0), Kd=(0, 0))
 
-    # To prevent bug with endless spinning in alternate directions by only allowing 1 direction of spinni
+    # To prevent bug with endless spinning in alternate directions by only allowing 1 direction of spinning
     use_spin_direction_lock = False
     spin_direction_lock = False
     spin_sign = 0  # -1 or 1 when spin_direction_lock is active
@@ -113,9 +109,7 @@ def main():
                         waypoint_sparsity_m=0.4,
                         astargrid_threshold_dist_cm=29,
                         path_opt_min_straight_deg=165,
-                        path_opt_max_safe_dist_cm=24,
-                        consider_nearest=4,
-                        biggrid_size_m=0.8)
+                        path_opt_max_safe_dist_cm=24)
 
     # Start run
     rep_service.start_run()

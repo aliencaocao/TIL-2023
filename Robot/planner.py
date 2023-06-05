@@ -1,13 +1,12 @@
 import math
 import time
-
 import pyastar2d
 from skimage.draw import line as bresenham_sk
 from tilsdk.localization import *
 
 
 class MyPlanner:
-    def __init__(self, map_: SignedDistanceGrid = None, waypoint_sparsity_m=0.5, astargrid_threshold_dist_cm=29, path_opt_min_straight_deg=170, path_opt_max_safe_dist_cm=24, consider_nearest=4, biggrid_size_m=0.8):
+    def __init__(self, map_: SignedDistanceGrid = None, waypoint_sparsity_m=0.5, astargrid_threshold_dist_cm=29, path_opt_min_straight_deg=170, path_opt_max_safe_dist_cm=24):
         '''
         Parameters
         ----------
@@ -26,11 +25,6 @@ class MyPlanner:
             This value is the minimum degree formed by 3 consecutive points that we still consider 'straight'.
         path_opt_max_safe_dist_cm:
             Maximum allowed minimum clearance along paths from one waypoint to the next and previous for it to be deleted in optimisation.
-        consider: float
-            For the get_explore function only. See there for more details.
-        biggrid_size_m:
-            Divide the grid into squares of side length biggrid_size_m m.
-            When there are no clues, the planner will try to explore every square of this big grid.
         '''
         # ALL grids (including big_grid) use [y][x] convention
 
@@ -38,18 +32,11 @@ class MyPlanner:
         self.astargrid_threshold_dist_cm = astargrid_threshold_dist_cm
         self.path_opt_min_straight_deg = path_opt_min_straight_deg
         self.path_opt_max_safe_dist_cm = path_opt_max_safe_dist_cm
-        self.biggrid_size_m = biggrid_size_m
-        self.consider_nearest = consider_nearest
 
         self.map = map_
         self.passable = self.map.grid > 0
         self.bgrid = self.transform_add_border(self.map.grid.copy())  # Grid which takes the walls outside the grid into account
         self.astar_grid = self.transform_for_astar(self.bgrid.copy())
-
-        self.bg_idim = math.ceil(5 / biggrid_size_m)  # i:y. Number of rows of the big grid to cover the whole map.
-        self.bg_jdim = math.ceil(7 / biggrid_size_m)  # j:x. Number of columns of the big grid to cover the whole map.
-        self.big_grid = [[0 for j in range(self.bg_jdim)] for i in range(self.bg_idim)]  # Big_grid stores whether each (biggrid_size_m*biggrid_size_m)m square of the arena has been visited
-        self.big_grid_centre = [[0 for j in range(self.bg_jdim)] for i in range(self.bg_idim)]
 
         self.path = None
         self.plt_init = False  # Whether the path visualisation pyplot for debug has been initialised
@@ -83,17 +70,6 @@ class MyPlanner:
                     grid2[i][j] = np.inf
         return grid2.astype("float32")
 
-    def heuristic(self, a: GridLocation, b: GridLocation) -> float:
-        '''Planning heuristic function.
-        Parameters
-        ----------
-        a: GridLocation
-            Starting location.
-        b: GridLocation
-            Goal location.
-        '''
-        return euclidean_distance(a, b)
-
     def nearest_clear(self, loc, passable):
         '''Utility function to find the nearest clear cell to a blocked cell'''
         loc = min(loc[0], self.map.grid.shape[0] - 1), min(loc[1], self.map.grid.shape[1] - 1)
@@ -103,7 +79,7 @@ class MyPlanner:
             for i in range(self.map.height):  # y
                 for j in range(self.map.width):  # x
                     if self.map.grid[(i, j)] > 0:
-                        best = min(best, (self.heuristic(GridLocation(i, j), loc), (i, j)))
+                        best = min(best, (euclidean_distance(GridLocation(i, j), loc), (i, j)))
             loc = best[1]
         return loc
 
@@ -250,7 +226,7 @@ if __name__ == '__main__':
     print("Got map from loc")
     ROBOT_RADIUS_M = 0.17
     map_.grid -= 1.5 * ROBOT_RADIUS_M / map_.scale
-    planner = MyPlanner(map_, waypoint_sparsity_m=0.4, astargrid_threshold_dist_cm=29, path_opt_max_safe_dist_cm=24, path_opt_min_straight_deg=165, consider_nearest=4, biggrid_size_m=0.8)
+    planner = MyPlanner(map_, waypoint_sparsity_m=0.4, astargrid_threshold_dist_cm=29, path_opt_max_safe_dist_cm=24, path_opt_min_straight_deg=165)
 
 
     def test_path(a, b, c, d):
