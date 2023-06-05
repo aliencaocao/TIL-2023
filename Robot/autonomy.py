@@ -67,7 +67,9 @@ def main():
 
     # Define helper functions
     # To run CV inference and report targets found
+
     def do_cv():
+        # TODO: Update for the new plushies challenge
         global prev_img_rpt_time
         # logger.debug('pirt',prev_img_rpt_time)
         if not prev_img_rpt_time or time.time() - prev_img_rpt_time >= 1:  # throttle to 1 submission per second, and only read img if necessary
@@ -79,12 +81,12 @@ def main():
             # Submit targets
             if targets:
                 prev_img_rpt_time = time.time()
-                rep_service.report(pose, img, targets)
+                # rep_service.report(pose, img, targets) TODO: Update for the new plushies challenge
                 logger.info('{} targets detected.'.format(len(targets)))
 
     # Movement-related config and controls
-    REACHED_THRESHOLD_M = 0.3  # TODO: Participant may tune, in meters
-    ANGLE_THRESHOLD_DEG = 25.0  # TODO: Participant may tune.
+    REACHED_THRESHOLD_M = 0.3  # Participant may tune, in meters
+    ANGLE_THRESHOLD_DEG = 25.0  # Participant may tune.
     tracker = PIDController(Kp=(0.35, 0.2), Ki=(0.1, 0.0), Kd=(0, 0))
 
     # To prevent bug with endless spinning in alternate directions by only allowing 1 direction of spinning
@@ -102,7 +104,7 @@ def main():
 
     # Initialise planner
     # Planner-related config here
-    ROBOT_RADIUS_M = 0.17  # TODO: Participant may tune. 0.390 * 0.245 (L x W)
+    ROBOT_RADIUS_M = 0.17  # Participant may tune. 0.390 * 0.245 (L x W)
     map_.grid -= 1.5 * ROBOT_RADIUS_M / map_.scale # Same functionality as .dilated last year: expands the walls by 1.5 times the radius of the robo
 
     planner = MyPlanner(map_,
@@ -112,7 +114,7 @@ def main():
                         path_opt_max_safe_dist_cm=24)
 
     # Start run
-    rep_service.start_run()
+    response = rep_service.start_run()  # This must be called before other ReportingService methods are called.
 
     # Main loop
     while True:
@@ -129,25 +131,78 @@ def main():
        
         # do_cv() # Debug
 
-        # Reached current destination OR just started. Get next location of interest (i.e. destination to visit)
         if not curr_loi:
-            # Get new LOI
-            curr_loi = RealLocation(4,1)
-            logger.info('Current LOI set to: {}'.format(curr_loi))
+            # We are at a checkpoint! Either the first one when just starting, or reached here after navigation.
+
+            return_val = "Test" #rep_service.check_pose(pose) # Call this to check if the robot is currently at a task or detour checkpoint.
+
+            if return_val == "PLACEHOLDER_FOR_TASKCHECKPT_VALUE": 
+                logger.debug('Spinning and taking photos to detect plushies')
+                #do cv & spin 45 degrees 8 times
+                starting_angle = pose[2]
+                starting_angle %= 360
+                first_turn_angle = starting_angle % 45
+
+                robot.chassis.drive_speed(x=0, z=first_turn_angle)
+                time.sleep(1)
+                robot.chassis.drive_speed(x=0, z=0)
+                logger.debug("First_turn_angle", first_turn_angle)
+
+                current_angle = (starting_angle - first_turn_angle) % 360
+
+                logger.debug("Doing angle", current_angle)
+                time.sleep(2)
+                do_cv()
+
+                for spinning in range(7):
+                    robot.chassis.drive_speed(x=0, z=45)
+                    time.sleep(1)
+                    robot.chassis.drive_speed(x=0, z=0)
+                    current_angle = (current_angle - 45) % 360
+
+                    logger.debug("Doing angle", current_angle)
+                    time.sleep(2)
+                    do_cv()
+
+                logger.debug('Done spinning. Moving on.')
+
+                # TODO: Code for speaker identification challenge
+
+                # TODO: Code for ASR (decoding degits) challenge
+
+            # TODO: Get the coordinates for the next location
+            # TODO: Break if signal is received that we've just completed the final checkpoint
+            curr_loi = RealLocation(4,1) #Placeholder for getting the next location from wtv DSTA API
+
+            logger.info('Current destination set to: {}'.format(curr_loi))
+
+            #Reset the pose filter
+            pose_filter = SimpleMovingAverage(n=10)
 
             # Plan a path to the new LOI
             logger.info('Planning path to: {}'.format(curr_loi))
             path = planner.plan(pose[:2], curr_loi, display=True)
-
             if path is None:
-                logger.info('No possible path found, location skipped')
-                curr_loi = None #TODO: Make sure planner get_explore() is robust against enclosed area
+                logger.info('Catastrophic error, no possible path found!')
+                #It should never come to this!
+                #TODO: Implement some simple random movement for the robot to change its location
+
+                #And/or re-initialise the map and planner with a smaller dilation (smaller robo radius) which I've done below (untested)
+                map_.grid += 1.5 * ROBOT_RADIUS_M / map_.scale # Same functionality as .dilated last year: expands the walls by 1.5 times the radius of the robo
+                ROBOT_RADIUS_M *= 2/3
+                map_.grid -= 1.5 * ROBOT_RADIUS_M / map_.scale
+                planner = MyPlanner(map_,
+                    waypoint_sparsity_m=0.4,
+                    astargrid_threshold_dist_cm=29,
+                    path_opt_min_straight_deg=165,
+                    path_opt_max_safe_dist_cm=24)
             else:
                 path.reverse()  # reverse so closest wp is last so that pop() is cheap , waypoint
                 curr_wp = None
                 logger.info('Path planned.')
+            
         else:
-            # There is a current LOI objective.
+            # There is a current destination.
             # Continue with navigation along current path.
             if path: # [RealLocation(x,y)]
                 # Get next waypoint
@@ -242,40 +297,11 @@ def main():
                 robot.chassis.drive_speed(x=vel_cmd[0], z=vel_cmd[1])
 
             else:
-                logger.debug('End of path. Spinning now.')
+                logger.debug('End of path.')
                 curr_loi = None
 
-                starting_angle = pose[2]
-                starting_angle %= 360
-                first_turn_angle = starting_angle % 45
-
-                robot.chassis.drive_speed(x=0, z=first_turn_angle)
-                time.sleep(1)
-                robot.chassis.drive_speed(x=0, z=0)
-                logger.debug("First_turn_angle", first_turn_angle)
-
-                current_angle = (starting_angle - first_turn_angle) % 360
-
-                logger.debug("Doing angle", current_angle)
-                time.sleep(2)
-                do_cv()
-
-                for spinning in range(7):
-                    robot.chassis.drive_speed(x=0, z=45)
-                    time.sleep(1)
-                    robot.chassis.drive_speed(x=0, z=0)
-                    current_angle = (current_angle - 45) % 360
-
-                    logger.debug("Doing angle", current_angle)
-                    time.sleep(2)
-                    do_cv()
-
-                logger.debug('Done spinning. Moving on.')
-                # Reset the pose_filter
-                pose_filter = SimpleMovingAverage(n=10)
-                continue
-
     robot.chassis.drive_speed(x=0.0, y=0.0, z=0.0)  # set stop for safety
+    response = rep_service.end_run() # Call this only after receiving confirmation from the scoring server that you have reached the maze's last checkpoint.
     logger.info('Mission Terminated.')
 
 
