@@ -1,1 +1,1 @@
-cmd /c til-simulator --config sim_config.yml
+cmd /c til-simulator -c sim_cfg.yml

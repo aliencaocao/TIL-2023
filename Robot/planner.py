@@ -1,13 +1,12 @@
 import math
 import time
-
 import pyastar2d
 from skimage.draw import line as bresenham_sk
 from tilsdk.localization import *
 
 
 class MyPlanner:
-    def __init__(self, map_: SignedDistanceGrid = None, waypoint_sparsity_m=0.5, astargrid_threshold_dist_cm=29, path_opt_min_straight_deg=170, path_opt_max_safe_dist_cm=24, explore_consider_nearest=4, biggrid_size_m=0.8):
+    def __init__(self, map_: SignedDistanceGrid = None, waypoint_sparsity_m=0.5, astargrid_threshold_dist_cm=29, path_opt_min_straight_deg=170, path_opt_max_safe_dist_cm=24):
         '''
         Parameters
         ----------
@@ -26,11 +25,6 @@ class MyPlanner:
             This value is the minimum degree formed by 3 consecutive points that we still consider 'straight'.
         path_opt_max_safe_dist_cm:
             Maximum allowed minimum clearance along paths from one waypoint to the next and previous for it to be deleted in optimisation.
-        consider: float
-            For the get_explore function only. See there for more details.
-        biggrid_size_m:
-            Divide the grid into squares of side length biggrid_size_m m.
-            When there are no clues, the planner will try to explore every square of this big grid.
         '''
         # ALL grids (including big_grid) use [y][x] convention
 
@@ -38,43 +32,15 @@ class MyPlanner:
         self.astargrid_threshold_dist_cm = astargrid_threshold_dist_cm
         self.path_opt_min_straight_deg = path_opt_min_straight_deg
         self.path_opt_max_safe_dist_cm = path_opt_max_safe_dist_cm
-        self.biggrid_size_m = biggrid_size_m
-        self.explore_consider_nearest = explore_consider_nearest
 
         self.map = map_
         self.passable = self.map.grid > 0
         self.bgrid = self.transform_add_border(self.map.grid.copy())  # Grid which takes the walls outside the grid into account
         self.astar_grid = self.transform_for_astar(self.bgrid.copy())
 
-        self.bg_idim = math.ceil(5 / biggrid_size_m)  # i:y. Number of rows of the big grid to cover the whole map.
-        self.bg_jdim = math.ceil(7 / biggrid_size_m)  # j:x. Number of columns of the big grid to cover the whole map.
-        self.big_grid = [[0 for j in range(self.bg_jdim)] for i in range(self.bg_idim)]  # Big_grid stores whether each (biggrid_size_m*biggrid_size_m)m square of the arena has been visited
-        self.big_grid_centre = [[0 for j in range(self.bg_jdim)] for i in range(self.bg_idim)]
-
         self.path = None
         self.plt_init = False  # Whether the path visualisation pyplot for debug has been initialised
         self.scat = None  # For storing the scatterplot pyplot for path visualisation
-
-        # Store the centres of the big_grid squares; if these locations are walls, find the next nearest location
-        for i in range(self.bg_idim):
-            for j in range(self.bg_jdim):
-                # Find the closest free location to centre of this big grid square
-                y_pos = min(4.9, i * self.biggrid_size_m + self.biggrid_size_m / 2)
-                x_pos = min(6.9, j * self.biggrid_size_m + self.biggrid_size_m / 2)
-
-                grid_loc = self.map.real_to_grid(RealLocation(x_pos, y_pos))
-                grid_loc = grid_loc[1], grid_loc[0]
-                nc = self.nearest_clear(grid_loc, self.passable)
-                # If the closest free location to the entre of the cell is in another cell,
-                # ignore this cell by marking it as visited
-                # This doesn't happen though
-                nc = nc[1], nc[0]
-                nc = self.map.grid_to_real(nc)
-                # print("gridctr",RealLocation(x_pos,y_pos),"nc",nc)
-                if self.big_grid_of(nc) != (j, i):
-                    self.big_grid[i][j] = 100
-                else:
-                    self.big_grid_centre[i][j] = nc
 
     def transform_add_border(self, og_grid):
         grid = og_grid.copy()
@@ -104,75 +70,6 @@ class MyPlanner:
                     grid2[i][j] = np.inf
         return grid2.astype("float32")
 
-    def big_grid_of(self, l: RealLocation):
-        # Returns the big grid array indices of a real location
-        return int(l[0] // self.biggrid_size_m), int(l[1] // self.biggrid_size_m)
-
-    def visit(self, l: RealLocation):  # Mark big_grid square as visited
-        indices = self.big_grid_of(l)
-        # print("Location:", l)
-        # print("indices:", indices)
-        # print("bg_idim:", self.bg_idim)
-        # print("bg_jdim:", self.bg_jdim)
-        indices = (min(indices[0], self.bg_jdim - 1), min(indices[1], self.bg_idim - 1))
-        self.big_grid[indices[1]][indices[0]] = max(1, self.big_grid[indices[1]][indices[0]])
-
-    def get_explore(self, l: RealLocation, debug: bool = False):
-        # DEBUG PLT IS CURRENTLY BROKEN!
-        # Call this to get a location to go to if there are no locations of interest left
-        # debug: Whether to plot maps and show info
-        # explore_consider_nearest (in __init__): Consider the astar paths of this number of the closest unvisited cells by euclidean distance
-        # Larger number gives better performance but slower
-        m = 100
-        for i in range(self.bg_idim):
-            for j in range(self.bg_jdim):
-                m = min(m, self.big_grid[i][j])
-        distance = []
-        for i in range(self.bg_idim):
-            for j in range(self.bg_jdim):
-                if self.big_grid[i][j] == m:
-                    distance.append((self.heuristic(self.big_grid_centre[i][j], l), (i, j)))
-        distance.sort()
-
-        if len(distance) == 0:
-            return None
-
-        distance = distance[:min(self.explore_consider_nearest, len(distance))]
-        for i in range(len(distance)):
-            loc = self.big_grid_centre[distance[i][1][0]][distance[i][1][1]]
-            if debug:
-                print("l, loc:", l, loc)
-            path = self.plan(l, loc, whole_path=True, display=debug)
-            distance[i] = (1e18 if path is None else len(path), distance[i][1])
-            if debug:
-                print("Path length:", distance[i][0])
-
-        distance.sort()
-        if debug:
-            print("Closest guys", distance[:min(5, len(distance))])
-
-        closest = distance[0]
-        self.big_grid[closest[1][0]][closest[1][1]] += 1
-
-        if debug:
-            fig, ax = plt.subplots(1, 1)
-            ax.imshow(self.big_grid)
-            ax.set_title("Big grid now")
-            plt.show(block=False)
-            print("Done showing")
-        return self.big_grid_centre[closest[1][0]][closest[1][1]]
-
-    def heuristic(self, a: GridLocation, b: GridLocation) -> float:
-        '''Planning heuristic function.
-        Parameters
-        ----------
-        a: GridLocation
-            Starting location.
-        b: GridLocation
-            Goal location.
-        '''
-        return euclidean_distance(a, b)
-
     def nearest_clear(self, loc, passable):
         '''Utility function to find the nearest clear cell to a blocked cell'''
         loc = min(loc[0], self.map.grid.shape[0] - 1), min(loc[1], self.map.grid.shape[1] - 1)
@@ -182,7 +79,7 @@ class MyPlanner:
             for i in range(self.map.height):  # y
                 for j in range(self.map.width):  # x
                     if self.map.grid[(i, j)] > 0:
-                        best = min(best, (self.heuristic(GridLocation(i, j), loc), (i, j)))
+                        best = min(best, (euclidean_distance(GridLocation(i, j), loc), (i, j)))
             loc = best[1]
         return loc
 
@@ -328,8 +225,8 @@ if __name__ == '__main__':
     map_: SignedDistanceGrid = loc_service.get_map()
     print("Got map from loc")
     ROBOT_RADIUS_M = 0.17
-    map_ = map_.dilated(1.5 * ROBOT_RADIUS_M / map_.scale)
-    planner = MyPlanner(map_, waypoint_sparsity_m=0.4, astargrid_threshold_dist_cm=29, path_opt_max_safe_dist_cm=24, path_opt_min_straight_deg=165, explore_consider_nearest=4, biggrid_size_m=0.8)
+    map_.grid -= 1.5 * ROBOT_RADIUS_M / map_.scale
+    planner = MyPlanner(map_, waypoint_sparsity_m=0.4, astargrid_threshold_dist_cm=29, path_opt_max_safe_dist_cm=24, path_opt_min_straight_deg=165)
 
 
     def test_path(a, b, c, d):

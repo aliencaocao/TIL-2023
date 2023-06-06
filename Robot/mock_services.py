@@ -62,7 +62,7 @@ class NLPService:
         '''
         pass
 
-    def locations_from_clues(self, clues: Iterable[Clue]) -> List[RealLocation]:
+    def locations_from_clues(self, clues) -> List[RealLocation]:
         '''Process clues and get locations of interest.
         
         Mock returns location of all clues.

@@ -1,0 +1,51 @@
+# scoring parameters
+max_time_per_run_s: 10000.0
+
+# Threshold limit for scoring server to consider that robot is near checkpoint. (metres)
+local_thres : 0.35
+
+# detour_checkpoints corresponding to each valid checkpoint. 
+detour_checkpoint : 
+  - (0, 0, 0)  # ignore this row - the first task checkpoint has no prior detour.
+  - (1.5, 3.5, 0) # detour before 2nd task checkpoint
+  - (2.5, 0.5, 0) # detour before 3rd task checkpoint
+
+# valid checkpoints in order 
+valid_checkpoints : 
+  - (0.5, 2, 180) # first task checkpoint, this is sent in the start_run ReportingService API
+  - (2.5, 3.5, 0) # second task checkpoint
+  - (6.5, 0.5, 0) # end goal
+
+# targets {<checkpoint_no> : {id : <checkpoint_no>, situation:<"hostage"/"suspect"/"none">}}
+targets:
+  1:
+    id: 1
+    situation : suspect
+    audio_path : "D:/TIL-AI 2023/til-23-finals/til-23-finals/data/audio/audio_iden_file1.zip"
+    correct_audio : audio1_teamName One_member2 
+    digit_audio_path : "D:/TIL-AI 2023/til-23-finals/til-23-finals/data/audio/audio_digit_file1.zip"
+    digits : (2,2)
+  
+  2:
+    id: 2
+    situation : suspect
+    audio_path : "D:/TIL-AI 2023/til-23-finals/til-23-finals/data/audio/audio_iden_file1.zip"
+    correct_audio : audio1_teamName One_member2
+    digit_audio_path : "D:/TIL-AI 2023/til-23-finals/til-23-finals/data/audio/audio_digit_file1.zip"
+    digits : (3,1)
+  
+  3:
+    id: 3
+    situation : suspect
+    audio_path : "D:/TIL-AI 2023/til-23-finals/til-23-finals/data/audio/audio_iden_file1.zip"
+    correct_audio : audio1_teamName One_member2
+    digit_audio_path : "D:/TIL-AI 2023/til-23-finals/til-23-finals/data/audio/audio_digit_file1.zip"
+    digits : (2,2)
+
+  4:
+    id: 4
+    situation : suspect
+    audio_path : "D:/TIL-AI 2023/til-23-finals/til-23-finals/data/audio/audio_iden_file1.zip"
+    correct_audio : audio1_teamName One_member2
+    digit_audio_path : "D:/TIL-AI 2023/til-23-finals/til-23-finals/data/audio/audio_digit_file1.zip"
+    digits : (2,2)
