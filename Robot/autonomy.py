@@ -12,7 +12,7 @@ import cv2
 
 if SIMULATOR_MODE:
     from tilsdk.mock_robomaster.robot import Robot  # Use this for the simulator
-    from mock_services import CVService
+    from mock_services import CVService, ASRService
 else:
     from robomaster.robot import Robot  # Use this for real robot
     from cv_service import CVService

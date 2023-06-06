@@ -25,7 +25,7 @@ class CVService:
         return image, 'none'
 
 
-class NLPService:
+class ASRService:
     '''
     Parameters
     ----------
