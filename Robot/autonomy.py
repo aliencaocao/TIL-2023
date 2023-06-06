@@ -1,6 +1,9 @@
+import glob
 import time
+
 from tilsdk import *  # import the SDK
 from tilsdk.utilities import PIDController, SimpleMovingAverage  # import optional useful things
+
 from planner import MyPlanner
 
 SIMULATOR_MODE = True  # Change to False for real robomaster
@@ -9,11 +12,11 @@ import cv2
 
 if SIMULATOR_MODE:
     from tilsdk.mock_robomaster.robot import Robot  # Use this for the simulator
-    from mock_services import CVService, NLPService
+    from mock_services import CVService
 else:
     from robomaster.robot import Robot  # Use this for real robot
     from cv_service import CVService
-    from nlp_service import NLPService
+    from nlp_service import ASRService
 
 # Setup logging in a nice readable format
 logging.basicConfig(level=logging.INFO,
@@ -32,8 +35,8 @@ for l in loggers:
     l.setLevel(logging.DEBUG)
 
 # TODO: move the models to the robot folder for finals
-NLP_PREPROCESSOR_DIR = '../ASR/wav2vec2-conformer'
-NLP_MODEL_DIR = '../ASR/wav2vec2-conformer.trt'
+ASR_PREPROCESSOR_DIR = '../ASR/wav2vec2-conformer'
+ASR_MODEL_DIR = '../ASR/wav2vec2-conformer.trt'
 OD_CONFIG_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py'
 OD_MODEL_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/InternImage-L epoch_12 stripped.pth'
 REID_MODEL_DIR = '../CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth'
@@ -51,14 +54,14 @@ def main():
     # Initialize services
     if SIMULATOR_MODE:
         cv_service = CVService(OD_CONFIG_DIR, OD_MODEL_DIR, REID_MODEL_DIR, REID_CONFIG_DIR)
-        nlp_service = NLPService(NLP_PREPROCESSOR_DIR, NLP_MODEL_DIR)
+        asr_service = ASRService(ASR_PREPROCESSOR_DIR, ASR_MODEL_DIR)
         loc_service = LocalizationService(host='localhost', port=5566)  # for simulator
-        rep_service = ReportingService(host='localhost', port=5566)  # only avail on simulator
+        rep_service = ReportingService(host='localhost', port=5566)
     else:
         cv_service = CVService(OD_CONFIG_DIR, OD_MODEL_DIR, REID_MODEL_DIR, REID_CONFIG_DIR)
-        nlp_service = NLPService(NLP_PREPROCESSOR_DIR, NLP_MODEL_DIR)
-        loc_service = LocalizationService(host='192.168.20.56', port=5521)  # for real robot
-        # No rep_service needed for real robot
+        asr_service = ASRService(ASR_PREPROCESSOR_DIR, ASR_MODEL_DIR)
+        loc_service = LocalizationService(host='192.168.20.56', port=5521)  # need change on spot
+        rep_service = ReportingService(host='localhost', port=5566)  # need change on spot
 
     # Initialize variables
     curr_loi: RealLocation = None
@@ -164,7 +167,19 @@ def main():
 
                 # TODO: Code for speaker identification challenge
 
-                # TODO: Code for ASR (decoding degits) challenge
+                # TODO: Code for ASR (decoding digits) challenge
+                password = asr_service.predict(glob.glob(os.path.join(ZIP_SAVE_DIR, '*.wav')))
+                if password:
+                    target_pose = rep_service.report_digit(pose, password)
+                    target_pose_check = rep_service.check_pose(target_pose)
+                    if isinstance(target_pose_check, RealPose):  # TODO: check if legal
+                        logger.info(f'Wrong password! Got detour point {target_pose}, next task point is {target_pose_check}, moving there now')
+                    if target_pose_check == 'Task Checkpoint Reached':
+                        logger.info(f'Correct password! Moving to next task checkpoint at {target_pose}')
+                    elif target_pose_check == 'Goal Reached':
+                        logger.info(f'Correct password! Moving to final goal at {target_pose}')
+                    else:
+                        logger.warning('Pose gotten from report digit is invalid!')
 
             # TODO: Get the coordinates for the next location
             # TODO: Break if signal is received that we've just completed the final checkpoint
@@ -232,7 +247,7 @@ def main():
                             and (max(log_y) - min(log_y) <= stuck_threshold_area_m)):
                         # Stuck! Try to unstuck by driving backwards at 0.5m/s for 2s.
                         # Then continue to next iteration for simplicity of code
-                        logger.info("STUCK DETECTED, DRIVING BACKWARDS")
+                        logger.warning("STUCK DETECTED, DRIVING BACKWARDS")
                         robot.chassis.drive_speed(x=-0.3, z=0)
                         time.sleep(3)
                         robot.chassis.drive_speed(x=0, z=0)
@@ -302,6 +317,6 @@ def main():
 
 
 if __name__ == '__main__':
-    suspect_img = cv2.imread('data/imgs/targetmario.png')
+    suspect_img = cv2.imread('data/imgs/suspect1.png')
     hostage_img = cv2.imread('data/imgs/targetmario.png')
     main()

@@ -15,9 +15,9 @@ start_pose:
   x: 1.0
   y: 1.0
   z: 0.0
-use_noisy_pose: off
+use_noisy_pose: true
 robot_phy_length: 0.32
-position_noise_stddev: 0.05
+position_noise_stddev: 0.1
 
 # localization proxy
 proxy_real_robot: off
@@ -84,28 +84,24 @@ targets:
       y: 4.8
       r: 0.2
     image_file: './data/imgs/image_0000.png'
-targets:
   - target_id: 2
     trigger:
       x: 6.0
       y: 4.5
       r: 0.2
     image_file: './data/imgs/image_0000.png'
-targets:
   - target_id: 3
     trigger:
       x: 6.5
       y: 4.5
       r: 0.2
     image_file: './data/imgs/image_0000.png'
-targets:
   - target_id: 4
     trigger:
       x: 3.5
       y: 1.0
       r: 0.2
     image_file: './data/imgs/image_0000.png'
-targets:
   - target_id: 5
     trigger:
       x: 4.0

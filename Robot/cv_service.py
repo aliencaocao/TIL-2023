@@ -3,8 +3,10 @@ import sys
 sys.path.insert(0, '../CV/InternImage/detection')
 sys.path.insert(1, '../CV/SOLIDER-REID')
 
+import os
 from typing import List
 import logging
+import time
 
 import cv2
 from mmdet.apis import inference_detector, init_detector
@@ -15,7 +17,6 @@ import numpy as np
 from model.make_model import make_model
 from config import cfg
 from utils.metrics import Postprocessor
-from tilsdk.cv import DetectedObject
 
 logger = logging.getLogger('CVService')
 assert mmdet_custom
@@ -64,12 +65,13 @@ class CVService:
             img[channel] /= cfg.INPUT.PIXEL_STD[channel]
         return img.astype(np.float32)
 
-    def predict(self, suspect: List[np.ndarray], image: np.ndarray) -> tuple[np.ndarray, str]:  # TODO: consider saving the visualization of the detections and query images
+    def predict(self, suspect: List[np.ndarray], image: np.ndarray) -> tuple[np.ndarray, str]:
         """Returns image drawn with bbox and class “suspect”/”hostage”/"none". Assume image only contains 1 gallery plushie"""
         assert len(suspect) == 2, f'Expecting 2 suspects, got {len(suspect)}'
         result = inference_detector(self.ODModel, image)[0][0]
         boxes = result[result[:, 4] > self.ODConfidenceThreshold]
         if len(boxes) == 0:
+            logger.info('Predicted None due to no bbox')
             return image, "none"  # no box at all, return none
         box = boxes[boxes[:, 4].argsort()][-1]  # take the highest confidence box
         query = [self.load_img(q) for q in suspect]  # 2, first is suspect, second is hostage
@@ -83,11 +85,17 @@ class CVService:
         self.REID_postprocessor.update(features.detach())  # postprocessor expects Torch tensor as it uses torch to compute stuff
         dist_mat = self.REID_postprocessor.compute()  # (2, 1) array, 2 queries, 1 gallery image
         dist_mat = np.squeeze(dist_mat)  # (2,)
+        logger.debug(f'Distance matrix: {dist_mat}')
         self.REID_postprocessor.reset()  # reset the postprocessor for next query
 
         # take the lowest distance one
         min_id = np.argmin(dist_mat)
         if dist_mat[min_id] > self.REIDThreshold:  # the min one still fail threshold so return none
+            logger.info('Predicted None due to threshold')
             return image, "none"
         img_with_bbox = cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        return img_with_bbox, "suspect" if result == 0 else "hostage"
+        os.makedirs('CV_output', exist_ok=True)
+        cv2.imwrite(f"{time.time()}.png", img_with_bbox)
+        pred = "suspect" if min_id == 0 else "hostage"
+        logger.info(f'Predicted {pred}')
+        return img_with_bbox, pred
