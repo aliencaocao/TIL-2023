@@ -1,17 +1,22 @@
-import time
+import glob
+import time, os
+
 from tilsdk import *  # import the SDK
 from tilsdk.utilities import PIDController, SimpleMovingAverage  # import optional useful things
+
 from planner import MyPlanner
 
 SIMULATOR_MODE = True  # Change to False for real robomaster
 
+import cv2
+
 if SIMULATOR_MODE:
     from tilsdk.mock_robomaster.robot import Robot  # Use this for the simulator
-    from mock_services import CVService, NLPService
+    from mock_services import CVService, ASRService
 else:
     from robomaster.robot import Robot  # Use this for real robot
     from cv_service import CVService
-    from nlp_service import NLPService
+    from nlp_service import ASRService
 
 # Setup logging in a nice readable format
 logging.basicConfig(level=logging.INFO,
@@ -30,12 +35,15 @@ for l in loggers:
     l.setLevel(logging.DEBUG)
 
 # TODO: move the models to the robot folder for finals
-NLP_PREPROCESSOR_DIR = '../ASR/wav2vec2-conformer'
-NLP_MODEL_DIR = '../ASR/wav2vec2-conformer.trt'
+ASR_PREPROCESSOR_DIR = '../ASR/wav2vec2-conformer'
+ASR_MODEL_DIR = '../ASR/wav2vec2-conformer.trt'
 OD_CONFIG_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py'
 OD_MODEL_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/InternImage-L epoch_12 stripped.pth'
 REID_MODEL_DIR = '../CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth'
 REID_CONFIG_DIR = '../CV/SOLIDER-REID/TIL.yml'
+ZIP_SAVE_DIR = "D:/TIL-AI 2023/til-22-finals/til-23-finals/temp"
+prev_img_rpt_time = 0  # In global scope to allow convenient usage of global keyword in do_cv()
+
 
 def main():
     # Connect to robot and start camera
@@ -46,12 +54,12 @@ def main():
     # Initialize services
     if SIMULATOR_MODE:
         cv_service = CVService(OD_CONFIG_DIR, OD_MODEL_DIR, REID_MODEL_DIR, REID_CONFIG_DIR)
-        #asr_service = ASRService(ASR_PREPROCESSOR_DIR, ASR_MODEL_DIR)
+        asr_service = ASRService(ASR_PREPROCESSOR_DIR, ASR_MODEL_DIR)
         loc_service = LocalizationService(host='localhost', port=5566)  # for simulator
         rep_service = ReportingService(host='localhost', port=5501)
     else:
         cv_service = CVService(OD_CONFIG_DIR, OD_MODEL_DIR, REID_MODEL_DIR, REID_CONFIG_DIR)
-        #asr_service = ASRService(ASR_PREPROCESSOR_DIR, ASR_MODEL_DIR)
+        asr_service = ASRService(ASR_PREPROCESSOR_DIR, ASR_MODEL_DIR)
         loc_service = LocalizationService(host='192.168.20.56', port=5521)  # need change on spot
         rep_service = ReportingService(host='localhost', port=5566)  # need change on spot
 
@@ -62,8 +70,9 @@ def main():
     path: List[RealLocation] = []
     curr_wp: RealLocation = None
     pose_filter = SimpleMovingAverage(n=10)
-    map_: SignedDistanceGrid = loc_service.get_map() # Currently, it is in the same format as the 2022 one. The docs says it's a new format.
-    #If they update get_map() to match the description in the docs, we will need to write a function to convert it back to the 2022 format.
+    map_: SignedDistanceGrid = loc_service.get_map()  # Currently, it is in the same format as the 2022 one. The docs says it's a new format.
+
+    # If they update get_map() to match the description in the docs, we will need to write a function to convert it back to the 2022 format.
 
     # Movement-related config and controls
     REACHED_THRESHOLD_M = 0.3  # Participant may tune, in meters
@@ -81,13 +90,13 @@ def main():
     log_x = []
     log_y = []
     log_time = []
-    stuck_threshold_time_s = 15 # Minimum seconds to be considered stuck
+    stuck_threshold_time_s = 15  # Minimum seconds to be considered stuck
     stuck_threshold_area_m = 0.15  # Considered stuck if it stays within a 15cm*15cm square
 
     # Initialise planner
     # Planner-related config here
     ROBOT_RADIUS_M = 0.17  # Participant may tune. 0.390 * 0.245 (L x W)
-    map_.grid -= 1.5 * ROBOT_RADIUS_M / map_.scale # Same functionality as .dilated last year: expands the walls by 1.5 times the radius of the robo
+    map_.grid -= 1.5 * ROBOT_RADIUS_M / map_.scale  # Same functionality as .dilated last year: expands the walls by 1.5 times the radius of the robo
 
     planner = MyPlanner(map_,
                         waypoint_sparsity_m=0.4,
@@ -214,7 +223,19 @@ def main():
                 # TODO: Code for all the AI challenges
                 # Can refer to https://github.com/til-23/til-23-finals-public/blob/main/stubs/autonomy_starter.py
 
-                target_pose = (4,1,180) # rep_service.report_digit(pose, password)
+                # TODO: Code for ASR (decoding digits) challenge
+                password = asr_service.predict(glob.glob(os.path.join(ZIP_SAVE_DIR, '*.wav')))
+                if password:
+                    target_pose = rep_service.report_digit(pose, password)
+                    target_pose_check = rep_service.check_pose(target_pose)
+                    if isinstance(target_pose_check, RealPose):  # TODO: check if legal
+                        logger.info(f'Wrong password! Got detour point {target_pose}, next task point is {target_pose_check}, moving there now')
+                    if target_pose_check == 'Task Checkpoint Reached':
+                        logger.info(f'Correct password! Moving to next task checkpoint at {target_pose}')
+                    elif target_pose_check == 'Goal Reached':
+                        logger.info(f'Correct password! Moving to final goal at {target_pose}')
+                    else:
+                        logger.warning('Pose gotten from report digit is invalid!')
 
 
             curr_loi = RealLocation(target_pose[0], target_pose[1]) #Placeholder for getting the next location from wtv DSTA API
@@ -232,24 +253,24 @@ def main():
                 #It should never come to this!
                 #TODO: Implement some simple random movement for the robot to change its location
 
-                #And/or re-initialise the map and planner with a smaller dilation (smaller robo radius) which I've done below (untested)
-                map_.grid += 1.5 * ROBOT_RADIUS_M / map_.scale # Same functionality as .dilated last year: expands the walls by 1.5 times the radius of the robo
-                ROBOT_RADIUS_M *= 2/3
+                # And/or re-initialise the map and planner with a smaller dilation (smaller robo radius) which I've done below (untested)
+                map_.grid += 1.5 * ROBOT_RADIUS_M / map_.scale  # Same functionality as .dilated last year: expands the walls by 1.5 times the radius of the robo
+                ROBOT_RADIUS_M *= 2 / 3
                 map_.grid -= 1.5 * ROBOT_RADIUS_M / map_.scale
                 planner = MyPlanner(map_,
-                    waypoint_sparsity_m=0.4,
-                    astargrid_threshold_dist_cm=29,
-                    path_opt_min_straight_deg=165,
-                    path_opt_max_safe_dist_cm=24)
+                                    waypoint_sparsity_m=0.4,
+                                    astargrid_threshold_dist_cm=29,
+                                    path_opt_min_straight_deg=165,
+                                    path_opt_max_safe_dist_cm=24)
             else:
                 path.reverse()  # reverse so closest wp is last so that pop() is cheap , waypoint
                 curr_wp = None
                 logger.info('Path planned.')
-            
+
         else:
             # There is a current destination.
             # Continue with navigation along current path.
-            if path: # [RealLocation(x,y)]
+            if path:  # [RealLocation(x,y)]
                 # Get next waypoint
                 if not curr_wp:
                     curr_wp = path.pop()
@@ -277,11 +298,11 @@ def main():
 
                     # Stuck detection: Stuck if the robo is within a /0.15/m*/0.15/m box for the past /15/-/20/ seconds
                     if ((log_time[0] < now - stuck_threshold_time_s)
-                            and (max(log_x) - min(log_x) <= stuck_threshold_area_m) \
+                            and (max(log_x) - min(log_x) <= stuck_threshold_area_m)
                             and (max(log_y) - min(log_y) <= stuck_threshold_area_m)):
                         # Stuck! Try to unstuck by driving backwards at 0.5m/s for 2s.
                         # Then continue to next iteration for simplicity of code
-                        logger.info("STUCK DETECTED, DRIVING BACKWARDS")
+                        logger.warning("STUCK DETECTED, DRIVING BACKWARDS")
                         robot.chassis.drive_speed(x=-0.3, z=0)
                         time.sleep(3)
                         robot.chassis.drive_speed(x=0, z=0)
@@ -331,7 +352,7 @@ def main():
                 # If robot is facing the wrong direction, turn to face waypoint first before moving forward.
                 # Lock spin direction (has effect only if use_spin_direction_lock = True) as bug causing infinite spinning back and forth has been encountered before in the sim
                 if abs(ang_diff) > ANGLE_THRESHOLD_DEG:
-                    vel_cmd[0] = 0.0 # Robot can only rotate; set speed to 0
+                    vel_cmd[0] = 0.0  # Robot can only rotate; set speed to 0
                     spin_direction_lock = True
                     spin_sign = np.sign(ang_diff)
                 else:
@@ -347,9 +368,11 @@ def main():
                 curr_loi = None
 
     robot.chassis.drive_speed(x=0.0, y=0.0, z=0.0)  # set stop for safety
-    response = rep_service.end_run() # Call this only after receiving confirmation from the scoring server that you have reached the maze's last checkpoint.
+    response = rep_service.end_run()  # Call this only after receiving confirmation from the scoring server that you have reached the maze's last checkpoint.
     logger.info('Mission Terminated.')
 
 
 if __name__ == '__main__':
+    suspect_img = cv2.imread('data/imgs/suspect1.png')
+    hostage_img = cv2.imread('data/imgs/targetmario.png')
     main()

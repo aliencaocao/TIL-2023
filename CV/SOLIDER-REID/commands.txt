@@ -13,4 +13,4 @@ python infer.py --batched True --config_file TIL.yml MODEL.SEMANTIC_WEIGHT 0.1 D
 
 # Visualization of REID preds
 
-python inspect_reid_preds.py --suspects_dir="../RT-DETR/dataset/reid/suspects" --test_set_img_dir="../RT-DETR/dataset/test/images" --preds_path="./submissions/wbf_0.88x no aug best conf 0.5 no reid lb 0.306_0.882 manyaug best conf 0.7 no reid lb 0.30378 lb 0.307922 REID lb 0.6693.csv" --output_dir="./log_currentbest669_transformer_29_wbf"
+python inspect_reid_preds.py --suspects_dir="../RT-DETR/dataset/reid/suspects" --test_set_img_dir="../RT-DETR/dataset/test/images" --preds_path="./submissions/epoch12 conf 0.99 with min 0.885 lb9292.csv" --output_dir="./reid_visual"
