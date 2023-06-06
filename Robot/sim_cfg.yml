@@ -6,10 +6,7 @@ host: '0.0.0.0'
 port: 5566
 
 # map
-#map_file: '/home/nicholas/code/til-23-finals/data/maps/map_empty_1cm.png'
-#map_file: "/home/nicholas/code/til-23-finals/data/maps/map_simple_5x2.png"
 map_file: './data/maps/map_complex_1cm.png'
-#map_file: "/home/nicholas/code/til-23-finals/data/maps/map_simple_5x2.png"
 
 image_file: './data/imgs/targetmario.png'
 
@@ -23,7 +20,7 @@ start_pose:
   x: 0.5
   y: 0.5
   z: 90
-use_noisy_pose: false  # true or false.
+use_noisy_pose: true  # true or false.
 robot_phy_length: 0.32
 position_noise_stddev: 0.15
 
