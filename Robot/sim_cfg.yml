@@ -20,7 +20,7 @@ start_pose:
   x: 0.5
   y: 0.5
   z: 90
-use_noisy_pose: true  # true or false.
+use_noisy_pose: false  # true or false.
 robot_phy_length: 0.32
 position_noise_stddev: 0.15
 

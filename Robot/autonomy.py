@@ -36,8 +36,6 @@ OD_CONFIG_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn
 OD_MODEL_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/InternImage-L epoch_12 stripped.pth'
 REID_MODEL_DIR = '../CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth'
 REID_CONFIG_DIR = '../CV/SOLIDER-REID/TIL.yml'
-prev_img_rpt_time = 0  # In global scope to allow convenient usage of global keyword in do_cv()
-
 
 def main():
     # Connect to robot and start camera
@@ -48,44 +46,28 @@ def main():
     # Initialize services
     if SIMULATOR_MODE:
         cv_service = CVService(OD_CONFIG_DIR, OD_MODEL_DIR, REID_MODEL_DIR, REID_CONFIG_DIR)
-        nlp_service = NLPService(NLP_PREPROCESSOR_DIR, NLP_MODEL_DIR)
+        #asr_service = ASRService(ASR_PREPROCESSOR_DIR, ASR_MODEL_DIR)
         loc_service = LocalizationService(host='localhost', port=5566)  # for simulator
-        rep_service = ReportingService(host='localhost', port=5566)  # only avail on simulator
+        rep_service = ReportingService(host='localhost', port=5501)
     else:
         cv_service = CVService(OD_CONFIG_DIR, OD_MODEL_DIR, REID_MODEL_DIR, REID_CONFIG_DIR)
-        nlp_service = NLPService(NLP_PREPROCESSOR_DIR, NLP_MODEL_DIR)
-        loc_service = LocalizationService(host='192.168.20.56', port=5521)  # for real robot
-        # No rep_service needed for real robot
+        #asr_service = ASRService(ASR_PREPROCESSOR_DIR, ASR_MODEL_DIR)
+        loc_service = LocalizationService(host='192.168.20.56', port=5521)  # need change on spot
+        rep_service = ReportingService(host='localhost', port=5566)  # need change on spot
 
     # Initialize variables
     curr_loi: RealLocation = None
+    prev_loi: RealLocation = None
+    target_rotation = None
     path: List[RealLocation] = []
     curr_wp: RealLocation = None
     pose_filter = SimpleMovingAverage(n=10)
     map_: SignedDistanceGrid = loc_service.get_map() # Currently, it is in the same format as the 2022 one. The docs says it's a new format.
     #If they update get_map() to match the description in the docs, we will need to write a function to convert it back to the 2022 format.
 
-    # Define helper functions
-    # To run CV inference and report targets found
-
-    def do_cv():
-        # TODO: Update for the new plushies challenge
-        global prev_img_rpt_time
-        # logger.debug('pirt',prev_img_rpt_time)
-        if not prev_img_rpt_time or time.time() - prev_img_rpt_time >= 1:  # throttle to 1 submission per second, and only read img if necessary
-            img = robot.camera.read_cv2_image(strategy='newest')
-
-            # Process image and detect targets
-            targets = cv_service.targets_from_image(img)
-
-            # Submit targets
-            if targets:
-                prev_img_rpt_time = time.time()
-                # rep_service.report(pose, img, targets) TODO: Update for the new plushies challenge
-                logger.info('{} targets detected.'.format(len(targets)))
-
     # Movement-related config and controls
     REACHED_THRESHOLD_M = 0.3  # Participant may tune, in meters
+    REACHED_THRESHOLD_LAST_M = REACHED_THRESHOLD_M / 2
     ANGLE_THRESHOLD_DEG = 25.0  # Participant may tune.
     tracker = PIDController(Kp=(0.35, 0.2), Ki=(0.1, 0.0), Kd=(0, 0))
 
@@ -112,9 +94,43 @@ def main():
                         astargrid_threshold_dist_cm=29,
                         path_opt_min_straight_deg=165,
                         path_opt_max_safe_dist_cm=24)
+    
+    for _ in range(15):
+        logger.info(f"Warming up pose filter to initialise position + reduce initial noise.")
+        pose = loc_service.get_pose()  # TODO: remove `clues`.
+        time.sleep(0.25)
+        pose = pose_filter.update(pose)
 
     # Start run
-    response = rep_service.start_run()  # This must be called before other ReportingService methods are called.
+    res = rep_service.start_run()
+    if res.status == 200:
+        initial_target_pose = eval(res.data)
+        logger.info(f"First location:{initial_target_pose}")
+        curr_loi = RealLocation(x=initial_target_pose[0], y=initial_target_pose[1])
+        target_rotation = initial_target_pose[2]
+        path = planner.plan(pose[:2], curr_loi, display=True)
+        if path is None:
+            logger.info('Error, no possible path found to the first location!')
+            #It should never come to this!
+            #Re-initialise the map and planner with a smaller dilation (smaller robo radius) which I've done below (untested)
+            map_.grid += 1.5 * ROBOT_RADIUS_M / map_.scale # Same functionality as .dilated last year: expands the walls by 1.5 times the radius of the robo
+            ROBOT_RADIUS_M *= 2/3
+            map_.grid -= 1.5 * ROBOT_RADIUS_M / map_.scale
+            planner = MyPlanner(map_,
+                waypoint_sparsity_m=0.4,
+                astargrid_threshold_dist_cm=29,
+                path_opt_min_straight_deg=165,
+                path_opt_max_safe_dist_cm=24)
+        else:
+            path.reverse()  # reverse so closest wp is last so that pop() is cheap , waypoint
+            curr_wp = None
+            logger.info('Path planned.')
+
+    else:
+        logger.error("Bad response from challenge server.")
+        return
+    
+
 
     # Main loop
     while True:
@@ -122,60 +138,89 @@ def main():
 
         # Get new data
         pose = loc_service.get_pose()
-        pose = pose_filter.update(pose)
-        pose = RealPose(min(pose[0], 7), min(pose[1], 5), pose[2])  # prevents out of bounds errors
-        pose = RealPose(max(pose[0], 0), max(pose[1], 0), pose[2])  # prevents out of bounds errors
         if not pose:
             # no new data, continue to next iteration.
             continue
-       
-        # do_cv() # Debug
 
+        pose = pose_filter.update(pose)
+        pose = RealPose(min(pose[0], 7), min(pose[1], 5), pose[2])  # prevents out of bounds errors
+        pose = RealPose(max(pose[0], 0), max(pose[1], 0), pose[2])  # prevents out of bounds errors
+        
         if not curr_loi:
             # We are at a checkpoint! Either the first one when just starting, or reached here after navigation.
+            # Could be task or detour checkpoint or the end
 
-            return_val = "Test" #rep_service.check_pose(pose) # Call this to check if the robot is currently at a task or detour checkpoint.
+            logger.info("=== Reached checkpoint or starting ===")
+            is_task_not_detour = None
+            target_pose = None # Next location to go to which we'll receive soon
+            info = rep_service.check_pose(pose)
 
-            if return_val == "PLACEHOLDER_FOR_TASKCHECKPT_VALUE": 
-                logger.debug('Spinning and taking photos to detect plushies')
-                #do cv & spin 45 degrees 8 times
-                starting_angle = pose[2]
-                starting_angle %= 360
-                first_turn_angle = starting_angle % 45
+            if type(info) == str: # Task checkpoint or the end
+                if info == "End Goal Reached":
+                    rep_service.end_run()
+                    print("=== YOU REACHED THE END ===")
+                    break
+                elif info == "Task Checkpoint Reached":
+                    is_task_not_detour = True
+                elif info == "Not An Expected Checkpoint":
+                    logging.getLogger('Main').info(f"Not yet at task checkpoint. status: {res.status}, data: {res.data}, curr pose: {pose}")
+                    # If we reached this execution branch, it means the autonomy code thinks the
+                    # robot has reached close enough to the checkpoint, but the Reporting server
+                    # is expecting the robot to be even closer to the checkpoint.
+                    # Robot should try to get closer to the checkpoint.
+                    
+                    curr_loi = prev_loi  # Move closer to prev loi
+                    path = [curr_loi, curr_loi] # 2 copies for legacy reasons... prob works with just 1 copy too but that would need testing
+                    REACHED_THRESHOLD_LAST_M *= 2/3               
+                    continue # Resume movement                            
+                else:
+                    raise Exception("DSTA rep_service.check_pose() error: Unexpected string value.")
 
-                robot.chassis.drive_speed(x=0, z=first_turn_angle)
-                time.sleep(1)
-                robot.chassis.drive_speed(x=0, z=0)
-                logger.debug("First_turn_angle", first_turn_angle)
+            elif type(info) == RealPose:  # Robot reached detour checkpoint and received new coordinates to go to.
+                logging.getLogger('Main').info(f"Not goal, not task checkpt. Received a new target pose: {info}.")
+                is_task_not_detour = False
+                target_pose = info
+                continue # Reprocess in next iteration 
+                
+            else:
+                raise Exception(f"DSTA rep_service.check_pose() error: Unexpected return type: {type(info)}.")
 
-                current_angle = (starting_angle - first_turn_angle) % 360
 
-                logger.debug("Doing angle", current_angle)
-                time.sleep(2)
-                do_cv()
+            if is_task_not_detour:
+                logger.info("===== Turning towards CV target =====")
+                ang_diff = -(target_rotation - pose[2])  # body frame
+                #Iinw the - sign is due to robomaster's angle convention being opposite of normal
+                #If the below code results in wrong direction of rotation, try removing - sign
 
-                for spinning in range(7):
+                # ensure ang_diff is in [-180, 180]
+                if ang_diff < -180:
+                    ang_diff += 360
+
+                if ang_diff > 180:
+                    ang_diff -= 360
+                
+                if ang_diff > 0:
                     robot.chassis.drive_speed(x=0, z=45)
-                    time.sleep(1)
+                    time.sleep(ang_diff/45)
                     robot.chassis.drive_speed(x=0, z=0)
-                    current_angle = (current_angle - 45) % 360
+                else:
+                    robot.chassis.drive_speed(x=0, z=-45)
+                    time.sleep(ang_diff/-45)
+                    robot.chassis.drive_speed(x=0, z=0)
+                
 
-                    logger.debug("Doing angle", current_angle)
-                    time.sleep(2)
-                    do_cv()
+                logger.info("===== Starting AI tasks =====")
 
-                logger.debug('Done spinning. Moving on.')
+                # TODO: Code for all the AI challenges
+                # Can refer to https://github.com/til-23/til-23-finals-public/blob/main/stubs/autonomy_starter.py
 
-                # TODO: Code for speaker identification challenge
+                target_pose = (4,1,180) # rep_service.report_digit(pose, password)
 
-                # TODO: Code for ASR (decoding degits) challenge
 
-            # TODO: Get the coordinates for the next location
-            # TODO: Break if signal is received that we've just completed the final checkpoint
-            curr_loi = RealLocation(4,1) #Placeholder for getting the next location from wtv DSTA API
+            curr_loi = RealLocation(target_pose[0], target_pose[1]) #Placeholder for getting the next location from wtv DSTA API
+            target_rotation = target_pose[2]
 
-            logger.info('Current destination set to: {}'.format(curr_loi))
-
+            logger.info('Next checkpoint location: {}'.format(curr_loi))
             #Reset the pose filter
             pose_filter = SimpleMovingAverage(n=10)
 
@@ -183,7 +228,7 @@ def main():
             logger.info('Planning path to: {}'.format(curr_loi))
             path = planner.plan(pose[:2], curr_loi, display=True)
             if path is None:
-                logger.info('Catastrophic error, no possible path found!')
+                logger.info('Error, no possible path found to the next location!')
                 #It should never come to this!
                 #TODO: Implement some simple random movement for the robot to change its location
 
@@ -267,7 +312,7 @@ def main():
                 # NavLogger.info('Pose: {}'.format(pose))
 
                 # Consider waypoint reached if within a threshold distance
-                if dist_to_wp < (REACHED_THRESHOLD_M / 2 if len(path) <= 1 else REACHED_THRESHOLD_M):
+                if dist_to_wp < (REACHED_THRESHOLD_LAST_M if len(path) <= 1 else REACHED_THRESHOLD_M):
                     NavLogger.info('Reached wp: {}'.format(curr_wp))
                     tracker.reset()
                     curr_wp = None
@@ -298,6 +343,7 @@ def main():
 
             else:
                 logger.debug('End of path.')
+                prev_loi = curr_loi
                 curr_loi = None
 
     robot.chassis.drive_speed(x=0.0, y=0.0, z=0.0)  # set stop for safety

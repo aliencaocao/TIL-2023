@@ -1,3 +1,18 @@
 [ INFO][12:05:40][werkzeug]:  * Running on http://0.0.0.0:5501/ (Press CTRL+C to quit)
 [ INFO][12:20:41][waitress]: Serving on http://0.0.0.0:5501
 [ INFO][12:24:09][waitress]: Serving on http://0.0.0.0:5501
+[ INFO][23:10:34][waitress]: Serving on http://0.0.0.0:5501
+[ INFO][23:12:26][start_run]: Run started at 2023-06-06_23-12-26. Writing to 10000SGDMRT\run_2023-06-06_23-12-26.shelve
+[ INFO][23:12:26][start_run]: valid checkpoints : [RealPose(x=0.5, y=2.0, z=180.0), RealPose(x=2.5, y=3.5, z=0.0), RealPose(x=6.5, y=0.5, z=0.0)]
+[ INFO][23:12:26][start_run]: detour checkpoints : [RealPose(x=0.0, y=0.0, z=0.0), RealPose(x=1.5, y=3.5, z=0.0), RealPose(x=2.5, y=0.5, z=0.0)]
+[ INFO][23:12:26][start_run]: First checkpoint given RealPose(x=0.5, y=2.0, z=180.0) with pose counter at 0
+[ INFO][23:12:26][messenger]: Announcing event 'status update'
+[ INFO][23:12:29][check_pose]: check_pose received at 23:12:29
+[ INFO][23:12:56][check_pose]: check_pose received at 23:12:56
+[ INFO][23:12:56][messenger]: Announcing event 'status update'
+[ INFO][23:23:29][waitress]: Serving on http://0.0.0.0:5501
+[ INFO][23:23:55][start_run]: Run started at 2023-06-06_23-23-55. Writing to 10000SGDMRT\run_2023-06-06_23-23-55.shelve
+[ INFO][23:23:55][start_run]: valid checkpoints : [RealPose(x=0.5, y=2.0, z=180.0), RealPose(x=2.5, y=3.5, z=0.0), RealPose(x=6.5, y=0.5, z=0.0)]
+[ INFO][23:23:55][start_run]: detour checkpoints : [RealPose(x=0.0, y=0.0, z=0.0), RealPose(x=1.5, y=3.5, z=0.0), RealPose(x=2.5, y=0.5, z=0.0)]
+[ INFO][23:23:55][start_run]: First checkpoint given RealPose(x=0.5, y=2.0, z=180.0) with pose counter at 0
+[ INFO][23:23:55][messenger]: Announcing event 'status update'
