@@ -21,7 +21,7 @@ class CVService:
         '''
 
     def predict(self, suspect: List[np.ndarray], image: np.ndarray) -> Tuple[np.ndarray, str]:
-        return image, 'none'
+        return image, 'suspect'
 
 
 class ASRService:
@@ -44,4 +44,4 @@ class ASRService:
         pass
 
     def predict(self, audio_paths: List[str]) -> Optional[Tuple[int]]:
-        pass
+        return (9,)

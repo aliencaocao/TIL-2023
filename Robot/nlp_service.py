@@ -75,10 +75,10 @@ class ASRService:
                 audio = self.processor(audio, sampling_rate=16000).input_values[0][0]
                 output = self.model({'input': audio})['output'][0]  # remove batch dimension
                 outputs.append(output)
-            outputs = [self.clean(anno) for anno in self.processor.batch_decode(np.argmax(outputs, axis=-1))]
-            outputs = [self.fix_grammar(anno) for anno in outputs]
+            outputs = (self.clean(anno) for anno in self.processor.batch_decode(np.argmax(outputs, axis=-1)))
+            outputs = tuple(self.fix_grammar(anno) for anno in outputs)
             logger.debug(f'Predicted texts: {outputs}')
-            outputs = tuple(self.find_digit(anno) for anno in outputs)
+            outputs = (self.find_digit(anno) for anno in outputs)
             outputs = tuple(o for o in outputs if o is not None)
             logger.info(f'Predicted digits: {outputs}')
             if len(outputs) != len(audio_paths):

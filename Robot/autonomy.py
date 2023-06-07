@@ -63,6 +63,9 @@ def main():
     else:
         cv_service = CVService(OD_CONFIG_DIR, OD_MODEL_DIR, REID_MODEL_DIR, REID_CONFIG_DIR)
         asr_service = ASRService(ASR_PREPROCESSOR_DIR, ASR_MODEL_DIR)
+        import torch
+        print(torch.cuda.memory_summary())
+        del torch
         loc_service = LocalizationService(host='192.168.20.56', port=5521)  # need change on spot
         rep_service = ReportingService(host='localhost', port=5566)  # need change on spot
 
@@ -80,7 +83,7 @@ def main():
     # Movement-related config and controls
     REACHED_THRESHOLD_M = 0.3  # Participant may tune, in meters
     REACHED_THRESHOLD_LAST_M = REACHED_THRESHOLD_M / 2
-    ANGLE_THRESHOLD_DEG = 25.0  # Participant may tune.
+    MAX_DEVIATION_THRESH_M = 0.25  # 25cm max allowed to deviate from the next WP, used for calculating dynamic angular threshold to speed movement up
     tracker = PIDController(Kp=(0.35, 0.2), Ki=(0.1, 0.0), Kd=(0, 0))
 
     # To prevent bug with endless spinning in alternate directions by only allowing 1 direction of spinning
@@ -359,6 +362,8 @@ def main():
 
                 # If robot is facing the wrong direction, turn to face waypoint first before moving forward.
                 # Lock spin direction (has effect only if use_spin_direction_lock = True) as bug causing infinite spinning back and forth has been encountered before in the sim
+                # Calculate the angle threshold based on dist_to_wp such that when reaching the next wp, the max deviation is less than MAX_DEVIATION_THRESH_M
+                ANGLE_THRESHOLD_DEG = np.degrees(np.arctan2(MAX_DEVIATION_THRESH_M, dist_to_wp))  # TODO: decide MAX_DEVIATION_THRESH_M based on shortest distance to a wall from the straight line that connects to the next wp
                 if abs(ang_diff) > ANGLE_THRESHOLD_DEG:
                     vel_cmd[0] = 0.0  # Robot can only rotate; set speed to 0
                     spin_direction_lock = True
@@ -369,7 +374,6 @@ def main():
 
                 # Send command to robot
                 robot.chassis.drive_speed(x=vel_cmd[0], z=vel_cmd[1])
-
             else:
                 logger.debug('End of path.')
                 prev_loi = curr_loi
@@ -377,7 +381,7 @@ def main():
 
     rep_service.end_run()  # Call this only after receiving confirmation from the scoring server that you have reached the maze's last checkpoint.
     robot.chassis.drive_speed(x=0.0, y=0.0, z=0.0)  # set stop for safety
-    logger.info('Mission Terminated.')
+    logger.info('Mission Completed.')
     asr_service.language_tool.close()  # closes the spawned Java program, hangs on Windows (need task manager), need test on their Linux machine
 
 

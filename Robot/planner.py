@@ -43,7 +43,8 @@ class MyPlanner:
         self.plt_init = False  # Whether the path visualisation pyplot for debug has been initialised
         self.scat = None  # For storing the scatterplot pyplot for path visualisation
 
-    def transform_add_border(self, og_grid):
+    @staticmethod
+    def transform_add_border(og_grid):
         grid = og_grid.copy()
         a, b = grid.shape
         for i in range(a):
