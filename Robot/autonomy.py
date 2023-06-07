@@ -168,7 +168,7 @@ def main():
             continue
 
         pose = pose_filter.update(pose)
-        pose = RealPose(min(pose[0], 7), min(pose[1], 5), pose[2])  # prevents out of bounds errors
+        pose = RealPose(min(pose[0], 6.99), min(pose[1], 4.99), pose[2])  # prevents out of bounds errors
         pose = RealPose(max(pose[0], 0), max(pose[1], 0), pose[2])  # prevents out of bounds errors
         
         if not curr_loi:

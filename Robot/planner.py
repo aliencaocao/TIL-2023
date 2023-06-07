@@ -221,6 +221,16 @@ class MyPlanner:
         plt.draw()
         # plt.savefig(f"path_{str(uuid.uuid4())[:5]}.png")
 
+    def wall_clearance(self, l: RealLocation):
+        grid_l = self.map.real_to_grid(l)
+        return self.bgrid[grid_l[1]][grid_l[0]] * self.map.scale
+    
+    def min_clearance_along_path_real(self, l1:RealLocation, l2:RealLocation):
+        j1, i1 = self.map.real_to_grid(l1)
+        j2, i2 = self.map.real_to_grid(l2)
+        return self.min_clearance_along_path(i1, j1, i2, j2)
+
+
 
 if __name__ == '__main__':
     print("Running (not importing) planner.py, doing debug")
