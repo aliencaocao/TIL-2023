@@ -1,4 +1,5 @@
 import sys
+
 from tilsdk.localization.types import *
 
 sys.path.insert(0, '../CV/InternImage/detection')
@@ -68,6 +69,7 @@ class CVService:
 
     def predict(self, suspect: List[np.ndarray], image: np.ndarray) -> Tuple[np.ndarray, str]:
         """Returns image drawn with bbox and class “suspect”/”hostage”/"none". Assume image only contains 1 gallery plushie"""
+        logger.info('Predicting CV...')
         assert len(suspect) == 2, f'Expecting 2 suspects, got {len(suspect)}'
         result = inference_detector(self.ODModel, image)[0][0]
         boxes = result[result[:, 4] > self.ODConfidenceThreshold]

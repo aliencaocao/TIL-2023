@@ -67,9 +67,8 @@ class ASRService:
 
     def predict(self, audio_paths: list[str]) -> Optional[tuple[int]]:
         try:
-            audios = []
-            for a in audio_paths:
-                audios.append(torchaudio.load(a)[0])
+            logger.info(f'Predicting {len(audio_paths)} audio(s)...')
+            audios = [torchaudio.load(a)[0] for a in audio_paths]
             audios = self.processor(audios, sampling_rate=16000).input_values[0][0]  # batched already so no need expand dims later
             output = self.model({'input': audios})['output']
             output = [self.clean(anno) for anno in self.processor.batch_decode(np.argmax(output, axis=-1))]

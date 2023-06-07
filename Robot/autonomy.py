@@ -1,5 +1,6 @@
 import glob
-import time, os
+import os
+import time
 
 from tilsdk import *  # import the SDK
 from tilsdk.utilities import PIDController, SimpleMovingAverage  # import optional useful things
@@ -34,7 +35,9 @@ for l in loggers:
     l.addHandler(handler)
     l.setLevel(logging.DEBUG)
 
-# TODO: move the models to the robot folder for finals
+# TODO: move the models to the robot folder for finals and update the paths here
+suspect_img = cv2.imread('data/imgs/suspect1.png')
+hostage_img = cv2.imread('data/imgs/targetmario.png')
 ASR_PREPROCESSOR_DIR = '../ASR/wav2vec2-conformer'
 ASR_MODEL_DIR = '../ASR/wav2vec2-conformer.trt'
 OD_CONFIG_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py'
@@ -45,11 +48,21 @@ ZIP_SAVE_DIR = "D:/TIL-AI 2023/til-22-finals/til-23-finals/temp"
 prev_img_rpt_time = 0  # In global scope to allow convenient usage of global keyword in do_cv()
 
 
+def do_cv():
+    global prev_img_rpt_time
+    if not prev_img_rpt_time or time.time() - prev_img_rpt_time >= 1:  # throttle to 1 submission per second, and only read img if necessary
+        robot.camera.start_video_stream(display=False, resolution='720p')
+        img = robot.camera.read_cv2_image(strategy='newest')
+        robot.camera.stop_video_stream()
+        img_with_bbox, answer = cv_service.predict([suspect_img, hostage_img], img)
+        prev_img_rpt_time = time.time()
+        rep_service.report_situation(img_with_bbox, pose, answer, ZIP_SAVE_DIR)
+
 def main():
     # Connect to robot and start camera
     robot = Robot()
-    robot.initialize(conn_type="sta")
-    robot.camera.start_video_stream(display=False, resolution='720p')
+    robot.initialize(conn_type="ap")
+    robot.set_robot_mode(mode="chassis_lead")
 
     # Initialize services
     if SIMULATOR_MODE:
@@ -66,7 +79,7 @@ def main():
     # Initialize variables
     curr_loi: RealLocation = None
     prev_loi: RealLocation = None
-    target_rotation = None
+    target_rotation: float = None
     path: List[RealLocation] = []
     curr_wp: RealLocation = None
     pose_filter = SimpleMovingAverage(n=10)
@@ -138,8 +151,6 @@ def main():
     else:
         logger.error("Bad response from challenge server.")
         return
-    
-
 
     # Main loop
     while True:
@@ -164,15 +175,13 @@ def main():
             target_pose = None # Next location to go to which we'll receive soon
             info = rep_service.check_pose(pose)
 
-            if type(info) == str: # Task checkpoint or the end
-                if info == "End Goal Reached":
-                    rep_service.end_run()
-                    print("=== YOU REACHED THE END ===")
+            if isinstance(info, str): # Task checkpoint or the end
+                if info == "End Goal Reached":  # end run and logs are after this loop, not implementing them here
                     break
                 elif info == "Task Checkpoint Reached":
                     is_task_not_detour = True
                 elif info == "Not An Expected Checkpoint":
-                    logging.getLogger('Main').info(f"Not yet at task checkpoint. status: {res.status}, data: {res.data}, curr pose: {pose}")
+                    logger.warning(f"Not yet at task checkpoint according to rep service but path planner thinks it is near enough. status: {res.status}, data: {res.data}, curr pose: {pose}")
                     # If we reached this execution branch, it means the autonomy code thinks the
                     # robot has reached close enough to the checkpoint, but the Reporting server
                     # is expecting the robot to be even closer to the checkpoint.
@@ -184,17 +193,13 @@ def main():
                     continue # Resume movement                            
                 else:
                     raise Exception("DSTA rep_service.check_pose() error: Unexpected string value.")
-
-            elif type(info) == RealPose:  # Robot reached detour checkpoint and received new coordinates to go to.
-                logging.getLogger('Main').info(f"Not goal, not task checkpt. Received a new target pose: {info}.")
+            elif isinstance(info, RealPose):  # Robot reached detour checkpoint and received new coordinates to go to.
+                logger.info(f"Reached detour point, got next task point: {info}.")
                 is_task_not_detour = False
-                target_pose = info
-                continue # Reprocess in next iteration 
-                
+                target_pose = info  # get the new task point from detour point
+                continue  # Reprocess in next iteration  # TODO: could be a bug?
             else:
                 raise Exception(f"DSTA rep_service.check_pose() error: Unexpected return type: {type(info)}.")
-
-
             if is_task_not_detour:
                 logger.info("===== Turning towards CV target =====")
                 ang_diff = -(target_rotation - pose[2])  # body frame
@@ -219,30 +224,30 @@ def main():
                 
 
                 logger.info("===== Starting AI tasks =====")
+                do_cv()  # reports the CV stuff and no matter the result, audios will be saved to ZIP_SAVE_DIR
 
-                # TODO: Code for all the AI challenges
-                # Can refer to https://github.com/til-23/til-23-finals-public/blob/main/stubs/autonomy_starter.py
+                # TODO: Code for SpeakerID challenge
 
-                # TODO: Code for ASR (decoding digits) challenge
-                password = asr_service.predict(glob.glob(os.path.join(ZIP_SAVE_DIR, '*.wav')))
+                # ASR password digits task
+                password = asr_service.predict(glob.glob(os.path.join(ZIP_SAVE_DIR, 'digit*.wav')))
                 if password:
                     target_pose = rep_service.report_digit(pose, password)
                     target_pose_check = rep_service.check_pose(target_pose)
-                    if isinstance(target_pose_check, RealPose):  # TODO: check if legal
-                        logger.info(f'Wrong password! Got detour point {target_pose}, next task point is {target_pose_check}, moving there now')
+                    if isinstance(target_pose_check, RealPose):
+                        logger.info(f'Wrong password! Got detour point {target_pose}, moving there now')
                     if target_pose_check == 'Task Checkpoint Reached':
                         logger.info(f'Correct password! Moving to next task checkpoint at {target_pose}')
                     elif target_pose_check == 'Goal Reached':
                         logger.info(f'Correct password! Moving to final goal at {target_pose}')
                     else:
-                        logger.warning('Pose gotten from report digit is invalid!')
+                        logger.error('Pose gotten from report digit is invalid!')
 
 
-            curr_loi = RealLocation(target_pose[0], target_pose[1]) #Placeholder for getting the next location from wtv DSTA API
+            curr_loi = RealLocation(target_pose[0], target_pose[1]) # Set the next location to be the target pose
             target_rotation = target_pose[2]
 
             logger.info('Next checkpoint location: {}'.format(curr_loi))
-            #Reset the pose filter
+            # Reset the pose filter
             pose_filter = SimpleMovingAverage(n=10)
 
             # Plan a path to the new LOI
@@ -250,8 +255,8 @@ def main():
             path = planner.plan(pose[:2], curr_loi, display=True)
             if path is None:
                 logger.info('Error, no possible path found to the next location!')
-                #It should never come to this!
-                #TODO: Implement some simple random movement for the robot to change its location
+                # It should never come to this!
+                # TODO: Implement some simple random movement for the robot to change its location
 
                 # And/or re-initialise the map and planner with a smaller dilation (smaller robo radius) which I've done below (untested)
                 map_.grid += 1.5 * ROBOT_RADIUS_M / map_.scale  # Same functionality as .dilated last year: expands the walls by 1.5 times the radius of the robo
@@ -302,7 +307,7 @@ def main():
                             and (max(log_y) - min(log_y) <= stuck_threshold_area_m)):
                         # Stuck! Try to unstuck by driving backwards at 0.5m/s for 2s.
                         # Then continue to next iteration for simplicity of code
-                        logger.warning("STUCK DETECTED, DRIVING BACKWARDS")
+                        NavLogger.warning("STUCK DETECTED, DRIVING BACKWARDS")
                         robot.chassis.drive_speed(x=-0.3, z=0)
                         time.sleep(3)
                         robot.chassis.drive_speed(x=0, z=0)
@@ -323,10 +328,10 @@ def main():
 
                 if use_spin_direction_lock and spin_direction_lock:  # disabled
                     if spin_sign == 1 and ang_diff < 0:
-                        logger.debug("Spin direction lock, modifying ang_diff +360")
+                        NavLogger.debug("Spin direction lock, modifying ang_diff +360")
                         ang_diff += 360
                     elif spin_sign == -1 and ang_diff > 0:
-                        logger.debug("Spin direction lock, modifying ang_diff -360")
+                        NavLogger.debug("Spin direction lock, modifying ang_diff -360")
                         ang_diff -= 360
 
                 # NavLogger.info('ang_to_wp: {}, hdg: {}, ang_diff: {}'.format(ang_to_wp, pose[2], ang_diff))
@@ -368,11 +373,9 @@ def main():
                 curr_loi = None
 
     robot.chassis.drive_speed(x=0.0, y=0.0, z=0.0)  # set stop for safety
-    response = rep_service.end_run()  # Call this only after receiving confirmation from the scoring server that you have reached the maze's last checkpoint.
+    rep_service.end_run()  # Call this only after receiving confirmation from the scoring server that you have reached the maze's last checkpoint.
     logger.info('Mission Terminated.')
 
 
 if __name__ == '__main__':
-    suspect_img = cv2.imread('data/imgs/suspect1.png')
-    hostage_img = cv2.imread('data/imgs/targetmario.png')
     main()
