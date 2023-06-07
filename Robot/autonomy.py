@@ -44,23 +44,13 @@ OD_CONFIG_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn
 OD_MODEL_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/InternImage-L epoch_12 stripped.pth'
 REID_MODEL_DIR = '../CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth'
 REID_CONFIG_DIR = '../CV/SOLIDER-REID/TIL.yml'
-ZIP_SAVE_DIR = "D:/TIL-AI 2023/til-22-finals/til-23-finals/temp"
+ZIP_SAVE_DIR = Path(r"C:\Users\alien\Documents\PyCharm-Projects\TIL-2023\Robot\data\temp")
 prev_img_rpt_time = 0  # In global scope to allow convenient usage of global keyword in do_cv()
+robot = Robot()
 
-
-def do_cv():
-    global prev_img_rpt_time
-    if not prev_img_rpt_time or time.time() - prev_img_rpt_time >= 1:  # throttle to 1 submission per second, and only read img if necessary
-        robot.camera.start_video_stream(display=False, resolution='720p')
-        img = robot.camera.read_cv2_image(strategy='newest')
-        robot.camera.stop_video_stream()
-        img_with_bbox, answer = cv_service.predict([suspect_img, hostage_img], img)
-        prev_img_rpt_time = time.time()
-        rep_service.report_situation(img_with_bbox, pose, answer, ZIP_SAVE_DIR)
 
 def main():
-    # Connect to robot and start camera
-    robot = Robot()
+    # Connect to robot
     robot.initialize(conn_type="ap")
     robot.set_robot_mode(mode="chassis_lead")
 
@@ -116,10 +106,10 @@ def main():
                         astargrid_threshold_dist_cm=29,
                         path_opt_min_straight_deg=165,
                         path_opt_max_safe_dist_cm=24)
-    
+
+    logger.info(f"Warming up pose filter to initialise position + reduce initial noise.")
     for _ in range(15):
-        logger.info(f"Warming up pose filter to initialise position + reduce initial noise.")
-        pose = loc_service.get_pose()  # TODO: remove `clues`.
+        pose = loc_service.get_pose()
         time.sleep(0.25)
         pose = pose_filter.update(pose)
 
@@ -127,7 +117,7 @@ def main():
     res = rep_service.start_run()
     if res.status == 200:
         initial_target_pose = eval(res.data)
-        logger.info(f"First location:{initial_target_pose}")
+        logger.info(f"First location: {initial_target_pose}")
         curr_loi = RealLocation(x=initial_target_pose[0], y=initial_target_pose[1])
         target_rotation = initial_target_pose[2]
         path = planner.plan(pose[:2], curr_loi, display=True)
@@ -152,6 +142,18 @@ def main():
         logger.error("Bad response from challenge server.")
         return
 
+    def do_cv(pose: RealPose) -> str:
+        if SIMULATOR_MODE:
+            return rep_service.report_situation(np.random.random((224, 224, 3)), pose, 'suspect', ZIP_SAVE_DIR)  # give answer directly
+        global prev_img_rpt_time
+        if not prev_img_rpt_time or time.time() - prev_img_rpt_time >= 1:  # throttle to 1 submission per second, and only read img if necessary
+            robot.camera.start_video_stream(display=False, resolution='720p')
+            img = robot.camera.read_cv2_image(strategy='newest')
+            robot.camera.stop_video_stream()
+            img_with_bbox, answer = cv_service.predict([suspect_img, hostage_img], img)
+            prev_img_rpt_time = time.time()
+            return rep_service.report_situation(img_with_bbox, pose, answer, ZIP_SAVE_DIR)
+
     # Main loop
     while True:
         if path: planner.visualise_update()  # just for visualisation
@@ -169,8 +171,7 @@ def main():
         if not curr_loi:
             # We are at a checkpoint! Either the first one when just starting, or reached here after navigation.
             # Could be task or detour checkpoint or the end
-
-            logger.info("=== Reached checkpoint or starting ===")
+            logger.info("Reached checkpoint")
             is_task_not_detour = None
             target_pose = None # Next location to go to which we'll receive soon
             info = rep_service.check_pose(pose)
@@ -181,7 +182,7 @@ def main():
                 elif info == "Task Checkpoint Reached":
                     is_task_not_detour = True
                 elif info == "Not An Expected Checkpoint":
-                    logger.warning(f"Not yet at task checkpoint according to rep service but path planner thinks it is near enough. status: {res.status}, data: {res.data}, curr pose: {pose}")
+                    logger.warning(f"Not yet at task checkpoint according to rep service but path planner thinks it is near enough. status: {res.status}, data: {res.data.decode()}, curr pose: {pose}")
                     # If we reached this execution branch, it means the autonomy code thinks the
                     # robot has reached close enough to the checkpoint, but the Reporting server
                     # is expecting the robot to be even closer to the checkpoint.
@@ -190,18 +191,17 @@ def main():
                     curr_loi = prev_loi  # Move closer to prev loi
                     path = [curr_loi, curr_loi] # 2 copies for legacy reasons... prob works with just 1 copy too but that would need testing
                     REACHED_THRESHOLD_LAST_M *= 2/3               
-                    continue # Resume movement                            
+                    continue # Resume movement
                 else:
                     raise Exception("DSTA rep_service.check_pose() error: Unexpected string value.")
             elif isinstance(info, RealPose):  # Robot reached detour checkpoint and received new coordinates to go to.
                 logger.info(f"Reached detour point, got next task point: {info}.")
                 is_task_not_detour = False
                 target_pose = info  # get the new task point from detour point
-                continue  # Reprocess in next iteration  # TODO: could be a bug?
             else:
                 raise Exception(f"DSTA rep_service.check_pose() error: Unexpected return type: {type(info)}.")
             if is_task_not_detour:
-                logger.info("===== Turning towards CV target =====")
+                logger.debug("Turning towards CV target")
                 ang_diff = -(target_rotation - pose[2])  # body frame
                 #Iinw the - sign is due to robomaster's angle convention being opposite of normal
                 #If the below code results in wrong direction of rotation, try removing - sign
@@ -223,25 +223,28 @@ def main():
                     robot.chassis.drive_speed(x=0, z=0)
                 
 
-                logger.info("===== Starting AI tasks =====")
-                do_cv()  # reports the CV stuff and no matter the result, audios will be saved to ZIP_SAVE_DIR
+                logger.info("Starting AI tasks")
+                save_dir = do_cv(pose)  # reports the CV stuff and no matter the result, audios will be saved to ZIP_SAVE_DIR
+                if not save_dir: continue  # still within 1second rate limit, skip to next iteration
 
                 # TODO: Code for SpeakerID challenge
+                save_dir = rep_service.report_audio(pose, 'audio1_teamName One_member2', ZIP_SAVE_DIR)  # placeholder correct ans
 
                 # ASR password digits task
-                password = asr_service.predict(glob.glob(os.path.join(ZIP_SAVE_DIR, 'digit*.wav')))
-                if password:
-                    target_pose = rep_service.report_digit(pose, password)
-                    target_pose_check = rep_service.check_pose(target_pose)
-                    if isinstance(target_pose_check, RealPose):
-                        logger.info(f'Wrong password! Got detour point {target_pose}, moving there now')
-                    if target_pose_check == 'Task Checkpoint Reached':
-                        logger.info(f'Correct password! Moving to next task checkpoint at {target_pose}')
-                    elif target_pose_check == 'Goal Reached':
-                        logger.info(f'Correct password! Moving to final goal at {target_pose}')
-                    else:
-                        logger.error('Pose gotten from report digit is invalid!')
-
+                password = asr_service.predict(glob.glob(os.path.join(save_dir, '*.wav')))
+                if not password:
+                    logger.warning('ASR failed to detect any digits in audio. Submitting (0,) as placeholder.')
+                    password = (0,)
+                target_pose = rep_service.report_digit(pose, password)
+                target_pose_check = rep_service.check_pose(target_pose)
+                if isinstance(target_pose_check, RealPose):
+                    logger.info(f'Wrong password! Got detour point {target_pose}, moving there now')
+                elif target_pose_check == 'Task Checkpoint Reached':
+                    logger.info(f'Correct password! Moving to next task checkpoint at {target_pose}')
+                elif target_pose_check == 'End Goal Reached':
+                    logger.info(f'Correct password! Moving to final goal at {target_pose}')
+                else:
+                    logger.error(f'Pose gotten from report digit is invalid! Got {target_pose}, check result {target_pose_check}.')
 
             curr_loi = RealLocation(target_pose[0], target_pose[1]) # Set the next location to be the target pose
             target_rotation = target_pose[2]
@@ -279,7 +282,7 @@ def main():
                 # Get next waypoint
                 if not curr_wp:
                     curr_wp = path.pop()
-                    NavLogger.info('New waypoint: {}'.format(curr_wp))
+                    NavLogger.debug('New waypoint: {}'.format(curr_wp))
                     if use_stuck_detection:  # Reset lists
                         log_x.clear()
                         log_y.clear()
@@ -339,7 +342,7 @@ def main():
 
                 # Consider waypoint reached if within a threshold distance
                 if dist_to_wp < (REACHED_THRESHOLD_LAST_M if len(path) <= 1 else REACHED_THRESHOLD_M):
-                    NavLogger.info('Reached wp: {}'.format(curr_wp))
+                    NavLogger.debug('Reached wp: {}'.format(curr_wp))
                     tracker.reset()
                     curr_wp = None
                     continue
@@ -372,9 +375,10 @@ def main():
                 prev_loi = curr_loi
                 curr_loi = None
 
-    robot.chassis.drive_speed(x=0.0, y=0.0, z=0.0)  # set stop for safety
     rep_service.end_run()  # Call this only after receiving confirmation from the scoring server that you have reached the maze's last checkpoint.
+    robot.chassis.drive_speed(x=0.0, y=0.0, z=0.0)  # set stop for safety
     logger.info('Mission Terminated.')
+    asr_service.language_tool.close()  # closes the spawned Java program, hangs on Windows (need task manager), need test on their Linux machine
 
 
 if __name__ == '__main__':

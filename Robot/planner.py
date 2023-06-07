@@ -1,5 +1,6 @@
 import math
 import time
+
 import pyastar2d
 from skimage.draw import line as bresenham_sk
 from tilsdk.localization import *
@@ -213,7 +214,8 @@ class MyPlanner:
             self.scat = plt.scatter(self.gridpathx, self.gridpathy, c=np.arange(len(self.gridpathx)), s=25, cmap='Greys')
         self.visualise_update()
 
-    def visualise_update(self):
+    @staticmethod
+    def visualise_update():
         plt.pause(0.05)
         plt.draw()
         # plt.savefig(f"path_{str(uuid.uuid4())[:5]}.png")

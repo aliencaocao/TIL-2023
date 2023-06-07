@@ -37,7 +37,7 @@ class ASRService:
         logger.debug(f'Loading TensorRT engine from {model_dir}...')
         self.model = TRTInference(model_dir, verbose=True)
         logger.debug('Warming up TensorRT engine...')
-        self.model.warmup({'input': np.random.randn(1, 16000)})
+        self.model.warmup({'input': np.random.randn(16000)})
         logger.debug('Starting language tool...')
         self.language_tool = language_tool_python.LanguageTool('en-US', config={'cacheSize': 10000, 'pipelineCaching': True, 'maxCheckThreads': 30, 'warmUp': True})
         logger.info('NLP service initialized.')
@@ -68,18 +68,22 @@ class ASRService:
     def predict(self, audio_paths: list[str]) -> Optional[tuple[int]]:
         try:
             logger.info(f'Predicting {len(audio_paths)} audio(s)...')
-            audios = [torchaudio.load(a)[0] for a in audio_paths]
-            audios = self.processor(audios, sampling_rate=16000).input_values[0][0]  # batched already so no need expand dims later
-            output = self.model({'input': audios})['output']
-            output = [self.clean(anno) for anno in self.processor.batch_decode(np.argmax(output, axis=-1))]
-            output = [self.fix_grammar(anno) for anno in output]
-            logger.debug(f'Predicted texts: {output}')
-            output = tuple(self.find_digit(anno) for anno in output)
-            output = tuple(o for o in output if o is not None)
-            logger.info(f'Predicted digits: {output}')
-            if len(output) != len(audio_paths):
-                logger.warning(f'{len(audio_paths) - len(output)} has no predicted digits!')  # TODO: add fuzzy retrival in this case, perhaps using Levenshtein Distance
-            return output
+            audio_paths.sort()
+            outputs = []
+            for audio in audio_paths:
+                audio = torchaudio.load(audio)[0]
+                audio = self.processor(audio, sampling_rate=16000).input_values[0][0]
+                output = self.model({'input': audio})['output'][0]  # remove batch dimension
+                outputs.append(output)
+            outputs = [self.clean(anno) for anno in self.processor.batch_decode(np.argmax(outputs, axis=-1))]
+            outputs = [self.fix_grammar(anno) for anno in outputs]
+            logger.debug(f'Predicted texts: {outputs}')
+            outputs = tuple(self.find_digit(anno) for anno in outputs)
+            outputs = tuple(o for o in outputs if o is not None)
+            logger.info(f'Predicted digits: {outputs}')
+            if len(outputs) != len(audio_paths):
+                logger.warning(f'{len(audio_paths) - len(outputs)} has no predicted digits!')  # TODO: add fuzzy retrival in this case, perhaps using Levenshtein Distance
+            return outputs
         except Exception as e:
             logger.error(f'Error while predicting: {e}')
             return None
