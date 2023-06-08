@@ -1,12 +1,13 @@
 import math
 import time
+
 import pyastar2d
 from skimage.draw import line as bresenham_sk
 from tilsdk.localization import *
 
 
 class MyPlanner:
-    def __init__(self, map_: SignedDistanceGrid = None, waypoint_sparsity_m=0.5, astargrid_threshold_dist_cm=29, path_opt_min_straight_deg=170, path_opt_max_safe_dist_cm=24):
+    def __init__(self, map_: SignedDistanceGrid = None, waypoint_sparsity_m=0.5, astargrid_threshold_dist_cm=29, path_opt_min_straight_deg=170, path_opt_max_safe_dist_cm=24, ROBOT_RADIUS_M=0.17):
         '''
         Parameters
         ----------
@@ -36,13 +37,15 @@ class MyPlanner:
         self.map = map_
         self.passable = self.map.grid > 0
         self.bgrid = self.transform_add_border(self.map.grid.copy())  # Grid which takes the walls outside the grid into account
+        self.bgrid -= 1.5 * ROBOT_RADIUS_M / self.map.scale  # Same functionality as .dilated last year: expands the walls by 1.5 times the radius of the robot
         self.astar_grid = self.transform_for_astar(self.bgrid.copy())
 
         self.path = None
         self.plt_init = False  # Whether the path visualisation pyplot for debug has been initialised
         self.scat = None  # For storing the scatterplot pyplot for path visualisation
 
-    def transform_add_border(self, og_grid):
+    @staticmethod
+    def transform_add_border(og_grid):
         grid = og_grid.copy()
         a, b = grid.shape
         for i in range(a):
@@ -213,10 +216,21 @@ class MyPlanner:
             self.scat = plt.scatter(self.gridpathx, self.gridpathy, c=np.arange(len(self.gridpathx)), s=25, cmap='Greys')
         self.visualise_update()
 
-    def visualise_update(self):
+    @staticmethod
+    def visualise_update():
         plt.pause(0.05)
         plt.draw()
         # plt.savefig(f"path_{str(uuid.uuid4())[:5]}.png")
+
+    def wall_clearance(self, l: Union[RealLocation, RealPose]):
+        grid_l = self.map.real_to_grid(l)
+        return self.bgrid[grid_l[1]][grid_l[0]] * self.map.scale
+    
+    def min_clearance_along_path_real(self, l1: Union[RealLocation, RealPose], l2: Union[RealLocation, RealPose]):
+        """Returns the shortest distance to the nearest wall from the straight line connecting l1 and l2. Result in CM"""
+        j1, i1 = self.map.real_to_grid(l1)[:2]
+        j2, i2 = self.map.real_to_grid(l2)[:2]
+        return self.min_clearance_along_path(i1, j1, i2, j2)
 
 
 if __name__ == '__main__':
@@ -224,9 +238,7 @@ if __name__ == '__main__':
     loc_service = LocalizationService(host='localhost', port=5566)  # for simulator
     map_: SignedDistanceGrid = loc_service.get_map()
     print("Got map from loc")
-    ROBOT_RADIUS_M = 0.17
-    map_.grid -= 1.5 * ROBOT_RADIUS_M / map_.scale
-    planner = MyPlanner(map_, waypoint_sparsity_m=0.4, astargrid_threshold_dist_cm=29, path_opt_max_safe_dist_cm=24, path_opt_min_straight_deg=165)
+    planner = MyPlanner(map_, waypoint_sparsity_m=0.4, astargrid_threshold_dist_cm=29, path_opt_max_safe_dist_cm=24, path_opt_min_straight_deg=165, ROBOT_RADIUS_M=0.17)
 
 
     def test_path(a, b, c, d):

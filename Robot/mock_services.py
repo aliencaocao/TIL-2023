@@ -1,8 +1,4 @@
-from typing import Iterable, List
-
-from tilsdk.cv import BoundingBox, DetectedObject
 from tilsdk.localization.types import *
-
 
 class CVService:
     '''Mock CV Service.
@@ -24,26 +20,11 @@ class CVService:
             Path to REID model yml config.
         '''
 
-    def targets_from_image(self, img: Any) -> List[DetectedObject]:
-        '''Process image and return targets.
-        
-        Parameters
-        ----------
-        img : Any
-            Input image.
-        
-        Returns
-        -------
-        results  : List[DetectedObject]
-            Detected targets.
-        '''
-        # dummy data
-        bbox = BoundingBox(100, 100, 300, 50)
-        obj = DetectedObject("1", "fallen", bbox)
-        return [obj]
+    def predict(self, suspect: List[np.ndarray], image: np.ndarray) -> Tuple[np.ndarray, str]:
+        return image, 'suspect'
 
 
-class NLPService:
+class ASRService:
     '''
     Parameters
     ----------
@@ -62,11 +43,5 @@ class NLPService:
         '''
         pass
 
-    def locations_from_clues(self, clues) -> List[RealLocation]:
-        '''Process clues and get locations of interest.
-        
-        Mock returns location of all clues.
-        '''
-        locations = [c.location for c in clues]
-
-        return locations, locations
+    def predict(self, audio_paths: List[str]) -> Optional[Tuple[int]]:
+        return (9,)
