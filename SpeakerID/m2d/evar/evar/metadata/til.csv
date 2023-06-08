@@ -1,4 +1,8 @@
 file_name,label,split
-train.wav,1,train
-valid.wav,2,valid
+train-1.wav,1,train
+train-2.wav,2,train
+train-3.wav,1,train
+valid-1.wav,1,valid
+valid-2.wav,2,valid
+valid-3.wav,1,valid
 test.wav,1,test

@@ -132,3 +132,111 @@ Parameter Group 0
 2023-06-08 17:12:05 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 5/0: val acc: 1.00000, loss: -0.00000, best: 1.00000@0
 2023-06-08 17:12:07 INFO Epoch [6] iter: 0/1, elapsed: 1.333s, lr: 0.00099778 loss: -0.00000000
 2023-06-08 17:12:07 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 6/0: val acc: 1.00000, loss: -0.00000, best: 1.00000@0
+2023-06-08 17:29:18 INFO {'audio_repr': 'ar_m2d.AR_M2D', 'weight_file': '../weights/msm_mae_vit_base-80x608p16x16-220924-mr75/checkpoint-300.pth', 'feature_d': 3840, 'sample_rate': 16000, 'n_fft': 400, 'window_size': 400, 'hop_size': 160, 'n_mels': 80, 'f_min': 50, 'f_max': 8000, 'window': 'hanning', 'cls_token': False, 'output_layers': [-1], 'training_mask': 0.0, 'flat_features': False, 'batch_size': 128, 'lr_lineareval': 3e-05, 'report_per_epochs': 50, 'early_stop_epochs': 20, 'warmup_epochs': 5, 'mixup': 0.5, 'ft_bs': 44, 'ft_lr': 0.001, 'ft_early_stop_epochs': -1, 'ft_epochs': 200, 'ft_freq_mask': 30, 'ft_time_mask': 192, 'ft_noise': 0.0, 'ft_rrc': True, 'name': '', 'task_metadata': 'evar/metadata/til.csv', 'task_data': 'work/16k/til', 'unit_samples': 240000, 'id': 'til_ar_m2d.AR_M2D_64f5263c', 'optim': 'sgd', 'unit_sec': None, 'runtime_cfg': {'lr': 0.001, 'seed': 42, 'hidden': [], 'mixup': 0.5, 'bs': 44, 'freq_mask': 30, 'time_mask': 192, 'rrc': True, 'epochs': 200, 'early_stop_epochs': -1, 'n_class': 2, 'id': '92c93b1f'}}
+2023-06-08 17:29:18 INFO 
+🚀 Start fine-tuning  with logging in logs/til_ar_m2d.AR_M2D_64f5263c
+2023-06-08 17:29:18 INFO Train:3, valid:3, test:1, multi label:False, balanced:True
+2023-06-08 17:29:19 INFO Creating model: msm_mae_vit_base(input=[80, 608], patch=[16, 16], decoder_depth=4)
+2023-06-08 17:29:19 INFO {'audio_repr': 'ar_m2d.AR_M2D', 'weight_file': '../weights/msm_mae_vit_base-80x608p16x16-220924-mr75/checkpoint-300.pth', 'feature_d': 3840, 'sample_rate': 16000, 'n_fft': 400, 'window_size': 400, 'hop_size': 160, 'n_mels': 80, 'f_min': 50, 'f_max': 8000, 'window': 'hanning', 'cls_token': False, 'output_layers': [-1], 'training_mask': 0.0, 'flat_features': False, 'batch_size': 128, 'lr_lineareval': 3e-05, 'report_per_epochs': 50, 'early_stop_epochs': 20, 'warmup_epochs': 5, 'mixup': 0.5, 'ft_bs': 44, 'ft_lr': 0.001, 'ft_early_stop_epochs': -1, 'ft_epochs': 200, 'ft_freq_mask': 30, 'ft_time_mask': 192, 'ft_noise': 0.0, 'ft_rrc': True, 'name': '', 'task_metadata': 'evar/metadata/til.csv', 'task_data': 'work/16k/til', 'unit_samples': 240000, 'id': 'til_ar_m2d.AR_M2D_64f5263c', 'optim': 'sgd', 'unit_sec': None, 'runtime_cfg': {'lr': 0.001, 'seed': 42, 'hidden': [], 'mixup': 0.5, 'bs': 44, 'freq_mask': 30, 'time_mask': 192, 'rrc': True, 'epochs': 200, 'early_stop_epochs': -1, 'n_class': 2, 'id': '92c93b1f'}, 'input_size': [80, 608], 'patch_size': [16, 16], 'model': 'msm_mae_vit_base', 'decoder_depth': 4}
+2023-06-08 17:29:19 INFO Model input size: [80, 608]
+2023-06-08 17:29:19 INFO Using weights: ../weights/msm_mae_vit_base-80x608p16x16-220924-mr75/checkpoint-300.pth
+2023-06-08 17:29:19 INFO [CLS] token?: False
+2023-06-08 17:29:19 INFO training_mask: 0.0
+2023-06-08 17:29:19 INFO flat_features: False
+2023-06-08 17:29:19 INFO Runtime MelSpectrogram(16000, 400, 400, 160, 80, 50, 8000):
+2023-06-08 17:29:19 INFO MelSpectrogram(
+  Mel filter banks size = (80, 201), trainable_mel=False
+  (stft): STFT(n_fft=400, Fourier Kernel size=(201, 1, 400), iSTFT=False, trainable=False)
+)
+2023-06-08 17:29:23 INFO  using spectrogram norimalization stats: [-12.897504    4.4194508]
+2023-06-08 17:29:23 INFO Head = TaskHead(
+  (norm): BatchNorm1d(3840, eps=1e-05, momentum=0.1, affine=False, track_running_stats=True)
+  (mlp): MLP(
+    (mlp): Sequential(
+      (0): Linear(in_features=3840, out_features=2, bias=True)
+    )
+  )
+)
+2023-06-08 17:29:23 INFO Using loss_nll, eval_acc, and SGD (
+Parameter Group 0
+    dampening: 0
+    differentiable: False
+    foreach: None
+    initial_lr: 0.001
+    lr: 0
+    maximize: False
+    momentum: 0.9
+    nesterov: False
+    weight_decay: 0
+)
+2023-06-08 17:29:23 INFO  using mixup with alpha=0.5
+2023-06-08 17:29:23 INFO  using SpecAugmentation with 30, 192.
+2023-06-08 17:29:23 INFO  using RandomResizeCrop(virtual_crop_size=(1.0, 1.5), time_scale=(0.6, 1.5), freq_scale=(0.6, 1.5))
+2023-06-08 17:29:24 INFO Epoch [0] iter: 0/1, elapsed: 0.898s, lr: 0.00000000 loss: 0.33650255
+2023-06-08 17:29:24 INFO Saved weight as logs/til_ar_m2d.AR_M2D_64f5263c/weights_ep0it0-0.66667_loss0.3365.pth
+2023-06-08 17:29:24 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 0/0: val acc: 0.66667, loss: 0.33650, best: 0.66667@0
+2023-06-08 17:29:25 INFO Epoch [1] iter: 0/1, elapsed: 1.531s, lr: 0.00020000 loss: 0.32646990
+2023-06-08 17:29:26 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 1/0: val acc: 0.66667, loss: 0.32647, best: 0.66667@0
+2023-06-08 17:29:27 INFO Epoch [2] iter: 0/1, elapsed: 1.331s, lr: 0.00040000 loss: 0.44117191
+2023-06-08 17:29:27 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 2/0: val acc: 0.66667, loss: 0.44117, best: 0.66667@0
+2023-06-08 17:29:28 INFO Epoch [3] iter: 0/1, elapsed: 1.371s, lr: 0.00060000 loss: 0.36490464
+2023-06-08 17:29:29 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 3/0: val acc: 0.66667, loss: 0.36490, best: 0.66667@0
+2023-06-08 17:29:30 INFO Epoch [4] iter: 0/1, elapsed: 1.363s, lr: 0.00080000 loss: 0.36535993
+2023-06-08 17:29:30 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 4/0: val acc: 0.66667, loss: 0.36536, best: 0.66667@0
+2023-06-08 17:29:31 INFO Epoch [5] iter: 0/1, elapsed: 1.375s, lr: 0.00099846 loss: 0.25633150
+2023-06-08 17:29:32 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 5/0: val acc: 0.66667, loss: 0.25633, best: 0.66667@0
+2023-06-08 17:29:33 INFO Epoch [6] iter: 0/1, elapsed: 1.365s, lr: 0.00099778 loss: 0.33468461
+2023-06-08 17:29:33 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 6/0: val acc: 0.66667, loss: 0.33468, best: 0.66667@0
+2023-06-08 17:29:34 INFO Epoch [7] iter: 0/1, elapsed: 1.343s, lr: 0.00099698 loss: 0.30684549
+2023-06-08 17:29:35 INFO Saved weight as logs/til_ar_m2d.AR_M2D_64f5263c/weights_ep7it0-1.00000_loss0.3068.pth
+2023-06-08 17:29:35 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 7/0: val acc: 1.00000, loss: 0.30685, best: 1.00000@7
+2023-06-08 17:29:36 INFO Epoch [8] iter: 0/1, elapsed: 1.569s, lr: 0.00099606 loss: 0.32088813
+2023-06-08 17:29:37 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 8/0: val acc: 1.00000, loss: 0.32089, best: 1.00000@7
+2023-06-08 17:29:38 INFO Epoch [9] iter: 0/1, elapsed: 1.365s, lr: 0.00099501 loss: 0.24315037
+2023-06-08 17:29:38 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 9/0: val acc: 0.66667, loss: 0.24315, best: 1.00000@7
+2023-06-08 17:29:39 INFO Epoch [10] iter: 0/1, elapsed: 1.359s, lr: 0.00099384 loss: 0.29829738
+2023-06-08 17:29:40 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 10/0: val acc: 0.66667, loss: 0.29830, best: 1.00000@7
+2023-06-08 17:29:41 INFO Epoch [11] iter: 0/1, elapsed: 1.315s, lr: 0.00099256 loss: 0.27760592
+2023-06-08 17:29:41 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 11/0: val acc: 0.66667, loss: 0.27761, best: 1.00000@7
+2023-06-08 17:29:42 INFO Epoch [12] iter: 0/1, elapsed: 1.363s, lr: 0.00099114 loss: 0.32206753
+2023-06-08 17:29:43 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 12/0: val acc: 1.00000, loss: 0.32207, best: 1.00000@7
+2023-06-08 17:29:44 INFO Epoch [13] iter: 0/1, elapsed: 1.315s, lr: 0.00098961 loss: 0.25444621
+2023-06-08 17:29:44 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 13/0: val acc: 1.00000, loss: 0.25445, best: 1.00000@7
+2023-06-08 17:29:45 INFO Epoch [14] iter: 0/1, elapsed: 1.376s, lr: 0.00098796 loss: 0.24228500
+2023-06-08 17:29:46 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 14/0: val acc: 1.00000, loss: 0.24228, best: 1.00000@7
+2023-06-08 17:29:47 INFO Epoch [15] iter: 0/1, elapsed: 1.359s, lr: 0.00098619 loss: 0.24120951
+2023-06-08 17:29:47 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 15/0: val acc: 1.00000, loss: 0.24121, best: 1.00000@7
+2023-06-08 17:29:48 INFO Epoch [16] iter: 0/1, elapsed: 1.395s, lr: 0.00098429 loss: 0.19527826
+2023-06-08 17:29:49 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 16/0: val acc: 1.00000, loss: 0.19528, best: 1.00000@7
+2023-06-08 17:29:50 INFO Epoch [17] iter: 0/1, elapsed: 1.328s, lr: 0.00098228 loss: 0.28070819
+2023-06-08 17:29:50 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 17/0: val acc: 1.00000, loss: 0.28071, best: 1.00000@7
+2023-06-08 17:29:51 INFO Epoch [18] iter: 0/1, elapsed: 1.315s, lr: 0.00098015 loss: 0.25338048
+2023-06-08 17:29:52 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 18/0: val acc: 1.00000, loss: 0.25338, best: 1.00000@7
+2023-06-08 17:29:53 INFO Epoch [19] iter: 0/1, elapsed: 1.353s, lr: 0.00097790 loss: 0.18620652
+2023-06-08 17:29:53 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 19/0: val acc: 1.00000, loss: 0.18621, best: 1.00000@7
+2023-06-08 17:29:54 INFO Epoch [20] iter: 0/1, elapsed: 1.389s, lr: 0.00097553 loss: 0.22936861
+2023-06-08 17:29:55 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 20/0: val acc: 1.00000, loss: 0.22937, best: 1.00000@7
+2023-06-08 17:29:56 INFO Epoch [21] iter: 0/1, elapsed: 1.381s, lr: 0.00097305 loss: 0.22264932
+2023-06-08 17:29:56 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 21/0: val acc: 0.66667, loss: 0.22265, best: 1.00000@7
+2023-06-08 17:29:57 INFO Epoch [22] iter: 0/1, elapsed: 1.370s, lr: 0.00097044 loss: 0.25837579
+2023-06-08 17:29:58 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 22/0: val acc: 1.00000, loss: 0.25838, best: 1.00000@7
+2023-06-08 17:29:59 INFO Epoch [23] iter: 0/1, elapsed: 1.343s, lr: 0.00096773 loss: 0.19826686
+2023-06-08 17:29:59 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 23/0: val acc: 1.00000, loss: 0.19827, best: 1.00000@7
+2023-06-08 17:30:00 INFO Epoch [24] iter: 0/1, elapsed: 1.306s, lr: 0.00096489 loss: 0.20858292
+2023-06-08 17:30:01 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 24/0: val acc: 1.00000, loss: 0.20858, best: 1.00000@7
+2023-06-08 17:30:02 INFO Epoch [25] iter: 0/1, elapsed: 1.355s, lr: 0.00096194 loss: 0.20175879
+2023-06-08 17:30:02 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 25/0: val acc: 0.66667, loss: 0.20176, best: 1.00000@7
+2023-06-08 17:30:03 INFO Epoch [26] iter: 0/1, elapsed: 1.311s, lr: 0.00095888 loss: 0.19140194
+2023-06-08 17:30:04 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 26/0: val acc: 0.66667, loss: 0.19140, best: 1.00000@7
+2023-06-08 17:30:05 INFO Epoch [27] iter: 0/1, elapsed: 1.310s, lr: 0.00095571 loss: 0.16719770
+2023-06-08 17:30:05 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 27/0: val acc: 0.66667, loss: 0.16720, best: 1.00000@7
+2023-06-08 17:30:06 INFO Epoch [28] iter: 0/1, elapsed: 1.334s, lr: 0.00095242 loss: 0.15423031
+2023-06-08 17:30:07 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 28/0: val acc: 0.66667, loss: 0.15423, best: 1.00000@7
+2023-06-08 17:30:08 INFO Epoch [29] iter: 0/1, elapsed: 1.309s, lr: 0.00094902 loss: 0.14404735
+2023-06-08 17:30:08 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 29/0: val acc: 0.66667, loss: 0.14405, best: 1.00000@7
+2023-06-08 17:30:09 INFO Epoch [30] iter: 0/1, elapsed: 1.313s, lr: 0.00094551 loss: 0.20717929
+2023-06-08 17:30:09 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 30/0: val acc: 0.66667, loss: 0.20718, best: 1.00000@7
+2023-06-08 17:30:10 INFO Epoch [31] iter: 0/1, elapsed: 1.350s, lr: 0.00094189 loss: 0.19535592
+2023-06-08 17:30:11 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 31/0: val acc: 1.00000, loss: 0.19536, best: 1.00000@7
+2023-06-08 17:30:12 INFO Epoch [32] iter: 0/1, elapsed: 1.386s, lr: 0.00093816 loss: 0.16727081
+2023-06-08 17:30:12 INFO til_ar_m2d.AR_M2D_64f5263c-lr001mu5fm30tm192balR | epoch/iter 32/0: val acc: 1.00000, loss: 0.16727, best: 1.00000@7
