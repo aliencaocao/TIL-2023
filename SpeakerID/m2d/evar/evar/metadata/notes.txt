@@ -1,0 +1,2 @@
+Only the 'label' column seems to be of consequence during training; see data.py.
+Therefore the 'label' column should contain the speaker ID of each file.

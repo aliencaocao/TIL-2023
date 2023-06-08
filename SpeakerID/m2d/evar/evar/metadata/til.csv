@@ -1,0 +1,4 @@
+file_name,label,split
+train.wav,1,train
+valid.wav,2,valid
+test.wav,1,test

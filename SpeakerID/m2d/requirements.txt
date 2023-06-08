@@ -12,3 +12,4 @@ librosa
 nnAudio
 timm
 einops
+easydict

@@ -1,6 +1,7 @@
 # AR parameters such as FFT parameters.
 audio_repr: ar_m2d.AR_M2D
-weight_file: m2d_vit_base-80x208p16x16-random/random
+# weight_file: m2d_vit_base-80x208p16x16-random/random
+weight_file: ../weights/msm_mae_vit_base-80x608p16x16-220924-mr75/checkpoint-300.pth
 feature_d: 3840
 sample_rate: 16000
 n_fft: 400
@@ -29,7 +30,8 @@ early_stop_epochs: 20
 warmup_epochs: 5
 mixup: 0.5
 ft_bs: 128
-ft_lr: 2.0
+# ft_lr: 2.0
+ft_lr: 1e-3
 ft_early_stop_epochs: -1  # -1: no early stopping
 ft_epochs: 200
 ft_freq_mask: 30
