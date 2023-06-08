@@ -74,6 +74,7 @@ def main():
     prev_loi: RealLocation = None
     target_rotation: float = None
     path: List[RealLocation] = []
+    prev_wp: RealLocation = None
     curr_wp: RealLocation = None
     pose_filter = SimpleMovingAverage(n=10)
     map_: SignedDistanceGrid = loc_service.get_map()  # Currently, it is in the same format as the 2022 one. The docs says it's a new format.
@@ -83,7 +84,6 @@ def main():
     # Movement-related config and controls
     REACHED_THRESHOLD_M = 0.3  # Participant may tune, in meters
     REACHED_THRESHOLD_LAST_M = REACHED_THRESHOLD_M / 2
-    MAX_DEVIATION_THRESH_M = 0.25  # 25cm max allowed to deviate from the next WP, used for calculating dynamic angular threshold to speed movement up
     tracker = PIDController(Kp=(0.35, 0.2), Ki=(0.1, 0.0), Kd=(0, 0))
 
     # To prevent bug with endless spinning in alternate directions by only allowing 1 direction of spinning
@@ -101,14 +101,12 @@ def main():
 
     # Initialise planner
     # Planner-related config here
-    ROBOT_RADIUS_M = 0.17  # Participant may tune. 0.390 * 0.245 (L x W)
-    map_.grid -= 1.5 * ROBOT_RADIUS_M / map_.scale  # Same functionality as .dilated last year: expands the walls by 1.5 times the radius of the robo
-
     planner = MyPlanner(map_,
                         waypoint_sparsity_m=0.4,
                         astargrid_threshold_dist_cm=29,
                         path_opt_min_straight_deg=165,
-                        path_opt_max_safe_dist_cm=24)
+                        path_opt_max_safe_dist_cm=24,
+                        ROBOT_RADIUS_M = 0.17)  # Participant may tune. 0.390 * 0.245 (L x W)
 
     logger.info(f"Warming up pose filter to initialise position + reduce initial noise.")
     for _ in range(15):
@@ -151,6 +149,7 @@ def main():
         global prev_img_rpt_time
         if not prev_img_rpt_time or time.time() - prev_img_rpt_time >= 1:  # throttle to 1 submission per second, and only read img if necessary
             robot.camera.start_video_stream(display=False, resolution='720p')
+            if not SIMULATOR_MODE: print(robot.camera.conf)  # see if can see whitebalance values
             img = robot.camera.read_cv2_image(strategy='newest')
             robot.camera.stop_video_stream()
             img_with_bbox, answer = cv_service.predict([suspect_img, hostage_img], img)
@@ -265,14 +264,12 @@ def main():
                 # TODO: Implement some simple random movement for the robot to change its location
 
                 # And/or re-initialise the map and planner with a smaller dilation (smaller robo radius) which I've done below (untested)
-                map_.grid += 1.5 * ROBOT_RADIUS_M / map_.scale  # Same functionality as .dilated last year: expands the walls by 1.5 times the radius of the robo
-                ROBOT_RADIUS_M *= 2 / 3
-                map_.grid -= 1.5 * ROBOT_RADIUS_M / map_.scale
                 planner = MyPlanner(map_,
                                     waypoint_sparsity_m=0.4,
                                     astargrid_threshold_dist_cm=29,
                                     path_opt_min_straight_deg=165,
-                                    path_opt_max_safe_dist_cm=24)
+                                    path_opt_max_safe_dist_cm=24,
+                                    ROBOT_RADIUS_M = 0.17 * 2 / 3)
             else:
                 path.reverse()  # reverse so closest wp is last so that pop() is cheap , waypoint
                 curr_wp = None
@@ -362,8 +359,14 @@ def main():
 
                 # If robot is facing the wrong direction, turn to face waypoint first before moving forward.
                 # Lock spin direction (has effect only if use_spin_direction_lock = True) as bug causing infinite spinning back and forth has been encountered before in the sim
-                # Calculate the angle threshold based on dist_to_wp such that when reaching the next wp, the max deviation is less than MAX_DEVIATION_THRESH_M
-                ANGLE_THRESHOLD_DEG = np.degrees(np.arctan2(MAX_DEVIATION_THRESH_M, dist_to_wp))  # TODO: decide MAX_DEVIATION_THRESH_M based on shortest distance to a wall from the straight line that connects to the next wp
+                # Calculate the angle threshold based on dist_to_wp such that when reaching the next wp, the max deviation is less than MAX_DEVIATION_THRESH_M , clamped to [5, 25] deg
+                # MAX_DEVIATION_THRESH_M based on shortest distance to a wall from the straight line that connects to the next wp
+                # This is only calculated at the first iter of every new wp and kept constant when approaching the same wp, to prevent angle threshold increasing too much when the robot is near the wp
+                if prev_wp != curr_wp:
+                    MAX_DEVIATION_THRESH_M = planner.min_clearance_along_path_real(pose, curr_wp)
+                    ANGLE_THRESHOLD_DEG = np.clip(np.degrees(np.arctan2(MAX_DEVIATION_THRESH_M, dist_to_wp)), 5, 25)  # TODO: tune the clamp range
+                    NavLogger.debug(f'MAX_DEVIATION_THRESH_M: {MAX_DEVIATION_THRESH_M}, ANGLE_THRESHOLD_DEG: {ANGLE_THRESHOLD_DEG}')
+                    prev_wp = curr_wp
                 if abs(ang_diff) > ANGLE_THRESHOLD_DEG:
                     vel_cmd[0] = 0.0  # Robot can only rotate; set speed to 0
                     spin_direction_lock = True
@@ -382,7 +385,9 @@ def main():
     rep_service.end_run()  # Call this only after receiving confirmation from the scoring server that you have reached the maze's last checkpoint.
     robot.chassis.drive_speed(x=0.0, y=0.0, z=0.0)  # set stop for safety
     logger.info('Mission Completed.')
-    asr_service.language_tool.close()  # closes the spawned Java program, hangs on Windows (need task manager), need test on their Linux machine
+    if not SIMULATOR_MODE:
+        robot.close()
+        asr_service.language_tool.close()  # closes the spawned Java program, hangs on Windows (need task manager), need test on their Linux machine
 
 
 if __name__ == '__main__':

@@ -7,7 +7,7 @@ from tilsdk.localization import *
 
 
 class MyPlanner:
-    def __init__(self, map_: SignedDistanceGrid = None, waypoint_sparsity_m=0.5, astargrid_threshold_dist_cm=29, path_opt_min_straight_deg=170, path_opt_max_safe_dist_cm=24):
+    def __init__(self, map_: SignedDistanceGrid = None, waypoint_sparsity_m=0.5, astargrid_threshold_dist_cm=29, path_opt_min_straight_deg=170, path_opt_max_safe_dist_cm=24, ROBOT_RADIUS_M=0.17):
         '''
         Parameters
         ----------
@@ -37,6 +37,7 @@ class MyPlanner:
         self.map = map_
         self.passable = self.map.grid > 0
         self.bgrid = self.transform_add_border(self.map.grid.copy())  # Grid which takes the walls outside the grid into account
+        self.bgrid -= 1.5 * ROBOT_RADIUS_M / self.map.scale  # Same functionality as .dilated last year: expands the walls by 1.5 times the radius of the robot
         self.astar_grid = self.transform_for_astar(self.bgrid.copy())
 
         self.path = None
@@ -221,15 +222,14 @@ class MyPlanner:
         plt.draw()
         # plt.savefig(f"path_{str(uuid.uuid4())[:5]}.png")
 
-    def wall_clearance(self, l: RealLocation):
+    def wall_clearance(self, l: Union[RealLocation, RealPose]):
         grid_l = self.map.real_to_grid(l)
         return self.bgrid[grid_l[1]][grid_l[0]] * self.map.scale
     
-    def min_clearance_along_path_real(self, l1:RealLocation, l2:RealLocation):
-        j1, i1 = self.map.real_to_grid(l1)
-        j2, i2 = self.map.real_to_grid(l2)
+    def min_clearance_along_path_real(self, l1: Union[RealLocation, RealPose], l2: Union[RealLocation, RealPose]):
+        j1, i1 = self.map.real_to_grid(l1)[:2]
+        j2, i2 = self.map.real_to_grid(l2)[:2]
         return self.min_clearance_along_path(i1, j1, i2, j2)
-
 
 
 if __name__ == '__main__':
@@ -237,9 +237,7 @@ if __name__ == '__main__':
     loc_service = LocalizationService(host='localhost', port=5566)  # for simulator
     map_: SignedDistanceGrid = loc_service.get_map()
     print("Got map from loc")
-    ROBOT_RADIUS_M = 0.17
-    map_.grid -= 1.5 * ROBOT_RADIUS_M / map_.scale
-    planner = MyPlanner(map_, waypoint_sparsity_m=0.4, astargrid_threshold_dist_cm=29, path_opt_max_safe_dist_cm=24, path_opt_min_straight_deg=165)
+    planner = MyPlanner(map_, waypoint_sparsity_m=0.4, astargrid_threshold_dist_cm=29, path_opt_max_safe_dist_cm=24, path_opt_min_straight_deg=165, ROBOT_RADIUS_M=0.17)
 
 
     def test_path(a, b, c, d):

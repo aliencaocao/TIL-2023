@@ -8,7 +8,7 @@ local_thres : 0.35
 detour_checkpoint : 
   - (0, 0, 0)  # ignore this row - the first task checkpoint has no prior detour.
   - (1.5, 3.5, 0) # detour before 2nd task checkpoint
-  - (2.5, 0.5, 0) # detour before 3rd task checkpoint
+  - (3.5, 0.5, 0) # detour before 3rd task checkpoint
   - (6.5, 2.0, 0) # detour before end goal
 
 # valid checkpoints in order 
