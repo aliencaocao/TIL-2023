@@ -34,3 +34,4 @@ language_tool_python
 audiomentations
 scikit-image
 pyastar2d
+levenshtein

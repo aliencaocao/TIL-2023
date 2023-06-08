@@ -227,6 +227,7 @@ class MyPlanner:
         return self.bgrid[grid_l[1]][grid_l[0]] * self.map.scale
     
     def min_clearance_along_path_real(self, l1: Union[RealLocation, RealPose], l2: Union[RealLocation, RealPose]):
+        """Returns the shortest distance to the nearest wall from the straight line from l1 and l2. Result in CM"""
         j1, i1 = self.map.real_to_grid(l1)[:2]
         j2, i2 = self.map.real_to_grid(l2)[:2]
         return self.min_clearance_along_path(i1, j1, i2, j2)

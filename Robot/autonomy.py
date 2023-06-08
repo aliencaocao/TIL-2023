@@ -194,8 +194,10 @@ def main():
                     path = [curr_loi, curr_loi] # 2 copies for legacy reasons... prob works with just 1 copy too but that would need testing
                     REACHED_THRESHOLD_LAST_M *= 2/3               
                     continue # Resume movement
+                elif info == 'You Still Have Checkpoints':
+                    logger.warning('Robot has reached end goal without finishing all task points!')  # TODO: what to do sia
                 else:
-                    raise Exception("DSTA rep_service.check_pose() error: Unexpected string value.")
+                    raise ValueError(f"DSTA rep_service.check_pose() error: Unexpected string value: {info}.")
             elif isinstance(info, RealPose):  # Robot reached detour checkpoint and received new coordinates to go to.
                 logger.info(f"Reached detour point, got next task point: {info}.")
                 is_task_not_detour = False
@@ -245,6 +247,8 @@ def main():
                     logger.info(f'Correct password! Moving to next task checkpoint at {target_pose}')
                 elif target_pose_check == 'End Goal Reached':
                     logger.info(f'Correct password! Moving to final goal at {target_pose}')
+                elif target_pose_check == 'You Still Have Checkpoints':
+                    logger.warning('Correct password and target pose given is end goal, however you have missed some previous task checkpoints!')  # TODO: what to do sia
                 else:
                     logger.error(f'Pose gotten from report digit is invalid! Got {target_pose}, check result {target_pose_check}.')
 
@@ -259,7 +263,7 @@ def main():
             logger.info('Planning path to: {}'.format(curr_loi))
             path = planner.plan(pose[:2], curr_loi, display=True)
             if path is None:
-                logger.info('Error, no possible path found to the next location!')
+                logger.error('No possible path found to the next location!')
                 # It should never come to this!
                 # TODO: Implement some simple random movement for the robot to change its location
 
@@ -363,7 +367,7 @@ def main():
                 # MAX_DEVIATION_THRESH_M based on shortest distance to a wall from the straight line that connects to the next wp
                 # This is only calculated at the first iter of every new wp and kept constant when approaching the same wp, to prevent angle threshold increasing too much when the robot is near the wp
                 if prev_wp != curr_wp:
-                    MAX_DEVIATION_THRESH_M = planner.min_clearance_along_path_real(pose, curr_wp)
+                    MAX_DEVIATION_THRESH_M = planner.min_clearance_along_path_real(pose, curr_wp) / 100  # returns cm so convert to m here
                     ANGLE_THRESHOLD_DEG = np.clip(np.degrees(np.arctan2(MAX_DEVIATION_THRESH_M, dist_to_wp)), 5, 25)  # TODO: tune the clamp range
                     NavLogger.debug(f'MAX_DEVIATION_THRESH_M: {MAX_DEVIATION_THRESH_M}, ANGLE_THRESHOLD_DEG: {ANGLE_THRESHOLD_DEG}')
                     prev_wp = curr_wp
