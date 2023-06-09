@@ -9,6 +9,7 @@
 *.safetensors
 *.zip
 *.pyc
+**/.ipynb_checkpoints/*
 CV/RT-DETR/checkpoints
 CV/RT-DETR/dataset
 CV/RT-DETR/output_inference
