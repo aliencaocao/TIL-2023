@@ -5,7 +5,7 @@ import fire
 import time
 from sklearn import metrics
 import timm.scheduler
-
+import pickle
 from evar.data import create_dataloader
 from evar.model_utils import show_layers_trainable, MLP
 from lineareval import make_cfg
@@ -84,7 +84,7 @@ class SpecAugment:
         return False
 
     def __init__(self, freqm, timem):
-        self.freqmask = torchaudio.transforms.FrequencyMasking(freqm) if freqm > 0 else None
+        self.freqmask = torchaudio.transforms.FrequencyMasking(freqm) if freqm > 0 else None #TODO set freqm to 0
         self.timemask = torchaudio.transforms.TimeMasking(timem) if timem > 0 else None
 
     def __call__(self, lms):
@@ -95,7 +95,7 @@ class SpecAugment:
         return lms
 
 
-class AudioFineuneAug:
+class AudioFinetuneAug:
     def __init__(self, freqm, timem, rrc=False):
         self.spec_aug = SpecAugment(freqm, timem) if SpecAugment.is_required(freqm, timem) else None
         self.rrc = RandomResizeCrop() if rrc else None
@@ -230,7 +230,7 @@ def _train(cfg, ar_model, device, logpath, train_loader, valid_loader, test_load
 
     # Augmentations for fine tuning
     mixup = Mixup(mixup_alpha=cfg.mixup)
-    aug_fn = AudioFineuneAug(cfg.ft_freq_mask, cfg.ft_time_mask, rrc=cfg.ft_rrc)
+    aug_fn = AudioFinetuneAug(cfg.ft_freq_mask, cfg.ft_time_mask, rrc=cfg.ft_rrc)
     ar_model.module.ar.set_augment_tf_feature_fn(aug_fn)
 
     # Name this session
@@ -306,6 +306,7 @@ def _train(cfg, ar_model, device, logpath, train_loader, valid_loader, test_load
 class TaskHead(torch.nn.Module):
     def __init__(self, dim, n_class=1000, hidden=()):
         super().__init__()
+        # print(f"TASK HEAD HAS {n_class} CLASSES")
         self.norm = torch.nn.BatchNorm1d(dim, affine=False)
         self.mlp = MLP(input_size=dim, hidden_sizes=hidden, output_size=n_class, mean=0.0, std=0.01, bias=0.)
 
@@ -371,9 +372,18 @@ def run_eval(config_file, task, options='', seed=42, lr=None, hidden=(), mixup=N
             always_one_hot=True, balanced_random=balanced)
         logging.info(f'Train:{len(train_loader.dataset)}, valid:{len(valid_loader.dataset)}, test:{len(test_loader.dataset)}, multi label:{multi_label}, balanced:{balanced}')
 
+        # Save train_loader.dataset.classes as a pickle file.
+        # this is done to map the label indices to the actual class names.
+        with open(logpath / "classes.pkl", "wb") as f:
+            pickle.dump(train_loader.dataset.classes, f)
+
         # Make a fresh model
         ar = eval('evar.'+cfg.audio_repr)(cfg).to(device)
+
+        # Compute and save normalization statistics (mean and stddev)
         ar.precompute(device, train_loader)
+        torch.save(ar.norm_stats, logpath / "norm_stats.pt")
+        
         task_model = TaskNetwork(cfg, ar).to(device)
         task_model_dp = torch.nn.DataParallel(task_model).to(device)
         logging.info(f'Head = {task_model.head}')

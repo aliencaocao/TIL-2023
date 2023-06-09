@@ -152,9 +152,10 @@ class RuntimeM2D(nn.Module):
 
     def to_feature(self, batch_audio):
         # raw -> spectrogram, and normalize
-        x = self.to_spec(batch_audio)
-        x = (x + torch.finfo().eps).log()
-        x = x.unsqueeze(1)
+        x = self.to_spec(batch_audio) # this will give the melspectrogram
+        x = (x + torch.finfo().eps).log() # this will add an epsilon for numerical stability, then take the log to get the log mel spectrogram
+        x = x.unsqueeze(1) # this will insert 1 dimension at the 1st dimension, so that the shape will be (batch_size, 1, n_mels, n_frames)
+        # reason because the ViT is used as the backbone, which typically expects the shape of (batch_size, num_channels, height, width)
         return x
 
     def normalize_batch(self, x, return_stats=False):

@@ -29,16 +29,23 @@ class AR_M2D_BatchNormStats(BaseAudioRepr):
 
 class AR_M2D(BaseAudioRepr):
 
-    def __init__(self, cfg):
+    def __init__(self, cfg, inference_mode=False, norm_stats=None):
         super().__init__(cfg=cfg)
 
         self.runtime = RuntimeM2D(cfg=cfg, weight_file=cfg.weight_file)
         self.runtime.eval()
 
+        self.inference_mode = inference_mode
+        if inference_mode:
+            if norm_stats is None:
+                raise ValueError(f"norm_stats must be provided when inference_mode=True")
+            self.norm_stats = norm_stats
+
     def precompute(self, device, data_loader):
         self.norm_stats = calculate_norm_stats(device, data_loader, self.runtime.to_feature)
 
     def encode_frames(self, batch_audio):
+        # TODO: pre-spectrogram augs go here
         x = self.runtime.to_feature(batch_audio)
         x = normalize_spectrogram(self.norm_stats, x)
         x = self.augment_if_training(x)

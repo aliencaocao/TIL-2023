@@ -22,7 +22,8 @@ _defs = {
 
     # TIL custom
     # unit_sec seems to be the length of each clip in seconds
-    'til': [1, 15.0, 'softmax', None, True]
+    # TODO: change to 3 or 5 sec depending on how we choose to expand the dataset
+    'til': [1, 15.0, 'softmax', None, True] # need to set the balanced training to True because the dataset given to us will be imbalanced
 }
 
 _fs_table = {

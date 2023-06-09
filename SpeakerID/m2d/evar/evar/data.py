@@ -7,7 +7,7 @@ from .common import (np, pd, torch, torchaudio, F)
 from .sampler import BalancedRandomSampler, InfiniteSampler
 import multiprocessing
 from sklearn.preprocessing import MultiLabelBinarizer
-
+from audiomentations import Compose, Shift, Reverse, TimeStretch, Trim
 
 class BaseRawAudioDataset(torch.utils.data.Dataset):
     def __init__(self, unit_samples, tfms=None, random_crop=False):
@@ -46,8 +46,8 @@ class BaseRawAudioDataset(torch.utils.data.Dataset):
 
 
 class WavDataset(BaseRawAudioDataset):
-    def __init__(self, cfg, split, holdout_fold=1, always_one_hot=False, random_crop=True, classes=None):
-        super().__init__(cfg.unit_samples, tfms=None, random_crop=random_crop)
+    def __init__(self, cfg, split, tfms=None, holdout_fold=1, always_one_hot=False, random_crop=True, classes=None):
+        super().__init__(cfg.unit_samples, tfms=tfms, random_crop=random_crop)
         self.cfg = cfg
         self.split = split
 
@@ -86,7 +86,17 @@ class WavDataset(BaseRawAudioDataset):
 
 def create_dataloader(cfg, fold=1, seed=42, batch_size=None, always_one_hot=False, balanced_random=False, pin_memory=True):
     batch_size = batch_size or cfg.batch_size
-    train_dataset = WavDataset(cfg, 'train', holdout_fold=fold, always_one_hot=always_one_hot, random_crop=True)
+
+    train_transforms = Compose([
+        # TODO: inspect dataset to determine dB threshold below which audio is considered silence
+        # white noise injection may mess this up because silence with noise is no longer silent
+        # Trim(p=0.5, top_db=30.0),
+        Shift(p=0.5, min_fraction=-0.5, max_fraction=0.5),
+        Reverse(p=0.5),
+        TimeStretch(p=0.5, min_rate=0.8, max_rate=1.25, leave_length_unchanged=True),
+    ])
+
+    train_dataset = WavDataset(cfg, 'train', tfms=train_transforms, holdout_fold=fold, always_one_hot=always_one_hot, random_crop=True)
     valid_dataset = WavDataset(cfg, 'valid', holdout_fold=fold, always_one_hot=always_one_hot, random_crop=True,
         classes=train_dataset.classes)
     test_dataset = WavDataset(cfg, 'test', holdout_fold=fold, always_one_hot=always_one_hot, random_crop=False,

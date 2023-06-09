@@ -34,7 +34,8 @@ ft_bs: 44
 ft_lr: 0.001
 ft_early_stop_epochs: -1  # -1: no early stopping
 ft_epochs: 200
-ft_freq_mask: 30
-ft_time_mask: 192
+ft_freq_mask: 0 # do not mask frequencies because they distinguish speakers from each other
+ft_time_mask: 192 # max of 117 if we use 5 seconds, otherwise max of 70 if we use 3 seconds
+# this was calculated based on the default ft_time_mask of 192, compared to the number of frames for VC1 dataset which is 820
 ft_noise: 0.0
 ft_rrc: True

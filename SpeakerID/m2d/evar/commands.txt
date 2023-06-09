@@ -1,2 +1,3 @@
 Finetuning:
-python3 
+python3 finetune.py config/m2d.yaml til
+Above command must be run in m2d/evar/ folder, otherwise there will be ModuleNotFoundError
