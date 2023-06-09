@@ -1,4 +1,5 @@
 import torch
+from pytorch_optimizer import Amos, Lion
 
 
 def make_optimizer(cfg, model, center_criterion):
@@ -22,6 +23,10 @@ def make_optimizer(cfg, model, center_criterion):
         optimizer = getattr(torch.optim, cfg.SOLVER.OPTIMIZER_NAME)(params, momentum=cfg.SOLVER.MOMENTUM)
     elif cfg.SOLVER.OPTIMIZER_NAME == 'AdamW':
         optimizer = torch.optim.AdamW(params, lr=cfg.SOLVER.BASE_LR, weight_decay=cfg.SOLVER.WEIGHT_DECAY)
+    elif cfg.SOLVER.OPTIMIZER_NAME == 'Lion':
+        optimizer = Lion(params, lr=cfg.SOLVER.BASE_LR / 3, weight_decay=cfg.SOLVER.WEIGHT_DECAY)  # Lion uses 3x smaller lr than adamw for optimal result
+    elif cfg.SOLVER.OPTIMIZER_NAME == 'Amos':
+        optimizer = Amos(params, lr=cfg.SOLVER.BASE_LR, weight_decay=cfg.SOLVER.WEIGHT_DECAY)
     else:
         optimizer = getattr(torch.optim, cfg.SOLVER.OPTIMIZER_NAME)(params)
     optimizer_center = torch.optim.SGD(center_criterion.parameters(), lr=cfg.SOLVER.CENTER_LR)

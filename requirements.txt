@@ -35,3 +35,4 @@ audiomentations
 scikit-image
 pyastar2d
 levenshtein
+pytorch_optimizer >= 2.10.0
