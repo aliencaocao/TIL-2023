@@ -30,12 +30,12 @@ DATALOADER:
   NUM_WORKERS: 2
 
 SOLVER:
-  OPTIMIZER_NAME: 'SGD'  # SGD
-  MAX_EPOCHS: 500
+  OPTIMIZER_NAME: 'Amos'  # SGD
+  MAX_EPOCHS: 200
   # BASE_LR: 0.005 # 0.0008
-  BASE_LR: 5e-3
+  BASE_LR: 8e-4  # if using Lion, the actual LR is this /10, because of how Lion works it needs a much lower lr
   WARMUP_EPOCHS: 3
-  IMS_PER_BATCH: 64
+  IMS_PER_BATCH: 128
   WARMUP_METHOD: 'cosine'
   LARGE_FC_LR: False
   CHECKPOINT_PERIOD: 1
@@ -47,12 +47,13 @@ SOLVER:
 
 TEST:
   EVAL: True
-  IMS_PER_BATCH: 64
+  IMS_PER_BATCH: 128
   RE_RANKING: True
-  WEIGHT: 'log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth'
+  # WEIGHT: 'log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth'
+  WEIGHT: ''
   NECK_FEAT: 'before'
   FEAT_NORM: 'yes'
   # THRESHOLD: 0.0013236288040655365 # without RR transformer_29 0.0013236288040655365
   THRESHOLD: 0.8669 # with RR, transformer_29 0.7868934651156535
 
-OUTPUT_DIR: 'log_SGD_500epoch_continue_1e-4LR_expanded'
+OUTPUT_DIR: 'log_Amos_200epoch_8e-5LR_expanded'

@@ -24,9 +24,9 @@ def make_optimizer(cfg, model, center_criterion):
     elif cfg.SOLVER.OPTIMIZER_NAME == 'AdamW':
         optimizer = torch.optim.AdamW(params, lr=cfg.SOLVER.BASE_LR, weight_decay=cfg.SOLVER.WEIGHT_DECAY)
     elif cfg.SOLVER.OPTIMIZER_NAME == 'Lion':
-        optimizer = Lion(params, lr=cfg.SOLVER.BASE_LR / 3, weight_decay=cfg.SOLVER.WEIGHT_DECAY)  # Lion uses 3x smaller lr than adamw for optimal result
+        optimizer = Lion(params, lr=cfg.SOLVER.BASE_LR / 100, weight_decay=0)  # Lion uses 100x smaller lr than adamw for optimal result and weight decay seems to destory everything
     elif cfg.SOLVER.OPTIMIZER_NAME == 'Amos':
-        optimizer = Amos(params, lr=cfg.SOLVER.BASE_LR, weight_decay=cfg.SOLVER.WEIGHT_DECAY)
+        optimizer = Amos(params, lr=cfg.SOLVER.BASE_LR)
     else:
         optimizer = getattr(torch.optim, cfg.SOLVER.OPTIMIZER_NAME)(params)
     optimizer_center = torch.optim.SGD(center_criterion.parameters(), lr=cfg.SOLVER.CENTER_LR)
