@@ -3,8 +3,9 @@ import os
 os.environ['LTP_PATH'] = '../ASR'  # local server for language tool
 
 import sys
-
 sys.path.insert(0, '../')  # for importing TensorRT_Inference
+sys.path.insert(0, "../SpeakerID/m2d")
+sys.path.insert(0, "../SpeakerID/m2d/evar")
 
 import logging
 
@@ -14,8 +15,67 @@ from transformers import pipeline
 import language_tool_python
 import numpy as np
 
+import torch
+import torchaudio
+import pickle
+from pathlib import Path
+from evar.ar_m2d import AR_M2D
+from finetune import TaskNetwork
+from lineareval import make_cfg
+from evar.common import kwarg_cfg
+
 logger = logging.getLogger('NLPService')
 
+class SpeakerIDService:
+    def __init__(self, config_path: str, run_dir: str, model_filename: str):
+        logger.info('Initializing SpeakerID service...')
+
+        run_dir = Path(run_dir)
+        
+        logger.debug(f'Loading SpeakerID config from {config_path}...')
+        device = torch.device("cuda")
+        cfg, n_folds, activation, balanced = make_cfg(
+            config_file=config_path,
+            task="til",
+            options="",
+        )
+        cfg.weight_file = "m2d_vit_base-80x208p16x16-random/random"
+        cfg.unit_sec = 5.0 # TODO: change unit_sec according to slice length
+        cfg.runtime_cfg = kwarg_cfg(n_class=40, hidden=()) # TODO: change n_class according to no. of unique speakers
+
+        state_dict_path = run_dir / model_filename
+        logger.debug(f"Loading model state_dict from {state_dict_path}")
+        state_dict = torch.load(state_dict_path)
+
+        norm_stats_path = run_dir / "norm_stats.pt"
+        logger.debug(f"Loading normalization stats from {norm_stats_path}")
+        norm_stats = torch.load(norm_stats_path)
+        
+        classes_pickle_path = run_dir / "classes.pkl"
+        logger.debug(f"Loading class names pickle from {classes_pickle_path}")
+        with open(classes_pickle_path, "rb") as classes_pickle:
+            self.class_names = list(pickle.load(classes_pickle))
+
+        logger.debug(f"Instantiating AR_M2D backbone")
+        backbone = AR_M2D(cfg, inference_mode=True, norm_stats=norm_stats).to(device)
+
+        logger.debug(f"Instantiating TaskNetwork")
+        self.model = TaskNetwork(cfg, ar=backbone).to(device)
+        self.model = torch.nn.DataParallel(self.model).to(device)
+
+        logger.debug(f"Loading TaskNetwork state_dict")
+        self.model.load_state_dict(state_dict)
+        self.model.eval()
+
+        logger.info("SpeakerID service successfully initialized.")
+    
+    def predict(self, audio_path: str) -> str:
+        wav, sr = torchaudio.load(audio_path)
+        model_output = self.model(wav)
+        pred_idx = torch.argmax(model_output[0])
+        return self.class_names[pred_idx]
+
+breakpoint()
 
 class ASRService:
     def __init__(self, model_dir: str = 'wav2vec2-conformer'):

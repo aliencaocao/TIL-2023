@@ -23,6 +23,12 @@ class CVService:
     def predict(self, suspect: List[np.ndarray], image: np.ndarray) -> Tuple[np.ndarray, str]:
         return image, 'suspect'
 
+class SpeakerIDService:
+    def __init__(self, config_path: str, run_dir: str, model_filename: str):
+        pass
+
+    def predict(self, audio_path: str) -> str:
+        return 0
 
 class ASRService:
     '''

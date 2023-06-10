@@ -13,11 +13,11 @@ import cv2
 
 if SIMULATOR_MODE:
     from tilsdk.mock_robomaster.robot import Robot  # Use this for the simulator
-    from mock_services import CVService, ASRService
+    from mock_services import CVService, ASRService, SpeakerIDService
 else:
     from robomaster.robot import Robot  # Use this for real robot
     from cv_service import CVService
-    from nlp_service import ASRService
+    from nlp_service import ASRService, SpeakerIDService
 
 # Setup logging in a nice readable format
 logging.basicConfig(level=logging.INFO,
@@ -39,10 +39,13 @@ for l in loggers:
 suspect_img = cv2.imread('data/imgs/suspect1.png')
 hostage_img = cv2.imread('data/imgs/targetmario.png')
 ASR_MODEL_DIR = '../ASR/wav2vec2-conformer'
-OD_CONFIG_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py'
-OD_MODEL_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/InternImage-L epoch_12 stripped.pth'
-REID_MODEL_DIR = '../CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth'
-REID_CONFIG_DIR = '../CV/SOLIDER-REID/TIL.yml'
+OD_CONFIG_PATH = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py'
+OD_MODEL_PATH = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/InternImage-L epoch_12 stripped.pth'
+REID_MODEL_PATH = '../CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth'
+REID_CONFIG_PATH = '../CV/SOLIDER-REID/TIL.yml'
+SPEAKERID_RUN_DIR = '../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_59808fb5'
+SPEAKERID_MODEL_FILENAME = 'weights_ep33it0-0.33333_loss0.0934.pth' # this is a FILENAME, not a full path
+SPEAKERID_CONFIG_PATH = '../SpeakerID/m2d/evar/config/m2d.yaml'
 ZIP_SAVE_DIR = Path(r"C:\Users\alien\Documents\PyCharm-Projects\TIL-2023\Robot\data\temp")
 prev_img_rpt_time = 0  # In global scope to allow convenient usage of global keyword in do_cv()
 robot = Robot()
@@ -54,14 +57,13 @@ def main():
     robot.set_robot_mode(mode="chassis_lead")
 
     # Initialize services
+    cv_service = CVService(OD_CONFIG_PATH, OD_MODEL_PATH, REID_MODEL_PATH, REID_CONFIG_PATH)
+    asr_service = ASRService(ASR_MODEL_DIR)
+    speakerid_service = SpeakerIDService(SPEAKERID_CONFIG_PATH, SPEAKERID_RUN_DIR, SPEAKERID_MODEL_FILENAME)
     if SIMULATOR_MODE:
-        cv_service = CVService(OD_CONFIG_DIR, OD_MODEL_DIR, REID_MODEL_DIR, REID_CONFIG_DIR)
-        asr_service = ASRService(ASR_MODEL_DIR)
         loc_service = LocalizationService(host='localhost', port=5566)  # for simulator
         rep_service = ReportingService(host='localhost', port=5501)
     else:
-        cv_service = CVService(OD_CONFIG_DIR, OD_MODEL_DIR, REID_MODEL_DIR, REID_CONFIG_DIR)
-        asr_service = ASRService(ASR_MODEL_DIR)
         import torch
         print(torch.cuda.memory_summary())
         del torch
