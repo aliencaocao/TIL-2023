@@ -129,8 +129,6 @@ class R1_mAP_eval:
             distmat = re_ranking(qf, gf, k1=20, k2=6, lambda_value=0.3)
 
         else:
-            # This is the priority
-            # Go to TIL.yaml and turn off the reranking
             print('=> Computing DistMat with euclidean_distance')
             distmat = euclidean_distance(qf, gf) # Figure out what this is, and how do you decode it
         cmc, mAP = eval_func(distmat, q_pids, g_pids, q_camids, g_camids)
@@ -157,7 +155,7 @@ class Postprocessor:
     def compute(self):  # called after each epoch
         feats = torch.cat(self.feats, dim=0)
         if self.feat_norm:
-            print("The test feature is normalized")
+            # print("The test feature is normalized")
             feats = torch.nn.functional.normalize(feats, dim=1, p=2)  # along channel
         # query
         # feats -> (64, 1024)
@@ -166,10 +164,10 @@ class Postprocessor:
         gallery_features = feats[self.num_query:]
 
         if self.reranking:
-            print('=> Computing DisMat with reranking')
+            # print('=> Computing DisMat with reranking')
             distmat = re_ranking(query_features, gallery_features, k1=20, k2=6, lambda_value=0.3)
 
         else:
-            print('=> Computing DistMat with euclidean_distance')
+            # print('=> Computing DistMat with euclidean_distance')
             distmat = euclidean_distance(query_features, gallery_features)
         return distmat
