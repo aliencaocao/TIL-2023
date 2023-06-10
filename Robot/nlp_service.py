@@ -16,6 +16,7 @@ import language_tool_python
 import numpy as np
 
 import torch
+import torch.nn.functional as F
 import torchaudio
 import pickle
 from pathlib import Path
@@ -31,6 +32,7 @@ class SpeakerIDService:
         logger.info('Initializing SpeakerID service...')
 
         run_dir = Path(run_dir)
+        self.segment_length_seconds = 3.0 # TODO: change according to slice length
         
         logger.debug(f'Loading SpeakerID config from {config_path}...')
         device = torch.device("cuda")
@@ -40,7 +42,7 @@ class SpeakerIDService:
             options="",
         )
         cfg.weight_file = "m2d_vit_base-80x208p16x16-random/random"
-        cfg.unit_sec = 5.0 # TODO: change unit_sec according to slice length
+        cfg.unit_sec = self.segment_length_seconds
         cfg.runtime_cfg = kwarg_cfg(n_class=40, hidden=()) # TODO: change n_class according to no. of unique speakers
 
         state_dict_path = run_dir / model_filename
@@ -71,8 +73,16 @@ class SpeakerIDService:
     
     def predict(self, audio_path: str) -> str:
         wav, sr = torchaudio.load(audio_path)
-        model_output = self.model(wav)
-        pred_idx = torch.argmax(model_output[0])
+
+        segment_length_samples = int(self.segment_length_seconds * sr)
+        segments = list(torch.split(wav, segment_length_samples, dim=1))
+        segments[-1] = F.pad(segments[-1], (0, segment_length_samples - segments[-1].shape[1]), value=0)
+        segments_batch = torch.cat(segments)
+        
+        model_output = self.model(segments_batch)
+        logits_averaged = torch.mean(model_output, dim=0)
+
+        pred_idx = torch.argmax(logits_averaged)
         return self.class_names[pred_idx]
 
 breakpoint()
