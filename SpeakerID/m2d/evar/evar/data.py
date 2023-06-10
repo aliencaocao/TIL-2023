@@ -27,6 +27,12 @@ class BaseRawAudioDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         wav = self.get_audio(index) # shape is expected to be (self.unit_samples,)
 
+        # Apply transforms prior to padding
+        if self.tfms is not None:
+            wav = self.tfms(wav, sample_rate=self.cfg.sample_rate)
+        # wav is a numpy.ndarray, we need to convert to torch tensor
+        wav = torch.from_numpy(np.copy(wav))
+
         # Trim or stuff padding
         l = len(wav)
         if l > self.unit_samples:
@@ -35,10 +41,6 @@ class BaseRawAudioDataset(torch.utils.data.Dataset):
         elif l < self.unit_samples:
             wav = F.pad(wav, (0, self.unit_samples - l), mode='constant', value=0)
         wav = wav.to(torch.float)
-
-        # Apply transforms
-        if self.tfms is not None:
-            wav = self.tfms(wav)
 
         # Return item
         label = self.get_label(index)
@@ -90,10 +92,9 @@ def create_dataloader(cfg, fold=1, seed=42, batch_size=None, always_one_hot=Fals
     train_transforms = Compose([
         # TODO: inspect dataset to determine dB threshold below which audio is considered silence
         # white noise injection may mess this up because silence with noise is no longer silent
-        # Trim(p=0.5, top_db=30.0),
-        Shift(p=0.5, min_fraction=-0.5, max_fraction=0.5),
+        Shift(p=0.5, min_fraction=-0.3, max_fraction=0.3),
         Reverse(p=0.5),
-        TimeStretch(p=0.5, min_rate=1/1.2, max_rate=1/0.8, leave_length_unchanged=True),
+        TimeStretch(p=0.5, min_rate=1/1.2, max_rate=1/0.8), # this means the maximum length of audio will change by either 0.8x or 1.2x
     ])
 
     train_dataset = WavDataset(cfg, 'train', tfms=train_transforms, holdout_fold=fold, always_one_hot=always_one_hot, random_crop=True)
