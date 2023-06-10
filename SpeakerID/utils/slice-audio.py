@@ -10,7 +10,7 @@ segment_length_seconds = 2.
 input_csv_path = Path("../m2d/evar/evar/metadata/til.csv")
 sliced_csv_path = Path("../m2d/evar/evar/metadata/til_sliced.csv")
 input_audio_dir = Path("../m2d/evar/work/16k/til")
-sliced_output_dir = Path("../m2d/evar/work/16k/til-sliced")
+sliced_output_dir = Path("../m2d/evar/work/16k/til_sliced")
 
 os.makedirs(sliced_output_dir, exist_ok=True)
 
