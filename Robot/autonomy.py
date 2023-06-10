@@ -35,7 +35,7 @@ for l in loggers:
     l.addHandler(handler)
     l.setLevel(logging.DEBUG)
 
-# TODO: move the models to the robot folder for finals and update the paths here
+# TODO: update the paths of imgs and ZIP here. Model path are already simulated
 suspect_img = cv2.imread('data/imgs/suspect1.png')
 hostage_img = cv2.imread('data/imgs/targetmario.png')
 ASR_PREPROCESSOR_DIR = '../ASR/wav2vec2-conformer'

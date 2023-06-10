@@ -43,7 +43,7 @@ class CVService:
         logger.debug(f'Loading object detection model from {model} using config {config}')
         self.ODModel = init_detector(config, model, device="cuda:0")
         self.ODConfidenceThreshold = 0.9  # more lenient than 0.99 used in quals as we are taking one with highest conf later
-        self.REIDThreshold = 0.0  # TODO: test on zindi using euclidean distance
+        self.REIDThreshold = 1.05
 
         logger.debug(f'Loading SOLIDER-REID model from {reid_model} using config {reid_config}')
         cfg.merge_from_file(reid_config)
@@ -52,14 +52,14 @@ class CVService:
         self.REID.load_param(reid_model)
         self.REID.to('cuda')
         self.REID.eval()
-        self.REID_postprocessor = Postprocessor(num_query=1, max_rank=50, feat_norm=cfg.TEST.FEAT_NORM, reranking=False)  # in finals cannot use RR as threshold will be changed based on gallery size
+        self.REID_postprocessor = Postprocessor(num_query=2, max_rank=50, feat_norm=cfg.TEST.FEAT_NORM, reranking=False)  # in finals cannot use RR as threshold will be changed based on gallery size, num_query is 2 as we have 1 suspect and 1 hostage
         logger.info('CV service initialized.')
 
     @staticmethod
     def load_img(img: np.ndarray):  # for REID only
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img = cv2.resize(img, (224, 224))
-        img = np.transpose(img, (2, 0, 1))
+        img = np.transpose(img, (2, 0, 1))  # HWC -> CHW
         # normalize with mean and std supplied in cfg
         img = img / 255.0
         for channel in range(3):
