@@ -37,3 +37,5 @@ CV/SOLIDER-REID/reid_visual
 !til-23-finals-public.zip
 Robot/10000SGDMRT
 *.shelve*
+SpeakerID/logs/*
+SpeakerID/m2d/evar/logs/*
