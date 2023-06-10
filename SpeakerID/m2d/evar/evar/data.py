@@ -27,10 +27,14 @@ class BaseRawAudioDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         wav = self.get_audio(index) # shape is expected to be (self.unit_samples,)
 
-        # Apply transforms prior to padding
+        # first convert wav from torch tensor to a numpy ndarray
+        wav = wav.numpy()
+
+        # Use audiomentaitons to apply transforms prior to padding
         if self.tfms is not None:
             wav = self.tfms(wav, sample_rate=self.cfg.sample_rate)
-        # wav is a numpy.ndarray, we need to convert to torch tensor
+        
+        # Since wav is a numpy.ndarray, we need to convert to torch tensor
         wav = torch.from_numpy(np.copy(wav))
 
         # Trim or stuff padding
@@ -107,12 +111,12 @@ def create_dataloader(cfg, fold=1, seed=42, batch_size=None, always_one_hot=Fals
         InfiniteSampler(train_dataset, batch_size, seed, shuffle=True)
 
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_sampler=train_sampler, pin_memory=pin_memory,
-                                            num_workers=multiprocessing.cpu_count()) if balanced_random else \
+                                            num_workers=4) if balanced_random else \
                    torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, pin_memory=pin_memory,
-                                            num_workers=multiprocessing.cpu_count())
+                                            num_workers=4)
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=batch_size, shuffle=False, pin_memory=pin_memory,
-                                           num_workers=multiprocessing.cpu_count())
+                                           num_workers=4)
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False, pin_memory=pin_memory,
-                                           num_workers=multiprocessing.cpu_count())
+                                           num_workers=4)
 
     return (train_loader, valid_loader, test_loader, train_dataset.multi_label)
