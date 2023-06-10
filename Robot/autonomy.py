@@ -38,8 +38,7 @@ for l in loggers:
 # TODO: update the paths of imgs and ZIP here. Model path are already simulated
 suspect_img = cv2.imread('data/imgs/suspect1.png')
 hostage_img = cv2.imread('data/imgs/targetmario.png')
-ASR_PREPROCESSOR_DIR = '../ASR/wav2vec2-conformer'
-ASR_MODEL_DIR = '../ASR/wav2vec2-conformer.trt'
+ASR_MODEL_DIR = '../ASR/wav2vec2-conformer'
 OD_CONFIG_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py'
 OD_MODEL_DIR = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/InternImage-L epoch_12 stripped.pth'
 REID_MODEL_DIR = '../CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth'
@@ -57,12 +56,12 @@ def main():
     # Initialize services
     if SIMULATOR_MODE:
         cv_service = CVService(OD_CONFIG_DIR, OD_MODEL_DIR, REID_MODEL_DIR, REID_CONFIG_DIR)
-        asr_service = ASRService(ASR_PREPROCESSOR_DIR, ASR_MODEL_DIR)
+        asr_service = ASRService(ASR_MODEL_DIR)
         loc_service = LocalizationService(host='localhost', port=5566)  # for simulator
         rep_service = ReportingService(host='localhost', port=5501)
     else:
         cv_service = CVService(OD_CONFIG_DIR, OD_MODEL_DIR, REID_MODEL_DIR, REID_CONFIG_DIR)
-        asr_service = ASRService(ASR_PREPROCESSOR_DIR, ASR_MODEL_DIR)
+        asr_service = ASRService(ASR_MODEL_DIR)
         import torch
         print(torch.cuda.memory_summary())
         del torch

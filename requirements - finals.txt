@@ -1,9 +1,7 @@
 numpy
-tensorrt
 torch
 torchvision
 torchaudio
-pycuda
 transformers
 librosa
 soundfile

@@ -1,6 +1,5 @@
 import os
 
-os.environ['CUDA_MODULE_LOADING'] = 'LAZY'
 os.environ['LTP_PATH'] = '../ASR'  # local server for language tool
 
 import sys
@@ -9,12 +8,9 @@ sys.path.insert(0, '../')  # for importing TensorRT_Inference
 
 import logging
 
-from TensorRT_Inference import TRTInference
-
 import Levenshtein
-import torchaudio
 from tilsdk.localization.types import *
-from transformers import Wav2Vec2Processor
+from transformers import pipeline
 import language_tool_python
 import numpy as np
 
@@ -22,7 +18,7 @@ logger = logging.getLogger('NLPService')
 
 
 class ASRService:
-    def __init__(self, preprocessor_dir: str = 'wav2vec2-conformer', model_dir: str = 'wav2vec2-conformer.trt'):
+    def __init__(self, model_dir: str = 'wav2vec2-conformer'):
         '''
         Parameters
         ----------
@@ -34,12 +30,10 @@ class ASRService:
         logger.info('Initializing NLP service...')
         self.digits = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', "NINE"]
         self.digits_to_int = {d: i for i, d in enumerate(self.digits)}
-        logger.debug(f'Loading Wav2Vec2Processor from {preprocessor_dir}...')
-        self.processor = Wav2Vec2Processor.from_pretrained(preprocessor_dir)
-        logger.debug(f'Loading TensorRT engine from {model_dir}...')
-        self.model = TRTInference(model_dir, verbose=True)
-        logger.debug('Warming up TensorRT engine...')
-        self.model.warmup({'input': np.random.randn(16000)})
+        logger.debug(f'Loading model from {model_dir}...')
+        self.model = pipeline("automatic-speech-recognition", model=model_dir, batch_size=64, device="cuda:0")
+        for _ in range(3):  # warm up
+            self.model(['data/audio/evala_00001.wav'])
         logger.debug('Starting language tool...')
         self.language_tool = language_tool_python.LanguageTool('en-US', config={'cacheSize': 10000, 'pipelineCaching': True, 'maxCheckThreads': 30, 'warmUp': True})
         logger.info('NLP service initialized.')
@@ -71,13 +65,8 @@ class ASRService:
         try:
             logger.info(f'Predicting {len(audio_paths)} audio(s)...')
             audio_paths.sort()
-            outputs = []
-            for audio in audio_paths:
-                audio = torchaudio.load(audio)[0]
-                audio = self.processor(audio, sampling_rate=16000).input_values[0][0]
-                output = self.model({'input': audio})['output'][0]  # remove batch dimension
-                outputs.append(output)
-            outputs = (self.clean(anno) for anno in self.processor.batch_decode(np.argmax(outputs, axis=-1)))
+            outputs = self.model(audio_paths)
+            outputs = (self.clean(i['text']) for i in outputs)
             outputs_text = tuple(self.fix_grammar(anno) for anno in outputs)
             logger.debug(f'Predicted texts: {outputs_text}')
             outputs = tuple(self.find_digit(anno) for anno in outputs_text)  # contains None
