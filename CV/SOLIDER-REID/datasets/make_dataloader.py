@@ -48,15 +48,16 @@ def batch_inference_collate_fn(batch):
 
 def make_dataloader(cfg):
     train_transforms = T.Compose([
-        GaussianNoise(probability=0.5, noise_strength=25),
-        T.Resize(cfg.INPUT.SIZE_TRAIN, interpolation=3),
-        T.RandomHorizontalFlip(p=cfg.INPUT.HFLIP_PROB),
-        T.RandomVerticalFlip(p=cfg.INPUT.VFLIP_PROB),
-        T.AutoAugment(policy=T.AutoAugmentPolicy.IMAGENET),
-        T.ToTensor(),
-        T.Normalize(mean=cfg.INPUT.PIXEL_MEAN, std=cfg.INPUT.PIXEL_STD),
-        RandomErasing(probability=cfg.INPUT.RE_PROB, mode='pixel', max_count=1, device='cpu'),
-    ])
+            GaussianNoise(probability=0.5, noise_strength=25),
+            T.Resize(cfg.INPUT.SIZE_TRAIN, interpolation=3),
+            T.RandomHorizontalFlip(p=cfg.INPUT.HFLIP_PROB),
+            T.RandomVerticalFlip(p=cfg.INPUT.VFLIP_PROB),
+            T.Pad(cfg.INPUT.PADDING),
+            T.RandomCrop(cfg.INPUT.SIZE_TRAIN),
+            T.ToTensor(),
+            T.Normalize(mean=cfg.INPUT.PIXEL_MEAN, std=cfg.INPUT.PIXEL_STD),
+            RandomErasing(probability=cfg.INPUT.RE_PROB, mode='pixel', max_count=1, device='cpu'),
+        ])
 
     val_transforms = T.Compose([
         T.Resize(cfg.INPUT.SIZE_TEST),
@@ -105,7 +106,7 @@ def make_dataloader(cfg):
         train_set_normal = ImageDataset(dataset.train, val_transforms)
 
         num_classes, cam_num, view_num = dataset.num_train_pids, dataset.num_train_cams, dataset.num_train_vids
-        
+
         if cfg.DATALOADER.SAMPLER in ['softmax_triplet', 'img_triplet']:
             print('using img_triplet sampler')
             if cfg.MODEL.DIST_TRAIN:
