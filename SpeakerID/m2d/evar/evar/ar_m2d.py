@@ -45,7 +45,6 @@ class AR_M2D(BaseAudioRepr):
         self.norm_stats = calculate_norm_stats(device, data_loader, self.runtime.to_feature)
 
     def encode_frames(self, batch_audio):
-        # TODO: pre-spectrogram augs go here
         x = self.runtime.to_feature(batch_audio)
         x = normalize_spectrogram(self.norm_stats, x)
         x = self.augment_if_training(x)
