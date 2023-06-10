@@ -22,7 +22,7 @@ _defs = {
 
     # TIL custom
     # unit_sec seems to be the length of each clip in seconds
-    # TODO: change to 3 or 5 sec depending on how we choose to expand the dataset
+    # TODO: change to 3 or 5 sec * 1.25 to take into account time stretch aug
     'til': [1, 15.0, 'softmax', None, True] # need to set the balanced training to True because the dataset given to us will be imbalanced
 }
 

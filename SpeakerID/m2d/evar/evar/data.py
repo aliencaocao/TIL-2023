@@ -93,7 +93,7 @@ def create_dataloader(cfg, fold=1, seed=42, batch_size=None, always_one_hot=Fals
         # Trim(p=0.5, top_db=30.0),
         Shift(p=0.5, min_fraction=-0.5, max_fraction=0.5),
         Reverse(p=0.5),
-        TimeStretch(p=0.5, min_rate=0.8, max_rate=1.25, leave_length_unchanged=True),
+        TimeStretch(p=0.5, min_rate=1/1.2, max_rate=1/0.8, leave_length_unchanged=True),
     ])
 
     train_dataset = WavDataset(cfg, 'train', tfms=train_transforms, holdout_fold=fold, always_one_hot=always_one_hot, random_crop=True)
