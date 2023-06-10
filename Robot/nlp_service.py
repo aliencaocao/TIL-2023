@@ -3,7 +3,6 @@ import os
 os.environ['LTP_PATH'] = '../ASR'  # local server for language tool
 
 import sys
-sys.path.insert(0, '../')  # for importing TensorRT_Inference
 sys.path.insert(0, "../SpeakerID/m2d")
 sys.path.insert(0, "../SpeakerID/m2d/evar")
 
@@ -26,13 +25,16 @@ from lineareval import make_cfg
 from evar.common import kwarg_cfg
 
 logger = logging.getLogger('NLPService')
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.DEBUG)
+logger.propagate = False
 
 class SpeakerIDService:
-    def __init__(self, config_path: str, run_dir: str, model_filename: str):
+    def __init__(self, config_path: str = '../SpeakerID/m2d/evar/config/m2d.yaml', run_dir: str = '../SpeakerID/m2d/evar/logs/msm_mae_vit_base-80x608p16x16-220924-mr75', model_filename: str = 'weights_ep33it0-0.33333_loss0.0934.pth'):
         logger.info('Initializing SpeakerID service...')
 
         run_dir = Path(run_dir)
-        self.segment_length_seconds = 3.0 # TODO: change according to slice length
+        self.segment_length_seconds = 3. # TODO: change according to slice length
         
         logger.debug(f'Loading SpeakerID config from {config_path}...')
         device = torch.device("cuda")
@@ -41,8 +43,8 @@ class SpeakerIDService:
             task="til",
             options="",
         )
-        cfg.weight_file = "m2d_vit_base-80x208p16x16-random/random"
-        cfg.unit_sec = self.segment_length_seconds
+        cfg.weight_file = "../SpeakerID/m2d/weights/msm_mae_vit_base-80x608p16x16-220924-mr75/checkpoint-300.pth"
+        cfg.unit_sec = self.segment_length_seconds # TODO: change unit_sec according to slice length
         cfg.runtime_cfg = kwarg_cfg(n_class=40, hidden=()) # TODO: change n_class according to no. of unique speakers
 
         state_dict_path = run_dir / model_filename
@@ -72,21 +74,33 @@ class SpeakerIDService:
         logger.info("SpeakerID service successfully initialized.")
     
     def predict(self, audio_path: str) -> str:
+        # load a full-length audio from DSTA
         wav, sr = torchaudio.load(audio_path)
 
+        # get the length of each segment in samples
         segment_length_samples = int(self.segment_length_seconds * sr)
-        segments = list(torch.split(wav, segment_length_samples, dim=1))
-        segment_lengths = torch.Tensor([s.shape[1] for s in segments])
-        segments[-1] = F.pad(segments[-1], (0, segment_length_samples - segments[-1].shape[1]), value=0)
-        segments_batch = torch.cat(segments)
         
-        model_output = self.model(segments_batch)
-        logits_averaged = torch.mean((segment_lengths * model_output.T).T, dim=0)
+        # slice the original full-length audio into segments of length segment_length_samples
+        segments = list(torch.split(wav, segment_length_samples, dim=1))
 
+        # get the length of each segment, in samples
+        segment_lengths = torch.Tensor([s.shape[1] for s in segments]).to('cuda:0')
+
+        # pad the last segment to the same length as the rest
+        # the last segment will be the one that's not long enough
+        segments[-1] = F.pad(segments[-1], (0, segment_length_samples - segments[-1].shape[1]), value=0)
+        
+        # concat all the segments into a batch and do the forward pass
+        segments_batch = torch.cat(segments).to('cuda:0')
+        with torch.no_grad():
+            model_output = self.model(segments_batch)
+
+        # multiply by length of each wav to get weighted average
+        model_output = model_output * segment_lengths.unsqueeze(-1)
+        logits_averaged = torch.mean(model_output, dim=0)
         pred_idx = torch.argmax(logits_averaged)
         return self.class_names[pred_idx]
 
-breakpoint()
 
 class ASRService:
     def __init__(self, model_dir: str = 'wav2vec2-conformer'):
