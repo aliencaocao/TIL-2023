@@ -76,11 +76,12 @@ class SpeakerIDService:
 
         segment_length_samples = int(self.segment_length_seconds * sr)
         segments = list(torch.split(wav, segment_length_samples, dim=1))
+        segment_lengths = torch.Tensor([s.shape[1] for s in segments])
         segments[-1] = F.pad(segments[-1], (0, segment_length_samples - segments[-1].shape[1]), value=0)
         segments_batch = torch.cat(segments)
         
         model_output = self.model(segments_batch)
-        logits_averaged = torch.mean(model_output, dim=0)
+        logits_averaged = torch.mean((segment_lengths * model_output.T).T, dim=0)
 
         pred_idx = torch.argmax(logits_averaged)
         return self.class_names[pred_idx]
