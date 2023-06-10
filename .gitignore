@@ -39,4 +39,4 @@ Robot/10000SGDMRT
 *.shelve*
 SpeakerID/logs/*
 SpeakerID/m2d/evar/logs/*
-/home/cheongalc/Documents/til2023/SpeakerID/m2d/evar/work/*
+SpeakerID/m2d/evar/work/*
