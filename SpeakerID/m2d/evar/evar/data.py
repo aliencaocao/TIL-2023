@@ -27,15 +27,11 @@ class BaseRawAudioDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         wav = self.get_audio(index) # shape is expected to be (self.unit_samples,)
 
-        # first convert wav from torch tensor to a numpy ndarray
-        wav = wav.numpy()
-
         # Use audiomentaitons to apply transforms prior to padding
         if self.tfms is not None:
+            wav = wav.numpy()
             wav = self.tfms(wav, sample_rate=self.cfg.sample_rate)
-        
-        # Since wav is a numpy.ndarray, we need to convert to torch tensor
-        wav = torch.from_numpy(np.copy(wav))
+            wav = torch.from_numpy(np.copy(wav))
 
         # Trim or stuff padding
         l = len(wav)
@@ -63,8 +59,7 @@ class WavDataset(BaseRawAudioDataset):
             assert 'fold' in df.columns, '.csv needs to have either "split" or "fold" column...'
             # Mark split either 'train' or 'test', no 'val' or 'valid' used in this implentation.
             df['split'] = df.fold.apply(lambda f: 'test' if f == holdout_fold else 'train')
-        df = df[df.split == split].reset_index()
-        self.df = df
+
         self.multi_label = df.label.map(str).str.contains(',').sum() > 0
 
         if self.multi_label or always_one_hot:
@@ -76,6 +71,10 @@ class WavDataset(BaseRawAudioDataset):
             # single valued gt values
             self.classes = sorted(df.label.unique()) if classes is None else classes
             self.labels = torch.tensor(df.label.map({l: i for i, l in enumerate(self.classes)}).values)
+        
+        is_current_split = (df.split == split)
+        self.df = df[is_current_split].reset_index()
+        self.labels = self.labels[is_current_split.values]
 
     def __len__(self):
         return len(self.df)
@@ -96,7 +95,7 @@ def create_dataloader(cfg, fold=1, seed=42, batch_size=None, always_one_hot=Fals
     train_transforms = Compose([
         # TODO: inspect dataset to determine dB threshold below which audio is considered silence
         # white noise injection may mess this up because silence with noise is no longer silent
-        Shift(p=0.5, min_fraction=-0.3, max_fraction=0.3),
+        Shift(p=0.5, min_fraction=-0.5, max_fraction=0.5),
         Reverse(p=0.5),
         TimeStretch(p=0.5, min_rate=1/1.2, max_rate=1/0.8), # this means the maximum length of audio will change by either 0.8x or 1.2x
     ])
@@ -111,12 +110,12 @@ def create_dataloader(cfg, fold=1, seed=42, batch_size=None, always_one_hot=Fals
         InfiniteSampler(train_dataset, batch_size, seed, shuffle=True)
 
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_sampler=train_sampler, pin_memory=pin_memory,
-                                            num_workers=4) if balanced_random else \
+                                            num_workers=0) if balanced_random else \
                    torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, pin_memory=pin_memory,
-                                            num_workers=4)
+                                            num_workers=0)
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=batch_size, shuffle=False, pin_memory=pin_memory,
-                                           num_workers=4)
+                                           num_workers=0)
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False, pin_memory=pin_memory,
-                                           num_workers=4)
+                                           num_workers=0)
 
     return (train_loader, valid_loader, test_loader, train_dataset.multi_label)

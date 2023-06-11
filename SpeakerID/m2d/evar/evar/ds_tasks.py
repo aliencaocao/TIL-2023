@@ -23,12 +23,13 @@ _defs = {
     # TIL custom
     # unit_sec seems to be the length of each clip in seconds
     # TODO: change to 3 or 5 sec * 1.25 to take into account time stretch aug
-    'til': [1, 15.0, 'softmax', None, True] # need to set the balanced training to True because the dataset given to us will be imbalanced
+    'til': [1, 3.0, 'softmax', None, True] # need to set the balanced training to True because the dataset given to us will be imbalanced
 }
 
 _fs_table = {
     16000: '16k',
     22000: '22k', # Following COALA that uses 22,000 Hz
+    22050: '22.5k',
     32000: '32k',
     44100: '44k',
     48000: '48k',

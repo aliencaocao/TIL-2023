@@ -158,17 +158,24 @@ class Mixup(object):
         return x_and_y
 
 
-def evaluate(model, loader, device, eval_fn, classes):
+def evaluate(model, loader, device, loss_fn, eval_fn, classes):
     model.eval()
     all_probs, all_gts= [], []
+    total_loss = 0.
     for batch in loader:
         with torch.no_grad():
             X, y_gt = batch
-            all_probs.append(model(X.to(device)).detach().cpu().numpy())
+            X = X.to(device)
+            y_gt = y_gt.cpu()
+            output = model(X).detach().cpu()
+            # print(output.shape, y_gt.shape)
+            # breakpoint()
+            total_loss += loss_fn(output, y_gt.cpu())
+            all_probs.append(output.numpy())
         all_gts.append(y_gt.numpy())
     y_score = np.vstack(all_probs)
     y_true = np.vstack(all_gts)
-    return eval_fn(y_score, y_true, classes)
+    return total_loss / len(loader), eval_fn(y_score, y_true, classes)
 
 
 def arg_conf_str(args, defaults={
@@ -219,9 +226,10 @@ def _train(cfg, ar_model, device, logpath, train_loader, valid_loader, test_load
 
     # Training begins here.
     time1 = time.time()
-    best_result, best_path, best_epoch = 0.0, None, 0
+    best_loss, best_path, best_epoch = float('inf'), None, 0
     epoch_iters = len(train_loader)
-    console_iters = max(10, epoch_iters // 10)
+    console_iters = 1
+    # console_iters = max(10, epoch_iters // 10)
 
     # Set test set as validation set if not available; i.e., val result = test result in this case.
     if len(valid_loader.dataset) == 0:
@@ -253,7 +261,9 @@ def _train(cfg, ar_model, device, logpath, train_loader, valid_loader, test_load
             optimizer.zero_grad()
             micro_epoch = epoch + iter/epoch_iters
             scheduler.step(micro_epoch)
-
+            
+            # breakpoint()
+            
             if iter % console_iters == 0:
                 logging.info(f'Epoch [{epoch}] iter: {iter}/{epoch_iters}, elapsed: {time.time() - time1:.3f}s,'
                            + f' lr: {scheduler.get_epoch_values(micro_epoch)[0]:.8f} loss: {float(loss):.8f}')
@@ -265,22 +275,22 @@ def _train(cfg, ar_model, device, logpath, train_loader, valid_loader, test_load
 
         # Epoch done -> Evaluate
         print('validating')
-        val_result, df = evaluate(ar_model, valid_loader, device, eval_fn, classes)
+        val_loss, (val_result, df) = evaluate(ar_model, valid_loader, device, loss_fn, eval_fn, classes)
         report = f'{name} | epoch/iter {epoch}/{iter}: '
-        report += f'val {crit_str}: {val_result:.5f}, loss: {float(loss):.5f}'
+        report += f'val {crit_str}: {val_result:.5f}, val loss: {float(val_loss):.5f}'
 
         # Save the best model
-        new_best_record = best_result < val_result
+        new_best_record = best_loss > val_loss
         if new_best_record: # following PANNs implementation, measuring potential performance.
-            best_result = val_result
+            best_loss = val_result
             best_epoch = epoch
-            if best_path is not None:
-                best_path.unlink()
-            best_path = logpath/f'weights_ep{epoch}it{iter}-{val_result:.5f}_loss{loss:.4f}.pth'
+            # if best_path is not None:
+            #     best_path.unlink()
+            best_path = logpath/f'weights_ep{epoch}it{iter}-{val_result:.5f}_loss{val_loss:.4f}.pth'
             torch.save(ar_model.state_dict(), best_path)
             logging.info(f'Saved weight as {best_path}')
-            df.to_csv(logpath/f'ep{epoch}it{iter}-{val_result:.5f}.csv')
-        report += f', best: {best_result:.5f}@{best_epoch}'
+            df.to_csv(logpath/f'ep{epoch}it{iter}-{val_result:.5f}_loss{val_loss:.4f}.csv')
+        report += f', best loss: {best_loss:.5f}@{best_epoch}'
 
         # Report to log and dashboard
         logging.info(report)
@@ -295,12 +305,12 @@ def _train(cfg, ar_model, device, logpath, train_loader, valid_loader, test_load
         logging.info(f'Load best weight from {best_path}')
         ar_model.load_state_dict(torch.load(best_path))
         print('testing')
-        best_result, df = evaluate(ar_model, test_loader, device, eval_fn, classes)
-        logging.info(f'Final test {crit_str}: {best_result:.5f}')
+        best_loss, df = evaluate(ar_model, test_loader, device, eval_fn, classes)
+        logging.info(f'Final test {crit_str}: {best_loss:.5f}')
     else:
-        logging.info(f'Best {crit_str}: {best_result:.5f}')
+        logging.info(f'Best {crit_str}: {best_loss:.5f}')
 
-    return best_result, best_path, name
+    return best_loss, best_path, name
 
 
 class TaskHead(torch.nn.Module):

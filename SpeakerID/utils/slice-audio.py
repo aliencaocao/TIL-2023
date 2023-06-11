@@ -2,34 +2,36 @@
 
 import pandas as pd
 import torchaudio
+import torch
 from pathlib import Path
 import os
 
 ########################## SETTINGS ##########################
-segment_length_seconds = 2.
-input_csv_path = Path("../m2d/evar/evar/metadata/til.csv")
-sliced_csv_path = Path("../m2d/evar/evar/metadata/til_sliced.csv")
-input_audio_dir = Path("../m2d/evar/work/16k/til")
-sliced_output_dir = Path("../m2d/evar/work/16k/til_sliced")
+segment_length_seconds = 3.
+input_csv_path = Path("../m2d/evar/evar/metadata/til_unsliced.csv")
+sliced_csv_path = Path("../m2d/evar/evar/metadata/til.csv")
+input_audio_dir = Path("../m2d/evar/work/22.5k/til_unsliced")
+sliced_output_dir = Path("../m2d/evar/work/22.5k/til")
 
 os.makedirs(sliced_output_dir, exist_ok=True)
 
 def slice_audio(audio_path, segment_length_seconds):
   wav, sr = torchaudio.load(audio_path)
   segment_length_samples = int(segment_length_seconds * sr)
-
-  slices = []
-  curr_start = 0
-  curr_end = min(segment_length_samples, wav.shape[1])
-  while True:
-    if curr_start >= wav.shape[1]:
-      break
-
-    slices.append(wav[:, curr_start:curr_end])
-    curr_start = curr_end
-    curr_end += segment_length_samples
   
-  return slices, sr
+  slices = list(torch.split(wav, segment_length_samples, dim=1))
+  # slices = []
+  # curr_start = 0
+  # curr_end = min(segment_length_samples, wav.shape[1])
+  # while True:
+  #   if curr_start >= wav.shape[1]:
+  #     break
+
+  #   slices.append(wav[:, curr_start:curr_end])
+  #   curr_start = curr_end
+  #   curr_end += segment_length_samples
+  
+  return slices[1:], sr
 
 def df_map_fn(row):
   slices, sr = slice_audio(input_audio_dir / row['file_name'], segment_length_seconds)
@@ -37,7 +39,7 @@ def df_map_fn(row):
   # save audio slices
   new_filenames = []
   for i, slice in enumerate(slices):
-    slice_filename = sliced_output_dir / (os.path.splitext(row["file_name"])[0] + f"-slice-{i+1}.wav")
+    slice_filename = sliced_output_dir / (os.path.splitext(row["file_name"])[0] + f"-slice-{i+2}.wav")
     new_filenames.append(slice_filename.name)
     torchaudio.save(slice_filename, slice, sr)
 

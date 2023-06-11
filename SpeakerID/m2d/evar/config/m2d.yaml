@@ -3,7 +3,8 @@ audio_repr: ar_m2d.AR_M2D
 # weight_file: m2d_vit_base-80x208p16x16-random/random
 weight_file: ../weights/msm_mae_vit_base-80x608p16x16-220924-mr75/checkpoint-300.pth
 feature_d: 3840
-sample_rate: 16000
+# sample_rate: 16000
+sample_rate: 22050
 n_fft: 400
 window_size: 400
 hop_size: 160
@@ -29,13 +30,13 @@ early_stop_epochs: 20
 # Fine-tuning parameters.
 warmup_epochs: 5
 mixup: 0.5
-ft_bs: 44
+ft_bs: 108
 # ft_lr: 2.0
 ft_lr: 0.001
 ft_early_stop_epochs: -1  # -1: no early stopping
-ft_epochs: 200
+ft_epochs: 50000
 ft_freq_mask: 0 # do not mask frequencies because they distinguish speakers from each other
-ft_time_mask: 192
+ft_time_mask: 70
 # the default length of VC1 dataset is 8.2-sec and the number of frames is 820.
 # the default ft_time_mask for VC1 dataset is 192.
 # 192/820 = 0.23414634146
