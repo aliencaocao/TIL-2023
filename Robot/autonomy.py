@@ -40,7 +40,7 @@ for l in loggers:
     l.addHandler(file_handler)
     l.setLevel(logging.DEBUG)
 
-# TODO: update the paths of imgs and ZIP here. Model path are already simulated
+# TODO: update the paths of imgs here. Model path are already simulated
 suspect_img = cv2.imread('data/imgs/suspect1.png')
 hostage_img = cv2.imread('data/imgs/targetmario.png')
 ASR_MODEL_DIR = '../ASR/wav2vec2-conformer'
@@ -48,8 +48,8 @@ OD_CONFIG_PATH = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fp
 OD_MODEL_PATH = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/InternImage-L epoch_12 stripped.pth'
 REID_MODEL_PATH = '../CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth'
 REID_CONFIG_PATH = '../CV/SOLIDER-REID/TIL.yml'
-SPEAKERID_RUN_DIR = '../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_59808fb5'
-SPEAKERID_MODEL_FILENAME = 'weights_ep33it0-0.33333_loss0.0934.pth' # this is a FILENAME, not a full path
+SPEAKERID_RUN_DIR = '../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc'
+SPEAKERID_MODEL_FILENAME = 'weights_ep0it1-0.00000_loss0.1096.pth' # this is a FILENAME, not a full path
 SPEAKERID_CONFIG_PATH = '../SpeakerID/m2d/evar/config/m2d.yaml'
 ZIP_SAVE_DIR = Path("data/temp").absolute()
 prev_img_rpt_time = 0  # In global scope to allow convenient usage of global keyword in do_cv()

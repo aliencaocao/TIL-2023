@@ -27,7 +27,7 @@ from evar.common import kwarg_cfg
 logger = logging.getLogger('NLPService')
 
 class SpeakerIDService:
-    def __init__(self, config_path: str = '../SpeakerID/m2d/evar/config/m2d.yaml', run_dir: str = '../SpeakerID/m2d/evar/logs/msm_mae_vit_base-80x608p16x16-220924-mr75', model_filename: str = 'weights_ep33it0-0.33333_loss0.0934.pth'):
+    def __init__(self, config_path: str = '../SpeakerID/m2d/evar/config/m2d.yaml', run_dir: str, model_filename: str):
         logger.info('Initializing SpeakerID service...')
 
         run_dir = Path(run_dir)
