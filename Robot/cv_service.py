@@ -98,7 +98,8 @@ class CVService:
             return image, "none"
         img_with_bbox = cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
         os.makedirs('CV_output', exist_ok=True)
-        cv2.imwrite(f"CV_output/{time.time()}.png", img_with_bbox)
+        if not cv2.imwrite(f"CV_output/{int(time.time())}.png", img_with_bbox):
+            logger.warning('Failed to save image')
         pred = "suspect" if min_id == 0 else "hostage"
         logger.info(f'Predicted {pred}')
         return img_with_bbox, pred

@@ -25,9 +25,6 @@ from lineareval import make_cfg
 from evar.common import kwarg_cfg
 
 logger = logging.getLogger('NLPService')
-logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.DEBUG)
-logger.propagate = False
 
 class SpeakerIDService:
     def __init__(self, config_path: str = '../SpeakerID/m2d/evar/config/m2d.yaml', run_dir: str = '../SpeakerID/m2d/evar/logs/msm_mae_vit_base-80x608p16x16-220924-mr75', model_filename: str = 'weights_ep33it0-0.33333_loss0.0934.pth'):
@@ -54,11 +51,14 @@ class SpeakerIDService:
         norm_stats_path = run_dir / "norm_stats.pt"
         logger.debug(f"Loading normalization stats from {norm_stats_path}")
         norm_stats = torch.load(norm_stats_path)
-        
+
+        self.teamname = '10000SGDMRT'
         classes_pickle_path = run_dir / "classes.pkl"
         logger.debug(f"Loading class names pickle from {classes_pickle_path}")
         with open(classes_pickle_path, "rb") as classes_pickle:
-            self.class_names = list(pickle.load(classes_pickle))
+            self.class_names = pickle.load(classes_pickle).astype(str)
+        self.our_team_ids = np.where(np.char.startswith(self.class_names, self.teamname))[0]
+        assert len(self.our_team_ids) == 4, "There should be 4 members in our team"
 
         logger.debug(f"Instantiating AR_M2D backbone")
         backbone = AR_M2D(cfg, inference_mode=True, norm_stats=norm_stats).to(device)
@@ -71,35 +71,71 @@ class SpeakerIDService:
         self.model.load_state_dict(state_dict)
         self.model.eval()
 
+        # warm up
+        logger.debug("Warming up...")
+        with torch.no_grad():
+            for _ in range(3):
+                self.model(torch.randn(3, 22050).to(device))
+
         logger.info("SpeakerID service successfully initialized.")
     
-    def predict(self, audio_path: str) -> str:
+    def predict(self, audio_path: List[str]) -> Optional[str]:
+        """Takes in a list of audio paths and return a string in format audio1_teamNameOne_member2, where the Team is the opponent"""
         # load a full-length audio from DSTA
-        wav, sr = torchaudio.load(audio_path)
+        try:
+            # assert len(audio_path) == 2, "There should be 2 audio files"
+            results = {}
+            logits = {}
+            for path in audio_path:
+                wav, sr = torchaudio.load(path)
 
-        # get the length of each segment in samples
-        segment_length_samples = int(self.segment_length_seconds * sr)
-        
-        # slice the original full-length audio into segments of length segment_length_samples
-        segments = list(torch.split(wav, segment_length_samples, dim=1))
+                # get the length of each segment in samples
+                segment_length_samples = int(self.segment_length_seconds * sr)
 
-        # get the length of each segment, in samples
-        segment_lengths = torch.Tensor([s.shape[1] for s in segments]).to('cuda:0')
+                # slice the original full-length audio into segments of length segment_length_samples
+                segments = list(torch.split(wav, segment_length_samples, dim=1))
 
-        # pad the last segment to the same length as the rest
-        # the last segment will be the one that's not long enough
-        segments[-1] = F.pad(segments[-1], (0, segment_length_samples - segments[-1].shape[1]), value=0)
-        
-        # concat all the segments into a batch and do the forward pass
-        segments_batch = torch.cat(segments).to('cuda:0')
-        with torch.no_grad():
-            model_output = self.model(segments_batch)
+                # get the length of each segment, in samples
+                segment_lengths = torch.Tensor([s.shape[1] for s in segments]).to('cuda:0')
 
-        # multiply by length of each wav to get weighted average
-        model_output = model_output * segment_lengths.unsqueeze(-1)
-        logits_averaged = torch.mean(model_output, dim=0)
-        pred_idx = torch.argmax(logits_averaged)
-        return self.class_names[pred_idx]
+                # pad the last segment to the same length as the rest
+                # the last segment will be the one that's not long enough
+                segments[-1] = F.pad(segments[-1], (0, segment_length_samples - segments[-1].shape[1]), value=0)
+
+                # concat all the segments into a batch and do the forward pass
+                segments_batch = torch.cat(segments).to('cuda:0')
+                with torch.no_grad():
+                    model_output = self.model(segments_batch)
+
+                # multiply by length of each wav to get weighted average
+                model_output = model_output * segment_lengths.unsqueeze(-1)
+                logits_averaged = torch.mean(model_output, dim=0)
+                pred_idx = torch.argmax(logits_averaged)
+                pred = self.class_names[pred_idx]
+                results[path.split(os.sep)[-1][:-4]] = pred
+                logits[path.split(os.sep)[-1][:-4]] = logits_averaged.cpu().numpy()
+                logger.info(f'Predicted: {results}')
+
+            # Post-processing to ensure exactly one not-our-team speaker is predicted
+            our_team_counts = len([i for i in results.values() if i.startswith(self.teamname)])
+            if our_team_counts == 1:
+                result = [k + '_' + v for k, v in results.items() if not k.startswith(self.teamname)][0]  # audio1_teamNameOne_member2
+            else:  # more than 1 OR no one predicted is our team, take the one with highest confidence as our team and return the other one to be the opponent team
+                logger.warning(f'Predicted {our_team_counts} audios to be from {self.teamname}! Choosing the one with lowest confidence in {self.teamname} members as opponent.')
+                min_confidence = 0
+                for k, v in results.items():
+                    min_our_team_confidence = np.min(logits[k][self.our_team_ids])
+                    if min_our_team_confidence < min_confidence:
+                        min_confidence = min_our_team_confidence
+                        result = k
+                logits_without_our_team = logits[result].copy()
+                logits_without_our_team[self.our_team_ids] = -1e99  # set to very low value so that np.argmax will not choose our team
+                result = result + '_' + self.class_names[np.argmax(logits_without_our_team)]
+                logger.info(f'Predicted after choosing lowest conf: {result}')
+            return result
+        except Exception as e:
+            logger.error(f'Error while predicting: {e}')
+            return None
 
 
 class ASRService:
@@ -146,7 +182,7 @@ class ASRService:
                 return self.digits_to_int[d]  # take the first one found
         return None
 
-    def predict(self, audio_paths: list[str]) -> Optional[tuple[int]]:
+    def predict(self, audio_paths: List[str]) -> Optional[Tuple[int]]:
         try:
             logger.info(f'Predicting {len(audio_paths)} audio(s)...')
             audio_paths.sort()

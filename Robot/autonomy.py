@@ -1,6 +1,8 @@
 import glob
 import os
 import time
+import warnings
+warnings.filterwarnings("ignore")
 
 from tilsdk import *  # import the SDK
 from tilsdk.utilities import PIDController, SimpleMovingAverage  # import optional useful things
@@ -24,15 +26,18 @@ logging.basicConfig(level=logging.INFO,
                     format='[%(levelname)s][%(asctime)s][%(name)s]: %(message)s',
                     datefmt='%H:%M:%S')
 formatter = logging.Formatter(fmt='[%(levelname)s][%(asctime)s][%(name)s]: %(message)s', datefmt='%H:%M:%S')
-handler = logging.StreamHandler()
-handler.setFormatter(formatter)
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+file_handler = logging.FileHandler('log.txt')
+file_handler.setFormatter(formatter)
 loggers = [logging.getLogger(name) for name in [__name__, 'NLPService', 'CVService', 'Navigation']]
 logger = loggers[0]  # the main one
 NavLogger = loggers[3]  # the navigation one
 logger.name = 'Main'
 for l in loggers:
     l.propagate = False
-    l.addHandler(handler)
+    l.addHandler(stream_handler)
+    l.addHandler(file_handler)
     l.setLevel(logging.DEBUG)
 
 # TODO: update the paths of imgs and ZIP here. Model path are already simulated
@@ -46,7 +51,7 @@ REID_CONFIG_PATH = '../CV/SOLIDER-REID/TIL.yml'
 SPEAKERID_RUN_DIR = '../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_59808fb5'
 SPEAKERID_MODEL_FILENAME = 'weights_ep33it0-0.33333_loss0.0934.pth' # this is a FILENAME, not a full path
 SPEAKERID_CONFIG_PATH = '../SpeakerID/m2d/evar/config/m2d.yaml'
-ZIP_SAVE_DIR = Path(r"C:\Users\alien\Documents\PyCharm-Projects\TIL-2023\Robot\data\temp")
+ZIP_SAVE_DIR = Path("data/temp").absolute()
 prev_img_rpt_time = 0  # In global scope to allow convenient usage of global keyword in do_cv()
 robot = Robot()
 
@@ -145,8 +150,6 @@ def main():
         return
 
     def do_cv(pose: RealPose) -> str:
-        if SIMULATOR_MODE:
-            return rep_service.report_situation(np.random.random((224, 224, 3)), pose, 'suspect', ZIP_SAVE_DIR)  # give answer directly
         global prev_img_rpt_time
         if not prev_img_rpt_time or time.time() - prev_img_rpt_time >= 1:  # throttle to 1 submission per second, and only read img if necessary
             robot.camera.start_video_stream(display=False, resolution='720p')
@@ -232,8 +235,10 @@ def main():
                 save_dir = do_cv(pose)  # reports the CV stuff and no matter the result, audios will be saved to ZIP_SAVE_DIR
                 if not save_dir: continue  # still within 1second rate limit, skip to next iteration
 
-                # TODO: Code for SpeakerID challenge
-                save_dir = rep_service.report_audio(pose, 'audio1_teamName One_member2', ZIP_SAVE_DIR)  # placeholder correct ans
+                pred = speakerid_service.predict(glob.glob(os.path.join(save_dir, '*.wav')))
+                pred = 'audio1_teamName One_member2' or pred  # if predict errored, it will return None, in this case just submit a dummy string and continue
+                pred = 'audio1_teamName One_member2' # remove this line once speakerid is trained
+                save_dir = rep_service.report_audio(pose, pred, ZIP_SAVE_DIR)
 
                 # ASR password digits task
                 password = asr_service.predict(glob.glob(os.path.join(save_dir, '*.wav')))
