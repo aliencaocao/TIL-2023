@@ -148,11 +148,12 @@ class ASRService:
         model_dir : str
             Path of model weights.
         '''
-        logger.info('Initializing NLP service...')
+        logger.info('Initializing ASR service...')
         self.digits = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', "NINE"]
         self.digits_to_int = {d: i for i, d in enumerate(self.digits)}
         logger.debug(f'Loading model from {model_dir}...')
         self.model = pipeline("automatic-speech-recognition", model=model_dir, batch_size=4, device="cuda:0")
+        logger.debug('Warming up...')
         for _ in range(3):  # warm up
             self.model(['data/audio/evala_00001.wav'])
         logger.debug('Starting language tool...')

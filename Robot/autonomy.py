@@ -84,7 +84,7 @@ def main():
     path: List[RealLocation] = []
     prev_wp: RealLocation = None
     curr_wp: RealLocation = None
-    pose_filter = SimpleMovingAverage(n=10)
+    pose_filter = SimpleMovingAverage(n=20)
     map_: SignedDistanceGrid = loc_service.get_map()  # Currently, it is in the same format as the 2022 one. The docs says it's a new format.
 
     # If they update get_map() to match the description in the docs, we will need to write a function to convert it back to the 2022 format.
@@ -92,7 +92,7 @@ def main():
     # Movement-related config and controls
     REACHED_THRESHOLD_M = 0.3  # Participant may tune, in meters
     REACHED_THRESHOLD_LAST_M = REACHED_THRESHOLD_M / 2
-    tracker = PIDController(Kp=(0.35, 0.2), Ki=(0.1, 0.0), Kd=(0, 0))
+    tracker = PIDController(Kp=(0.2, 0.2), Ki=(0.1, 0.0), Kd=(0, 0))
 
     # To prevent bug with endless spinning in alternate directions by only allowing 1 direction of spinning
     use_spin_direction_lock = False
@@ -100,11 +100,11 @@ def main():
     spin_sign = 0  # -1 or 1 when spin_direction_lock is active
 
     # To detect stuck and perform unstucking. New, needs IRL testing 
-    use_stuck_detection = False
+    use_stuck_detection = True
     log_x = []
     log_y = []
     log_time = []
-    stuck_threshold_time_s = 15  # Minimum seconds to be considered stuck
+    stuck_threshold_time_s = 10  # Minimum seconds to be considered stuck
     stuck_threshold_area_m = 0.15  # Considered stuck if it stays within a 15cm*15cm square
 
     # Initialise planner
@@ -112,9 +112,9 @@ def main():
     planner = MyPlanner(map_,
                         waypoint_sparsity_m=0.4,
                         astargrid_threshold_dist_cm=29,
-                        path_opt_min_straight_deg=165,
+                        path_opt_min_straight_deg=170,
                         path_opt_max_safe_dist_cm=24,
-                        ROBOT_RADIUS_M = 0.17)  # Participant may tune. 0.390 * 0.245 (L x W)
+                        ROBOT_RADIUS_M=0.17)  # Participant may tune. 0.390 * 0.245 (L x W)
 
     logger.info(f"Warming up pose filter to initialise position + reduce initial noise.")
     for _ in range(15):
@@ -134,14 +134,13 @@ def main():
             logger.info('Error, no possible path found to the first location!')
             #It should never come to this!
             #Re-initialise the map and planner with a smaller dilation (smaller robo radius) which I've done below (untested)
-            map_.grid += 1.5 * ROBOT_RADIUS_M / map_.scale # Same functionality as .dilated last year: expands the walls by 1.5 times the radius of the robo
-            ROBOT_RADIUS_M *= 2/3
-            map_.grid -= 1.5 * ROBOT_RADIUS_M / map_.scale
             planner = MyPlanner(map_,
                 waypoint_sparsity_m=0.4,
                 astargrid_threshold_dist_cm=29,
-                path_opt_min_straight_deg=165,
-                path_opt_max_safe_dist_cm=24)
+                path_opt_min_straight_deg=170,
+                path_opt_max_safe_dist_cm=24,
+                ROBOT_RADIUS_M=0.17,
+                no_path=True)
         else:
             path.reverse()  # reverse so closest wp is last so that pop() is cheap , waypoint
             curr_wp = None
@@ -167,9 +166,10 @@ def main():
         if path: planner.visualise_update()  # just for visualisation
 
         # Get new data
-        pose = loc_service.get_pose()
-        if not pose:
-            # no new data, continue to next iteration.
+        new_pose = loc_service.get_pose()
+        if not new_pose or euclidean_distance(new_pose, pose) > 0.5:
+            if new_pose: logger.warning(f"Pose outlier detected: {new_pose}")
+            # no new data or is outlier, continue to next iteration.
             continue
 
         pose = pose_filter.update(pose)
@@ -239,7 +239,6 @@ def main():
 
                 pred = speakerid_service.predict(glob.glob(os.path.join(save_dir, '*.wav')))
                 pred = 'audio1_teamName One_member2' or pred  # if predict errored, it will return None, in this case just submit a dummy string and continue
-                pred = 'audio1_teamName One_member2' # remove this line once speakerid is trained
                 save_dir = rep_service.report_audio(pose, pred, ZIP_SAVE_DIR)
 
                 # ASR password digits task
@@ -279,9 +278,10 @@ def main():
                 planner = MyPlanner(map_,
                                     waypoint_sparsity_m=0.4,
                                     astargrid_threshold_dist_cm=29,
-                                    path_opt_min_straight_deg=165,
+                                    path_opt_min_straight_deg=170,
                                     path_opt_max_safe_dist_cm=24,
-                                    ROBOT_RADIUS_M = 0.17 * 2 / 3)
+                                    ROBOT_RADIUS_M=0.17,
+                                    no_path=True)
             else:
                 path.reverse()  # reverse so closest wp is last so that pop() is cheap , waypoint
                 curr_wp = None
@@ -376,7 +376,7 @@ def main():
                 # This is only calculated at the first iter of every new wp and kept constant when approaching the same wp, to prevent angle threshold increasing too much when the robot is near the wp
                 if prev_wp != curr_wp:
                     MAX_DEVIATION_THRESH_M = planner.min_clearance_along_path_real(pose, curr_wp) / 100  # returns cm so convert to m here
-                    ANGLE_THRESHOLD_DEG = np.clip(np.degrees(np.arctan2(MAX_DEVIATION_THRESH_M, dist_to_wp)), 5, 25)  # TODO: tune the clamp range
+                    ANGLE_THRESHOLD_DEG = np.clip(np.degrees(np.arctan2(MAX_DEVIATION_THRESH_M, dist_to_wp)), 10, 25)  # TODO: tune the clamp range
                     NavLogger.debug(f'MAX_DEVIATION_THRESH_M: {MAX_DEVIATION_THRESH_M}, ANGLE_THRESHOLD_DEG: {ANGLE_THRESHOLD_DEG}')
                     prev_wp = curr_wp
                 if abs(ang_diff) > ANGLE_THRESHOLD_DEG:
