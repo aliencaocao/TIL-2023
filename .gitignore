@@ -39,7 +39,7 @@ Robot/10000SGDMRT
 Robot/log.txt
 *.shelve*
 SpeakerID/logs/*
-SpeakerID/train
+SpeakerID/train*
 SpeakerID/Validation
 SpeakerID/m2d/evar/logs/*
 SpeakerID/m2d/evar/work/*
