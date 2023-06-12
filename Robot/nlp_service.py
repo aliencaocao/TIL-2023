@@ -27,7 +27,7 @@ from evar.common import kwarg_cfg
 logger = logging.getLogger('NLPService')
 
 class SpeakerIDService:
-    def __init__(self, config_path: str = '../SpeakerID/m2d/evar/config/m2d.yaml', run_dir: str, model_filename: str):
+    def __init__(self, config_path: str, run_dir: str, model_filename: str):
         logger.info('Initializing SpeakerID service...')
 
         run_dir = Path(run_dir)
@@ -42,7 +42,7 @@ class SpeakerIDService:
         )
         cfg.weight_file = "../SpeakerID/m2d/weights/msm_mae_vit_base-80x608p16x16-220924-mr75/checkpoint-300.pth"
         cfg.unit_sec = self.segment_length_seconds # TODO: change unit_sec according to slice length
-        cfg.runtime_cfg = kwarg_cfg(n_class=40, hidden=()) # TODO: change n_class according to no. of unique speakers
+        cfg.runtime_cfg = kwarg_cfg(n_class=32, hidden=())
 
         state_dict_path = run_dir / model_filename
         logger.debug(f"Loading model state_dict from {state_dict_path}")
