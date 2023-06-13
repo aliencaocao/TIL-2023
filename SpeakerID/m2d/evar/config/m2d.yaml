@@ -3,8 +3,8 @@ audio_repr: ar_m2d.AR_M2D
 # weight_file: m2d_vit_base-80x208p16x16-random/random
 weight_file: ../weights/msm_mae_vit_base-80x608p16x16-220924-mr75/checkpoint-300.pth
 feature_d: 3840
-# sample_rate: 16000
-sample_rate: 22050
+sample_rate: 16000
+# sample_rate: 22050
 n_fft: 400
 window_size: 400
 hop_size: 160
