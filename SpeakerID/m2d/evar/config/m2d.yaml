@@ -28,14 +28,14 @@ report_per_epochs: 50
 early_stop_epochs: 20
 
 # Fine-tuning parameters.
-warmup_epochs: 5
-mixup: 0.5
+warmup_epochs: 1000 # warmup first 2K Steps regardless of epoch number
+mixup: 0.0 # set mixup to 0 as per the paper for VC1 dataset
 ft_bs: 108
 # ft_lr: 2.0
 ft_lr: 0.001
 ft_early_stop_epochs: -1  # -1: no early stopping
-ft_epochs: 50000
-ft_freq_mask: 0 # do not mask frequencies because they distinguish speakers from each other
+ft_epochs: 7000
+ft_freq_mask: 0 # do not myask frequencies because they distinguish speakers from each other
 ft_time_mask: 70
 # the default length of VC1 dataset is 8.2-sec and the number of frames is 820.
 # the default ft_time_mask for VC1 dataset is 192.
@@ -45,4 +45,4 @@ ft_time_mask: 70
 # if we do 3-sec slicing, the number of frames wil be 300
 # so the max ft_time_mask will be 0.23414634146 * 300 = 70.243902439
 ft_noise: 0.0 # unused
-ft_rrc: True # random resized crop
+ft_rrc: False # random resized crop. Set to False because the paper didn't use random resized crop for VC1 dataset.

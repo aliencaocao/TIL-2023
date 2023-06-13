@@ -411,7 +411,7 @@ def run_eval(config_file, task, options='', seed=42, lr=None, hidden=(), mixup=N
 
 def finetune_main(config_file, task, options='', seed=42, lr=None, hidden=(), epochs=None, early_stop_epochs=None, warmup_epochs=None,
                   mixup=None, freq_mask=None, time_mask=None, rrc=None, training_mask=None, batch_size=None,
-                  optim='sgd', unit_sec=None, verbose=False):
+                  optim='adamw', unit_sec=None, verbose=False):
     scores, best_path, name, cfg, logpath = run_eval(config_file, task, options=options, seed=seed, lr=lr, hidden=hidden, mixup=mixup,
         batch_size=batch_size, epochs=epochs, early_stop_epochs=early_stop_epochs, warmup_epochs=warmup_epochs,
         freq_mask=freq_mask, time_mask=time_mask, rrc=rrc, training_mask=training_mask, optim=optim,
