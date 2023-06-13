@@ -1,6 +1,7 @@
 import math
 import time
 
+import matplotlib.patches as mpatches
 import pyastar2d
 from skimage.draw import line as bresenham_sk
 from tilsdk.localization import *
@@ -46,7 +47,9 @@ class MyPlanner:
 
         self.path = None
         self.plt_init = False  # Whether the path visualisation pyplot for debug has been initialised
-        self.scat = None  # For storing the scatterplot pyplot for path visualisation
+        self.robot_plot_refs = []
+        plt.ion()
+        self.plot, self.ax = plt.subplots(clear=True)  # For storing the plot for path visualisation
 
     @staticmethod
     def transform_add_border(og_grid):
@@ -210,20 +213,32 @@ class MyPlanner:
     def visualise_path(self):
         if not self.plt_init:
             pathmap = np.log(self.astar_grid)
-            im = plt.imshow(pathmap)
+            im = self.ax.imshow(pathmap)
             bar = plt.colorbar(im, extend='max')
             plt.title("Path: white -> start, black -> end.\nColorbar shows log(astar_grid) vals.")
-            self.scat = plt.scatter(self.gridpathx, self.gridpathy, c=np.arange(len(self.gridpathx)), s=25, cmap='Greys')
+            self.scat = self.ax.scatter(self.gridpathx, self.gridpathy, c=np.arange(len(self.gridpathx)), s=25, cmap='Greys')
+            plt.draw()
             self.plt_init = True
         else:
             self.scat.remove()
-            self.scat = plt.scatter(self.gridpathx, self.gridpathy, c=np.arange(len(self.gridpathx)), s=25, cmap='Greys')
-        self.visualise_update()
+            self.scat = self.ax.scatter(self.gridpathx, self.gridpathy, c=np.arange(len(self.gridpathx)), s=25, cmap='Greys')
 
-    @staticmethod
-    def visualise_update():
-        plt.pause(0.05)
+    def draw_robot(self, pose: Union[RealPose, RealLocation]):
+        if self.robot_plot_refs:
+            for ref in self.robot_plot_refs:
+                ref.remove()
+        self.robot_plot_refs = []
+        grid_loc = real_to_grid_exact(pose[:2], self.map.scale)
+        angle = np.radians(pose[2])
+        circle = mpatches.Circle(grid_loc, radius=self.ROBOT_RADIUS_M*100, color='red')
+        self.robot_plot_refs.append(self.ax.add_artist(circle))
+        arrow = mpatches.Arrow(*grid_loc, self.ROBOT_RADIUS_M*100 * np.cos(angle), self.ROBOT_RADIUS_M*100 * np.sin(angle), width=self.ROBOT_RADIUS_M*100 / 2, color='blue')
+        self.robot_plot_refs.append(self.ax.add_artist(arrow))
+
+    def visualise_update(self, pose: Union[RealPose, RealLocation]):
+        self.draw_robot(pose)
         plt.draw()
+        plt.pause(0.01)
         # plt.savefig(f"path_{str(uuid.uuid4())[:5]}.png")
 
     def wall_clearance(self, l: Union[RealLocation, RealPose]):

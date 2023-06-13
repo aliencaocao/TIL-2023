@@ -8,16 +8,16 @@ map_file: './data/maps/map_complex_1cm.png'
 map_scale: 0.01
 image_file: '/mnt/c/Users/alien/Documents/PyCharm-Projects/TIL-2023/Robot/data/imgs/image_0000.png'
 # display
-robot_radius: 10
+robot_radius: 17
 
 # simulation
 start_pose:
   x: 1.0
   y: 1.0
   z: 0.0
-use_noisy_pose: false
+use_noisy_pose: true
 robot_phy_length: 0.32
-position_noise_stddev: 0.1
+position_noise_stddev: 0.2
 
 # localization proxy
 proxy_real_robot: off

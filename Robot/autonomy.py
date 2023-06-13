@@ -16,8 +16,8 @@ import cv2
 if SIMULATOR_MODE:
     from tilsdk.mock_robomaster.robot import Robot  # Use this for the simulator
     from mock_services import CVService, ASRService, SpeakerIDService
-    from cv_service import CVService
-    from nlp_service import ASRService, SpeakerIDService
+    # from cv_service import CVService
+    # from nlp_service import ASRService, SpeakerIDService
 else:
     from robomaster.robot import Robot  # Use this for real robot
     from cv_service import CVService
@@ -92,7 +92,8 @@ def main():
     # Movement-related config and controls
     REACHED_THRESHOLD_M = 0.3  # Participant may tune, in meters
     REACHED_THRESHOLD_LAST_M = REACHED_THRESHOLD_M / 2
-    tracker = PIDController(Kp=(0.2, 0.2), Ki=(0.1, 0.0), Kd=(0, 0))
+    OUTLIER_THRESH = 0.8 if SIMULATOR_MODE else 0.5  # euclidean distance in meters, simulator noise is more diagonally random so need give higher threshold
+    tracker = PIDController(Kp=(0.25, 0.2), Ki=(0.1, 0.0), Kd=(0, 0))
 
     # To prevent bug with endless spinning in alternate directions by only allowing 1 direction of spinning
     use_spin_direction_lock = False
@@ -104,8 +105,8 @@ def main():
     log_x = []
     log_y = []
     log_time = []
-    stuck_threshold_time_s = 10  # Minimum seconds to be considered stuck
-    stuck_threshold_area_m = 0.15  # Considered stuck if it stays within a 15cm*15cm square
+    stuck_threshold_time_s = 15  # Minimum seconds to be considered stuck
+    stuck_threshold_area_m = 0.1  # Considered stuck if it stays within a 15cm*15cm square
 
     # Initialise planner
     # Planner-related config here
@@ -119,7 +120,7 @@ def main():
     logger.info(f"Warming up pose filter to initialise position + reduce initial noise.")
     for _ in range(15):
         pose = loc_service.get_pose()
-        time.sleep(0.25)
+        time.sleep(0.1)
         pose = pose_filter.update(pose)
 
     # Start run
@@ -163,18 +164,17 @@ def main():
 
     # Main loop
     while True:
-        if path: planner.visualise_update()  # just for visualisation
-
         # Get new data
         new_pose = loc_service.get_pose()
-        if not new_pose or euclidean_distance(new_pose, pose) > 0.5:
+        if not new_pose or euclidean_distance(new_pose, pose) > OUTLIER_THRESH:
             if new_pose: logger.warning(f"Pose outlier detected: {new_pose}")
             # no new data or is outlier, continue to next iteration.
             continue
-
+        pose = new_pose
         pose = pose_filter.update(pose)
         pose = RealPose(min(pose[0], 6.99), min(pose[1], 4.99), pose[2])  # prevents out of bounds errors
         pose = RealPose(max(pose[0], 0), max(pose[1], 0), pose[2])  # prevents out of bounds errors
+        planner.visualise_update(pose)  # just for visualisation
         
         if not curr_loi:
             # We are at a checkpoint! Either the first one when just starting, or reached here after navigation.
