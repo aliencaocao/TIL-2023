@@ -1,5 +1,7 @@
-import glob
 import os
+os.environ['PATH'] += ':.'
+
+import glob
 import time
 import warnings
 warnings.filterwarnings("ignore")
@@ -45,6 +47,7 @@ for l in loggers:
 # TODO: update the paths of imgs here. Model path are already simulated
 suspect_img = cv2.imread('data/imgs/suspect1.png')
 hostage_img = cv2.imread('data/imgs/targetmario.png')
+ZIP_SAVE_DIR = Path("data/temp").absolute()
 ASR_MODEL_DIR = '../ASR/wav2vec2-conformer'
 OD_CONFIG_PATH = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py'
 OD_MODEL_PATH = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/InternImage-L epoch_12 stripped.pth'
@@ -53,8 +56,6 @@ REID_CONFIG_PATH = '../CV/SOLIDER-REID/TIL.yml'
 SPEAKERID_RUN_DIR = '../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc'
 SPEAKERID_MODEL_FILENAME = 'weights_ep0it1-0.00000_loss0.1096.pth' # this is a FILENAME, not a full path
 SPEAKERID_CONFIG_PATH = '../SpeakerID/m2d/evar/config/m2d.yaml'
-ZIP_SAVE_DIR = Path("data/temp").absolute()
-prev_img_rpt_time = 0  # In global scope to allow convenient usage of global keyword in do_cv()
 robot = Robot()
 
 
@@ -78,6 +79,8 @@ def main():
         rep_service = ReportingService(host='localhost', port=5566)  # need change on spot
 
     # Initialize variables
+    prev_img_rpt_time = 0
+
     curr_loi: RealLocation = None
     prev_loi: RealLocation = None
     target_rotation: float = None
@@ -152,7 +155,7 @@ def main():
         return
 
     def do_cv(pose: RealPose) -> str:
-        global prev_img_rpt_time
+        nonlocal prev_img_rpt_time
         if not prev_img_rpt_time or time.time() - prev_img_rpt_time >= 1:  # throttle to 1 submission per second, and only read img if necessary
             robot.camera.start_video_stream(display=False, resolution='720p')
             if not SIMULATOR_MODE: print(robot.camera.conf)  # see if can see whitebalance values
@@ -368,6 +371,7 @@ def main():
                 # Pose: (x, y, angle)
                 # Vel_cmd: (speed, angle)
                 vel_cmd[0] *= np.cos(np.radians(ang_diff))
+                vel_cmd[0] = min(vel_cmd[0], 0.3)  # cap x vel at 0.3m/s
 
                 # If robot is facing the wrong direction, turn to face waypoint first before moving forward.
                 # Lock spin direction (has effect only if use_spin_direction_lock = True) as bug causing infinite spinning back and forth has been encountered before in the sim
