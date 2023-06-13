@@ -7,6 +7,7 @@ sys.path.insert(0, "../SpeakerID/m2d")
 sys.path.insert(0, "../SpeakerID/m2d/evar")
 
 import logging
+import subprocess
 
 import Levenshtein
 from tilsdk.localization.types import *
@@ -118,12 +119,12 @@ class SpeakerIDService:
                 pred = self.class_names[pred_idx]
                 results[path.split(os.sep)[-1][:-4]] = pred
                 logits[path.split(os.sep)[-1][:-4]] = logits_averaged.cpu().numpy()
-                logger.info(f'Predicted: {results}')
+            logger.info(f'Predicted: {results}')
 
             # Post-processing to ensure exactly one not-our-team speaker is predicted
             our_team_counts = len([i for i in results.values() if i.startswith(self.teamname)])
             if our_team_counts == 1:
-                result = [k + '_' + v for k, v in results.items() if not k.startswith(self.teamname)][0]  # audio1_teamNameOne_member2
+                result = [k + '_' + v for k, v in results.items() if not v.startswith(self.teamname)][0]  # audio1_teamNameOne_member2
             else:  # more than 1 OR no one predicted is our team, take the one with highest confidence as our team and return the other one to be the opponent team
                 logger.warning(f'Predicted {our_team_counts} audios to be from {self.teamname}! Choosing the one with lowest confidence in {self.teamname} members as opponent.')
                 min_confidence = 0
@@ -153,6 +154,8 @@ class ASRService:
             Path of model weights.
         '''
         logger.info('Initializing ASR service...')
+        subprocess.run(['chmod', '777', './ffmpeg'])  # allow execution
+        subprocess.run(['ffmpeg', '-version'])
         self.digits = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', "NINE"]
         self.digits_to_int = {d: i for i, d in enumerate(self.digits)}
         logger.debug(f'Loading model from {model_dir}...')

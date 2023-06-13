@@ -24,23 +24,23 @@ targets:
   1:
     id: 1
     situation : suspect
-    audio_path : '/mnt/c/Users/alien/Documents/PyCharm-Projects/TIL-2023/Robot/data/audio/evala_00001.zip'
-    correct_audio : audio1_teamName One_member2 
+    audio_path : '/mnt/c/Users/alien/Documents/PyCharm-Projects/TIL-2023/Robot/data/audio/speakerid.zip'
+    correct_audio : audio2_ACESOFSPADES_memberA
     digit_audio_path : '/mnt/c/Users/alien/Documents/PyCharm-Projects/TIL-2023/Robot/data/audio/evala_00001.zip'
     digits : (9,)
   
   2:
     id: 2
     situation : suspect
-    audio_path : '/mnt/c/Users/alien/Documents/PyCharm-Projects/TIL-2023/Robot/data/audio/evala_00001.zip'
-    correct_audio : audio1_teamName One_member2
+    audio_path : '/mnt/c/Users/alien/Documents/PyCharm-Projects/TIL-2023/Robot/data/audio/speakerid.zip'
+    correct_audio : audio2_ACESOFSPADES_memberA
     digit_audio_path : '/mnt/c/Users/alien/Documents/PyCharm-Projects/TIL-2023/Robot/data/audio/evala_00001.zip'
     digits : (8,)  # intentionally set wrong so can test detour
   
   3:
     id: 3
     situation : suspect
-    audio_path : '/mnt/c/Users/alien/Documents/PyCharm-Projects/TIL-2023/Robot/data/audio/evala_00001.zip'
-    correct_audio : audio1_teamName One_member2
+    audio_path : '/mnt/c/Users/alien/Documents/PyCharm-Projects/TIL-2023/Robot/data/audio/speakerid.zip'
+    correct_audio : audio2_ACESOFSPADES_memberA
     digit_audio_path : '/mnt/c/Users/alien/Documents/PyCharm-Projects/TIL-2023/Robot/data/audio/evala_00001.zip'
     digits : (9,)
