@@ -280,9 +280,10 @@ def _train(cfg, ar_model, device, logpath, train_loader, valid_loader, test_load
         report += f'val {crit_str}: {val_result:.5f}, val loss: {float(val_loss):.5f}'
 
         # Save the best model
-        new_best_record = best_loss > val_loss
+        # if the current val loss is LESS than the best val loss, then that's a new record
+        new_best_record = val_loss < best_loss
         if new_best_record: # following PANNs implementation, measuring potential performance.
-            best_loss = val_result
+            best_loss = val_loss
             best_epoch = epoch
             # if best_path is not None:
             #     best_path.unlink()
