@@ -88,6 +88,10 @@ class SpeakerIDService:
             logits = {}
             for path in audio_path:
                 wav, sr = torchaudio.load(path)
+                
+                # resample to 16kHz because that's what our model expects
+                wav = torchaudio.functional.resample(wav, orig_freq=sr, new_freq=16000, lowpass_filter_width=128)
+                sr = 16000
 
                 # get the length of each segment in samples
                 segment_length_samples = int(self.segment_length_seconds * sr)
