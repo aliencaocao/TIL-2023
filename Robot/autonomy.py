@@ -14,6 +14,7 @@ from planner import MyPlanner
 SIMULATOR_MODE = True  # Change to False for real robomaster
 
 import cv2
+import numpy as np
 
 if SIMULATOR_MODE:
     from tilsdk.mock_robomaster.robot import Robot  # Use this for the simulator
@@ -95,7 +96,8 @@ def main():
     # Movement-related config and controls
     REACHED_THRESHOLD_M = 0.3  # Participant may tune, in meters
     REACHED_THRESHOLD_LAST_M = REACHED_THRESHOLD_M / 2
-    OUTLIER_THRESH = 0.8 if SIMULATOR_MODE else 0.5  # euclidean distance in meters, simulator noise is more diagonally random so need give higher threshold
+    OUTLIER_THRESH = 0.7  # euclidean distance in meters, loose here as later on have another filtering via optical flow
+    FLOW_PIXEL_TO_M_FACTOR = 0.000926  # how many meter does 1 pixel in 720p camera feed represent. Camera feed is 720p. Current estimate is 216 pixel (30% of height) / 0.2m seen in that crop TODO: tune this
     tracker = PIDController(Kp=(0.25, 0.2), Ki=(0.1, 0.0), Kd=(0, 0))
 
     # To prevent bug with endless spinning in alternate directions by only allowing 1 direction of spinning
@@ -165,13 +167,60 @@ def main():
             prev_img_rpt_time = time.time()
             return rep_service.report_situation(img_with_bbox, pose, answer, ZIP_SAVE_DIR)
 
+    def draw_flow(img, flow, step=8):
+        h, w = img.shape[:2]
+        y, x = np.mgrid[step / 2:h:step, step / 2:w:step].reshape(2, -1).astype(int)
+        fx, fy = flow[y, x].T
+        # create line endpoints
+        lines = np.vstack([x, y, x - fx, y - fy]).T.reshape(-1, 2, 2)
+        lines = np.int32(lines + 0.5)
+        # create image and draw
+        cv2.polylines(img, lines, 0, (0, 255, 0))
+        for (x1, y1), (_x2, _y2) in lines:
+            cv2.circle(img, (x1, y1), 1, (0, 255, 0), -1)
+        return img
+
+    # Before main loop, read 1 prev image first to define the prev variable properly. This is for OpticalFlow
+    robot.camera.start_video_stream(display=False, resolution='720p')
+    prev = robot.camera.read_cv2_image(strategy='newest')
+    robot.camera.stop_video_stream()
+    h, w = prev.shape[:2]
+    crop_box = (w * 0.3, h * 0.6, w * 0.4, h * 0.4)  # xywh (take middle 40% of x axis (w) and bottom 30% of y axis (h))
+    # crop out the floor part only
+    prev = prev[int(crop_box[1]):int(crop_box[1] + crop_box[3]), int(crop_box[0]):int(crop_box[0] + crop_box[2]), :]
+    prev_gray = cv2.cvtColor(prev, cv2.COLOR_BGR2GRAY)
+    prev_start = None
     # Main loop
     while True:
-        # Get new data
+        start = time.time()
+        # Get new camera feed for OpticalFlow
+        robot.camera.start_video_stream(display=False, resolution='720p')
+        new = robot.camera.read_cv2_image(strategy='newest')
+        robot.camera.stop_video_stream()
+        new = new[int(crop_box[1]):int(crop_box[1] + crop_box[3]), int(crop_box[0]):int(crop_box[0] + crop_box[2]), :]
+        new_gray = cv2.cvtColor(new, cv2.COLOR_BGR2GRAY)
+        # prev, next, flow (pointer in C, use None in Python), pyrscale, levels, winsize, iterations, poly_n, poly_sigma, flags
+        flow = cv2.calcOpticalFlowFarneback(prev_gray, new_gray, None, 0.5, 3, 5, 15, 5, 1.2, 0)  # if tracking not sensitive enough, increase iterations
+        # flow is of shape (h, w, 2), where flow[:,:,0] is the x axis movement and flow[:,:,1] is the y axis movement
+        prev_gray = new_gray
+        end = time.time()  # this end is purely for FPS calculation, NOT for timing the entire loop
+        fps  = 1 / (end - start)
+        drawn = draw_flow(new, flow)
+        cv2.putText(drawn, f"FPS: {fps:.2f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+        cv2.imshow('OpticalFlow', drawn)
+        cv2.waitKey(1)  # waitKey(1) is necessary for imshow to work
+        flow_y_mean, flow_x_mean = np.mean(flow, axis=(0, 1))  # take the mean of x and y axis movement. y means move, x means rotate angle
+
+        # Get new loc data
         new_pose = loc_service.get_pose()
-        if not new_pose or euclidean_distance(new_pose, pose) > OUTLIER_THRESH:
-            if new_pose: logger.warning(f"Pose outlier detected: {new_pose}")
+        pose_dist = euclidean_distance(new_pose, pose)
+        if not new_pose or pose_dist > OUTLIER_THRESH:
+            if new_pose: logger.warning(f"Pose outlier detected from euclidean dist: {new_pose}, dist: {pose_dist}")
             # no new data or is outlier, continue to next iteration.
+            continue
+        if not SIMULATOR_MODE and prev_start and pose_dist > flow_y_mean * FLOW_PIXEL_TO_M_FACTOR * (start-prev_start):  # s = vt
+            # if the robot is moving faster than the flow * time, then it is an outlier. Doesnt work in simulator as image is stationary
+            logger.warning(f"Pose outlier detected from OpticalFlow: {new_pose}, dist: {pose_dist}, calculated motion vector: {flow_y_mean * FLOW_PIXEL_TO_M_FACTOR * (prev_start-start)}, flow_y_mean: {flow_y_mean}, time: {prev_start-start}")
             continue
         pose = new_pose
         pose = pose_filter.update(pose)
@@ -397,6 +446,7 @@ def main():
                 logger.debug('End of path.')
                 prev_loi = curr_loi
                 curr_loi = None
+        prev_start = time.time()  # end of loop
 
     rep_service.end_run()  # Call this only after receiving confirmation from the scoring server that you have reached the maze's last checkpoint.
     robot.chassis.drive_speed(x=0.0, y=0.0, z=0.0)  # set stop for safety
