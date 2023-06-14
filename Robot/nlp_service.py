@@ -180,7 +180,7 @@ class SpeakerIDService:
                 pred_idx = torch.argmax(logits_averaged)
                 pred = self.class_names[pred_idx]
                 results[os.path.split(path)[-1][:-4]] = pred
-                logits[os.path.split(path)[:-4]] = logits_averaged.cpu().numpy()
+                logits[os.path.split(path)[-1][:-4]] = logits_averaged.cpu().numpy()
             logger.info(f'Predicted: {results}')
 
             # Post-processing to ensure exactly one not-our-team speaker is predicted
