@@ -99,18 +99,11 @@ class CVService:
             if not cv2.imwrite(f"CV_output/{int(time.time())}.png", image):
                 logger.warning('Failed to save image')
             return image, "none"
-        filtered_distmad_idx = np.where(dist_mat < self.REIDThreshold)
-        if np.sum(filtered_distmad_idx[0]) > 0 and np.sum(filtered_distmad_idx[1]) > 0:  # if both hostage and suspect contains at least 1 that passes threshold test
-            # take the class that has the smallest dist, TODO: decide whether within that class, take the smallest dist, or take all. Depending on DSTA whether they can 1 scene can have more than 1 suspect/hostage. For now, take min
-            pred = "suspect" if min_id[0] == 0 else "hostage"
-            box = boxes[min_id[1]]  # choose the corresponding box that has the min dist
-            x1, y1, x2, y2 = box[:4].astype(np.int32)
-            img_with_bbox = cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255 if pred == 'hostage' else 0, 255 if pred == 'suspect' else 0), 2)
-        else: # only 1 of the classes pass threshold test. # TODO: see above, whether to take all or take min. For now, take min
-            pred = "suspect" if min_id[0] == 0 else "hostage"
-            box = boxes[min_id[1]]  # choose the corresponding box that has the min dist
-            x1, y1, x2, y2 = box[:4].astype(np.int32)
-            img_with_bbox = cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255 if pred == 'hostage' else 0, 255 if pred == 'suspect' else 0), 2)
+        # take the class and gallery image with min dist
+        pred = "suspect" if min_id[0] == 0 else "hostage"
+        box = boxes[min_id[1]]  # choose the corresponding box that has the min dist
+        x1, y1, x2, y2 = box[:4].astype(np.int32)
+        img_with_bbox = cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255 if pred == 'hostage' else 0, 255 if pred == 'suspect' else 0), 2)
 
         if not cv2.imwrite(f"CV_output/{int(time.time())}.png", img_with_bbox):
             logger.warning('Failed to save image')
