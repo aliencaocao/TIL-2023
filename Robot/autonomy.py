@@ -55,7 +55,7 @@ OD_MODEL_PATH = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn
 REID_MODEL_PATH = '../CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth'
 REID_CONFIG_PATH = '../CV/SOLIDER-REID/TIL.yml'
 SPEAKERID_RUN_DIR = '../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc'
-SPEAKERID_MODEL_FILENAME = 'weights_ep866it1-0.90000_loss0.0160.pth' # this is a FILENAME, not a full path
+SPEAKERID_MODEL_FILENAME = 'weights_ep866it1-0.90000_loss0.0160.pth'  # this is a FILENAME, not a full path
 SPEAKERID_CONFIG_PATH = '../SpeakerID/m2d/evar/config/m2d.yaml'
 robot = Robot()
 
@@ -76,8 +76,8 @@ def main():
         import torch
         print(torch.cuda.memory_summary())
         del torch
-        loc_service = LocalizationService(host='192.168.20.56', port=5521)  # need change on spot
-        rep_service = ReportingService(host='localhost', port=5566)  # need change on spot
+        loc_service = LocalizationService(host='localhost', port=5566)  # need change on spot
+        rep_service = ReportingService(host='172.16.118.20', port=5511)  # need change on spot
 
     # Initialize variables
     prev_img_rpt_time = 0
@@ -96,8 +96,15 @@ def main():
     # Movement-related config and controls
     REACHED_THRESHOLD_M = 0.3  # Participant may tune, in meters
     REACHED_THRESHOLD_LAST_M = REACHED_THRESHOLD_M / 2
-    OUTLIER_THRESH = 0.7  # euclidean distance in meters, loose here as later on have another filtering via optical flow
-    FLOW_PIXEL_TO_M_FACTOR = 0.000926  # how many meter does 1 pixel in 720p camera feed represent. Camera feed is 720p. Current estimate is 216 pixel (30% of height) / 0.2m seen in that crop TODO: tune this
+
+    # Localization noise related solutions
+    USE_OUTLIER_DETECTION = False  # uses euclidean distance to eliminate large outliers like jumping loc
+    OUTLIER_THRESH = 0.75  # max euclidean distance in meters robot should move between 2 iteration of main loop
+    USE_OPTICAL_FLOW = False  # uses camera feed and optical flow to calculate motion vector
+    FLOW_PIXEL_TO_M_FACTOR = 0.0014  # how many meter does 1 pixel in 720p camera feed represent. Camera feed is 720p. Current estimate is 216 pixel (30% of height) / 0.15m seen in that crop
+    POSE_DIFF_THRESH = 0.0
+    USE_SPEED_ESTIMATION = True  # uses the robot's movement speed to track motion internally to reduce loc service noise
+
     tracker = PIDController(Kp=(0.25, 0.2), Ki=(0.1, 0.0), Kd=(0, 0))
 
     # To prevent bug with endless spinning in alternate directions by only allowing 1 direction of spinning
@@ -105,7 +112,7 @@ def main():
     spin_direction_lock = False
     spin_sign = 0  # -1 or 1 when spin_direction_lock is active
 
-    # To detect stuck and perform unstucking. New, needs IRL testing 
+    # To detect stuck and perform unstucking
     use_stuck_detection = True
     log_x = []
     log_y = []
@@ -117,7 +124,7 @@ def main():
     # Planner-related config here
     planner = MyPlanner(map_,
                         waypoint_sparsity_m=0.4,
-                        astargrid_threshold_dist_cm=29,
+                        astargrid_threshold_dist_cm=10,
                         path_opt_min_straight_deg=170,
                         path_opt_max_safe_dist_cm=24,
                         ROBOT_RADIUS_M=0.17)  # Participant may tune. 0.390 * 0.245 (L x W)
@@ -155,10 +162,9 @@ def main():
     def do_cv(pose: RealPose) -> str:
         nonlocal prev_img_rpt_time
         if not prev_img_rpt_time or time.time() - prev_img_rpt_time >= 1:  # throttle to 1 submission per second, and only read img if necessary
-            # ensure robot is stopped and video stream reaches steady state
-            robot.chassis.drive_speed(0, 0, 0)
-            time.sleep(2)
-            if not SIMULATOR_MODE: print(robot.camera.conf)  # see if can see whitebalance values
+            # ensure that the robot is stationary prior to taking a photo
+            robot.chassis.drive_speed(x=0, y=0, z=0)
+            time.sleep(5)
             img = robot.camera.read_cv2_image(strategy='newest')
             img_with_bbox, answer = cv_service.predict([suspect_img, hostage_img], img)
             prev_img_rpt_time = time.time()
@@ -179,40 +185,66 @@ def main():
 
     # Before main loop, read 1 prev image first to define the prev variable properly. This is for OpticalFlow
     robot.camera.start_video_stream(display=False, resolution='720p')
-    prev = robot.camera.read_cv2_image(strategy='newest')
-    h, w = prev.shape[:2]
-    crop_box = (w * 0.3, h * 0.6, w * 0.4, h * 0.4)  # xywh (take middle 40% of x axis (w) and bottom 30% of y axis (h))
-    # crop out the floor part only
-    prev = prev[int(crop_box[1]):int(crop_box[1] + crop_box[3]), int(crop_box[0]):int(crop_box[0] + crop_box[2]), :]
-    prev_gray = cv2.cvtColor(prev, cv2.COLOR_BGR2GRAY)
-    prev_start = None
+    if USE_OPTICAL_FLOW:
+        prev = robot.camera.read_cv2_image(strategy='newest')
+        h, w = prev.shape[:2]
+        crop_box = (w * 0.3, h * 0.6, w * 0.4, h * 0.4)  # xywh (take middle 40% of x axis (w) and bottom 30% of y axis (h))
+        # crop out the floor part only
+        prev = prev[int(crop_box[1]):int(crop_box[1] + crop_box[3]), int(crop_box[0]):int(crop_box[0] + crop_box[2]), :]
+        prev_gray = cv2.cvtColor(prev, cv2.COLOR_BGR2GRAY)
+        prev_start = None
+    prev_vel_cmd = (0.0, 0.0)
     # Main loop
     while True:
         start = time.time()
-        # Get new camera feed for OpticalFlow
-        new = robot.camera.read_cv2_image(strategy='newest')
-        new = new[int(crop_box[1]):int(crop_box[1] + crop_box[3]), int(crop_box[0]):int(crop_box[0] + crop_box[2]), :]
-        new_gray = cv2.cvtColor(new, cv2.COLOR_BGR2GRAY)
-        # prev, next, flow (pointer in C, use None in Python), pyrscale, levels, winsize, iterations, poly_n, poly_sigma, flags
-        flow = cv2.calcOpticalFlowFarneback(prev_gray, new_gray, None, 0.5, 3, 5, 15, 5, 1.2, 0)  # if tracking not sensitive enough, increase iterations
-        # flow is of shape (h, w, 2), where flow[:,:,0] is the x axis movement and flow[:,:,1] is the y axis movement
-        prev_gray = new_gray
-        end = time.time()  # this end is purely for FPS calculation, NOT for timing the entire loop
-        fps  = 1 / (end - start)
-        drawn = draw_flow(new, flow)
-        cv2.putText(drawn, f"FPS: {fps:.2f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
-        cv2.imshow('OpticalFlow', drawn)
-        cv2.waitKey(1)  # waitKey(1) is necessary for imshow to work
-        flow_y_mean, flow_x_mean = np.mean(flow, axis=(0, 1))  # take the mean of x and y axis movement. y means move, x means rotate angle
+        if USE_OPTICAL_FLOW:
+            # Get new camera feed for OpticalFlow
+            new = robot.camera.read_cv2_image(strategy='newest')
+            new = new[int(crop_box[1]):int(crop_box[1] + crop_box[3]), int(crop_box[0]):int(crop_box[0] + crop_box[2]), :]
+            new_gray = cv2.cvtColor(new, cv2.COLOR_BGR2GRAY)
+            # prev, next, flow (pointer in C, use None in Python), pyrscale, levels, winsize, iterations, poly_n, poly_sigma, flags
+            flow = cv2.calcOpticalFlowFarneback(prev_gray, new_gray, None, 0.5, 3, 5, 15, 5, 1.2, 0)  # if tracking not sensitive enough, increase iterations
+            # flow is of shape (h, w, 2), where flow[:,:,0] is the x axis movement and flow[:,:,1] is the y axis movement
+            prev_gray = new_gray
+            end = time.time()  # this end is purely for FPS calculation, NOT for timing the entire loop
+            fps = 1 / (end - start)
+            drawn = draw_flow(new, flow)
+            cv2.putText(drawn, f"FPS: {fps:.2f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+            cv2.imshow('OpticalFlow', drawn)
+            cv2.waitKey(1)  # waitKey(1) is necessary for imshow to work
+            flow_y_mean, flow_x_mean = np.mean(flow, axis=(0, 1))  # take the mean of x and y axis movement. y means move, x means rotate angle
 
-        # Get new loc data
-        new_pose = loc_service.get_pose()
-        pose_dist = euclidean_distance(new_pose, pose)
-        if not new_pose or pose_dist > OUTLIER_THRESH:
-            if new_pose: logger.warning(f"Pose outlier detected from euclidean dist: {new_pose}, dist: {pose_dist}")
-            # no new data or is outlier, continue to next iteration.
-            continue
-        if not SIMULATOR_MODE and prev_start and pose_dist > flow_y_mean * FLOW_PIXEL_TO_M_FACTOR * (start-prev_start):  # s = vt
+        # Get new loc data from localization service
+        loc_svc_pose = loc_service.get_pose()
+        if USE_SPEED_ESTIMATION:
+            # Calculate a new pose using our own last known pose
+            if prev_start is None:
+                new_pose = loc_svc_pose
+            else:
+                dt = (start - prev_start) * 1e6
+                calc_new_pose = RealPose(
+                    pose[0] + prev_vel_cmd[0] * np.cos(np.radians(pose[2])) * dt,
+                    pose[1] + prev_vel_cmd[0] * np.sin(np.radians(pose[2])) * dt,
+                    pose[2] + prev_vel_cmd[1] * dt
+                )
+                # compare the new loc data from localization service against our calculated one
+                diff = euclidean_distance(loc_svc_pose, calc_new_pose)
+                logger.debug(f"dt={dt}")
+                logger.debug(f"loc_svc_pose={loc_svc_pose}, calc_new_pose={calc_new_pose}, diff={diff}")
+                # if the difference between the reported location and calculated location exceeds a threshold, then reject the reported new pose
+                if diff > POSE_DIFF_THRESH:
+                    logger.warning(f"diff > {POSE_DIFF_THRESH}, using the calc_new_pose")
+                    new_pose = calc_new_pose
+                else:
+                    new_pose = loc_svc_pose
+
+        if USE_OUTLIER_DETECTION:
+            pose_dist = euclidean_distance(new_pose, pose)
+            if not new_pose or pose_dist > OUTLIER_THRESH:
+                if new_pose: logger.warning(f"Pose outlier detected from euclidean dist: {new_pose}, dist: {pose_dist}")
+                # no new data or is outlier, continue to next iteration.
+                continue
+        if USE_OPTICAL_FLOW and not SIMULATOR_MODE and prev_start and pose_dist > flow_y_mean * FLOW_PIXEL_TO_M_FACTOR * (start-prev_start):  # s = vt
             # if the robot is moving faster than the flow * time, then it is an outlier. Doesnt work in simulator as image is stationary
             logger.warning(f"Pose outlier detected from OpticalFlow: {new_pose}, dist: {pose_dist}, calculated motion vector: {flow_y_mean * FLOW_PIXEL_TO_M_FACTOR * (prev_start-start)}, flow_y_mean: {flow_y_mean}, time: {prev_start-start}")
             continue
@@ -221,16 +253,16 @@ def main():
         pose = RealPose(min(pose[0], 6.99), min(pose[1], 4.99), pose[2])  # prevents out of bounds errors
         pose = RealPose(max(pose[0], 0), max(pose[1], 0), pose[2])  # prevents out of bounds errors
         planner.visualise_update(pose)  # just for visualisation
-        
+
         if not curr_loi:
             # We are at a checkpoint! Either the first one when just starting, or reached here after navigation.
             # Could be task or detour checkpoint or the end
             logger.info("Reached checkpoint")
             is_task_not_detour = None
-            target_pose = None # Next location to go to which we'll receive soon
+            target_pose = None  # Next location to go to which we'll receive soon
             info = rep_service.check_pose(pose)
 
-            if isinstance(info, str): # Task checkpoint or the end
+            if isinstance(info, str):  # Task checkpoint or the end
                 if info == "End Goal Reached":  # end run and logs are after this loop, not implementing them here
                     break
                 elif info == "Task Checkpoint Reached":
@@ -241,11 +273,11 @@ def main():
                     # robot has reached close enough to the checkpoint, but the Reporting server
                     # is expecting the robot to be even closer to the checkpoint.
                     # Robot should try to get closer to the checkpoint.
-                    
+
                     curr_loi = prev_loi  # Move closer to prev loi
-                    path = [curr_loi, curr_loi] # 2 copies for legacy reasons... prob works with just 1 copy too but that would need testing
-                    REACHED_THRESHOLD_LAST_M *= 2/3               
-                    continue # Resume movement
+                    path = [curr_loi, curr_loi]  # 2 copies for legacy reasons... prob works with just 1 copy too but that would need testing
+                    REACHED_THRESHOLD_LAST_M *= 2 / 3
+                    continue  # Resume movement
                 elif info == 'You Still Have Checkpoints':
                     logger.warning('Robot has reached end goal without finishing all task points!')  # TODO: what to do sia
                 else:
@@ -259,8 +291,8 @@ def main():
             if is_task_not_detour:
                 logger.debug("Turning towards CV target")
                 ang_diff = -(target_rotation - pose[2])  # body frame
-                #Iinw the - sign is due to robomaster's angle convention being opposite of normal
-                #If the below code results in wrong direction of rotation, try removing - sign
+                # the - sign is due to robomaster's angle convention being opposite of normal
+                # If the below code results in wrong direction of rotation, try removing - sign
 
                 # ensure ang_diff is in [-180, 180]
                 if ang_diff < -180:
@@ -268,16 +300,15 @@ def main():
 
                 if ang_diff > 180:
                     ang_diff -= 360
-                
+
                 if ang_diff > 0:
                     robot.chassis.drive_speed(x=0, z=45)
-                    time.sleep(ang_diff/45)
+                    time.sleep(ang_diff / 45)
                     robot.chassis.drive_speed(x=0, z=0)
                 else:
                     robot.chassis.drive_speed(x=0, z=-45)
-                    time.sleep(ang_diff/-45)
+                    time.sleep(ang_diff / -45)
                     robot.chassis.drive_speed(x=0, z=0)
-                
 
                 logger.info("Starting AI tasks")
                 save_dir = do_cv(pose)  # reports the CV stuff and no matter the result, audios will be saved to ZIP_SAVE_DIR
@@ -305,7 +336,7 @@ def main():
                 else:
                     logger.error(f'Pose gotten from report digit is invalid! Got {target_pose}, check result {target_pose_check}.')
 
-            curr_loi = RealLocation(target_pose[0], target_pose[1]) # Set the next location to be the target pose
+            curr_loi = RealLocation(target_pose[0], target_pose[1])  # Set the next location to be the target pose
             target_rotation = target_pose[2]
 
             logger.info('Next checkpoint location: {}'.format(curr_loi))
@@ -422,6 +453,7 @@ def main():
                     NavLogger.debug(f'MAX_DEVIATION_THRESH_M: {MAX_DEVIATION_THRESH_M}, ANGLE_THRESHOLD_DEG: {ANGLE_THRESHOLD_DEG}')
                     prev_wp = curr_wp
                 if abs(ang_diff) > ANGLE_THRESHOLD_DEG:
+                    logger.debug("ROBOT CAN ONLY ROTATE")
                     vel_cmd[0] = 0.0  # Robot can only rotate; set speed to 0
                     spin_direction_lock = True
                     spin_sign = np.sign(ang_diff)
@@ -430,12 +462,15 @@ def main():
                     spin_sign = 0
 
                 # Send command to robot
+                logger.debug(f"Moving the robot at forward speed {vel_cmd[0]} and ang velocity {vel_cmd[1]}")
                 robot.chassis.drive_speed(x=vel_cmd[0], z=vel_cmd[1])
+
+                prev_vel_cmd = vel_cmd
             else:
                 logger.debug('End of path.')
                 prev_loi = curr_loi
                 curr_loi = None
-        prev_start = time.time()  # end of loop
+        prev_start = start  # end of loop
 
     rep_service.end_run()  # Call this only after receiving confirmation from the scoring server that you have reached the maze's last checkpoint.
     robot.chassis.drive_speed(x=0.0, y=0.0, z=0.0)  # set stop for safety
