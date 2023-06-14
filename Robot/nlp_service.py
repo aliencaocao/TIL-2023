@@ -131,7 +131,7 @@ class SpeakerIDService:
                 data, rate = sf.read(output_path)  # load audio
                 loudness = self.loudness_meter.integrated_loudness(data)
                 if loudness < -35:  # could be PALMTREE or TOMATOFARMER D
-                    # peak normalize audio to -0.1 dB as frcrn tend to output very soft
+                    # do FRCRN only without DF3 for all PALMTREE ones
                     self.FRCRN(path, output_path=output_path)
                     data, rate = sf.read(output_path)  # load audio
                     # peak normalize audio to -0.1 dB as frcrn tend to output very soft
@@ -145,7 +145,7 @@ class SpeakerIDService:
                         # loudness normalize audio to -18 dB LUFS
                         normalized_audio = pyln.normalize.loudness(data, loudness, -18.0)
                     else:  # only can be TOMATOFARMER D
-                        results[audio_filename] = "TOMATOFARMER_memberD"
+                        results[os.path.split(path)[-1][:-4]] = "TOMATOFARMER_memberD"
                         audio_path_denoised.remove(output_path)  # no need predict below alr
                 else:  # normalize all other classes to -0.1 normally
                     normalized_audio = pyln.normalize.peak(data, -0.1)
@@ -179,8 +179,8 @@ class SpeakerIDService:
                 logits_averaged = torch.mean(model_output, dim=0)
                 pred_idx = torch.argmax(logits_averaged)
                 pred = self.class_names[pred_idx]
-                results[path.split(os.sep)[-1][:-4]] = pred
-                logits[path.split(os.sep)[-1][:-4]] = logits_averaged.cpu().numpy()
+                results[os.path.split(path)[-1][:-4]] = pred
+                logits[os.path.split(path)[:-4]] = logits_averaged.cpu().numpy()
             logger.info(f'Predicted: {results}')
 
             # Post-processing to ensure exactly one not-our-team speaker is predicted
