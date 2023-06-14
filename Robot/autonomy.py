@@ -140,13 +140,9 @@ def main():
             logger.info('Error, no possible path found to the first location!')
             #It should never come to this!
             #Re-initialise the map and planner with a smaller dilation (smaller robo radius) which I've done below (untested)
-            planner = MyPlanner(map_,
-                waypoint_sparsity_m=0.4,
-                astargrid_threshold_dist_cm=29,
-                path_opt_min_straight_deg=170,
-                path_opt_max_safe_dist_cm=24,
-                ROBOT_RADIUS_M=0.17,
-                no_path=True)
+            planner.bgrid = planner.bgrid_original + (1.5 * planner.ROBOT_RADIUS_M / planner.map.scale)
+            planner.ROBOT_RADIUS_M *= 2 / 3
+            planner.bgrid = planner.bgrid - (1.5 * planner.ROBOT_RADIUS_M / planner.map.scale)
         else:
             path.reverse()  # reverse so closest wp is last so that pop() is cheap , waypoint
             curr_wp = None
@@ -159,10 +155,11 @@ def main():
     def do_cv(pose: RealPose) -> str:
         nonlocal prev_img_rpt_time
         if not prev_img_rpt_time or time.time() - prev_img_rpt_time >= 1:  # throttle to 1 submission per second, and only read img if necessary
-            robot.camera.start_video_stream(display=False, resolution='720p')
+            # ensure robot is stopped and video stream reaches steady state
+            robot.chassis.drive_speed(0, 0, 0)
+            time.sleep(2)
             if not SIMULATOR_MODE: print(robot.camera.conf)  # see if can see whitebalance values
             img = robot.camera.read_cv2_image(strategy='newest')
-            robot.camera.stop_video_stream()
             img_with_bbox, answer = cv_service.predict([suspect_img, hostage_img], img)
             prev_img_rpt_time = time.time()
             return rep_service.report_situation(img_with_bbox, pose, answer, ZIP_SAVE_DIR)
@@ -183,7 +180,6 @@ def main():
     # Before main loop, read 1 prev image first to define the prev variable properly. This is for OpticalFlow
     robot.camera.start_video_stream(display=False, resolution='720p')
     prev = robot.camera.read_cv2_image(strategy='newest')
-    robot.camera.stop_video_stream()
     h, w = prev.shape[:2]
     crop_box = (w * 0.3, h * 0.6, w * 0.4, h * 0.4)  # xywh (take middle 40% of x axis (w) and bottom 30% of y axis (h))
     # crop out the floor part only
@@ -194,9 +190,7 @@ def main():
     while True:
         start = time.time()
         # Get new camera feed for OpticalFlow
-        robot.camera.start_video_stream(display=False, resolution='720p')
         new = robot.camera.read_cv2_image(strategy='newest')
-        robot.camera.stop_video_stream()
         new = new[int(crop_box[1]):int(crop_box[1] + crop_box[3]), int(crop_box[0]):int(crop_box[0] + crop_box[2]), :]
         new_gray = cv2.cvtColor(new, cv2.COLOR_BGR2GRAY)
         # prev, next, flow (pointer in C, use None in Python), pyrscale, levels, winsize, iterations, poly_n, poly_sigma, flags
@@ -290,7 +284,7 @@ def main():
                 if not save_dir: continue  # still within 1second rate limit, skip to next iteration
 
                 pred = speakerid_service.predict(glob.glob(os.path.join(save_dir, '*.wav')))
-                pred = 'audio1_teamName One_member2' or pred  # if predict errored, it will return None, in this case just submit a dummy string and continue
+                pred = pred or 'audio1_teamName One_member2'  # if predict errored, it will return None, in this case just submit a dummy string and continue
                 save_dir = rep_service.report_audio(pose, pred, ZIP_SAVE_DIR)
 
                 # ASR password digits task
@@ -325,15 +319,10 @@ def main():
                 logger.error('No possible path found to the next location!')
                 # It should never come to this!
                 # TODO: Implement some simple random movement for the robot to change its location
-
                 # And/or re-initialise the map and planner with a smaller dilation (smaller robo radius) which I've done below (untested)
-                planner = MyPlanner(map_,
-                                    waypoint_sparsity_m=0.4,
-                                    astargrid_threshold_dist_cm=29,
-                                    path_opt_min_straight_deg=170,
-                                    path_opt_max_safe_dist_cm=24,
-                                    ROBOT_RADIUS_M=0.17,
-                                    no_path=True)
+                planner.bgrid = planner.bgrid_original + (1.5 * planner.ROBOT_RADIUS_M / planner.map.scale)
+                planner.ROBOT_RADIUS_M *= 2 / 3
+                planner.bgrid = planner.bgrid - (1.5 * planner.ROBOT_RADIUS_M / planner.map.scale)
             else:
                 path.reverse()  # reverse so closest wp is last so that pop() is cheap , waypoint
                 curr_wp = None
