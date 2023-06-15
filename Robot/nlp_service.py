@@ -131,6 +131,7 @@ class SpeakerIDService:
                 data, rate = sf.read(output_path)  # load audio
                 loudness = self.loudness_meter.integrated_loudness(data)
                 if loudness < -35:  # could be PALMTREE or TOMATOFARMER D
+                    logger.debug(f"Audio {path} is PALMTREE or TOMATOFARMER D")
                     # do FRCRN only without DF3 for all PALMTREE ones
                     self.FRCRN(path, output_path=output_path)
                     data, rate = sf.read(output_path)  # load audio
@@ -142,10 +143,14 @@ class SpeakerIDService:
                     data, rate = sf.read(output_path)  # load audio
                     loudness = self.loudness_meter.integrated_loudness(data)
                     if loudness > -45:  # PALMTREE
+                        logger.debug(f"Audio {path} is PALMTREE")
                         # loudness normalize audio to -18 dB LUFS
                         normalized_audio = pyln.normalize.loudness(data, loudness, -18.0)
                     else:  # only can be TOMATOFARMER D
+                        logger.debug(f"Audio {path} is TOMATOFARMER D")
                         results[os.path.split(path)[-1][:-4]] = "TOMATOFARMER_memberD"
+                        logits[os.path.split(path)[-1][:-4]] = np.zeros(32, dtype=float)  # 32 classes all set to 0
+                        logits[os.path.split(path)[-1][:-4]][self.class_names == 'TOMATOFARMER_memberD'] = 1.0  # set the TOMATOFARMER_memberD class to 1 since we are certain here
                         audio_path_denoised.remove(output_path)  # no need predict below alr
                 else:  # normalize all other classes to -0.1 normally
                     normalized_audio = pyln.normalize.peak(data, -0.1)
