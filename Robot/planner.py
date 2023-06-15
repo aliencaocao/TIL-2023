@@ -8,7 +8,7 @@ from tilsdk.localization import *
 
 
 class MyPlanner:
-    def __init__(self, map_: SignedDistanceGrid = None, waypoint_sparsity_m=0.5, astargrid_threshold_dist_cm=29, path_opt_min_straight_deg=170, path_opt_max_safe_dist_cm=24, ROBOT_RADIUS_M=0.17, no_path=False):
+    def __init__(self, map_: SignedDistanceGrid = None, waypoint_sparsity_m=0.5, astargrid_threshold_dist_cm=29, path_opt_min_straight_deg=170, path_opt_max_safe_dist_cm=24, ROBOT_RADIUS_M=0.17):
         '''
         Parameters
         ----------
@@ -29,7 +29,6 @@ class MyPlanner:
             Maximum allowed minimum clearance along paths from one waypoint to the next and previous for it to be deleted in optimisation.
         '''
         # ALL grids (including big_grid) use [y][x] convention
-
         self.waypoint_sparsity_m = waypoint_sparsity_m
         self.astargrid_threshold_dist_cm = astargrid_threshold_dist_cm
         self.path_opt_min_straight_deg = path_opt_min_straight_deg
@@ -37,12 +36,9 @@ class MyPlanner:
 
         self.map = map_
         self.passable = self.map.grid > 0
-        self.bgrid = self.transform_add_border(self.map.grid.copy())  # Grid which takes the walls outside the grid into account
+        self.bgrid_original = self.transform_add_border(self.map.grid.copy())  # Grid which takes the walls outside the grid into account
         self.ROBOT_RADIUS_M = ROBOT_RADIUS_M
-        if no_path:
-            self.bgrid += 1.5 * self.ROBOT_RADIUS_M / self.map.scale  # Same functionality as .dilated last year: expands the walls by 1.5 times the radius of the robo
-            self.ROBOT_RADIUS_M *= 2 / 3
-        self.bgrid -= 1.5 * self.ROBOT_RADIUS_M / self.map.scale  # Same functionality as .dilated last year: expands the walls by 1.5 times the radius of the robot
+        self.bgrid = self.bgrid_original - (1.5 * self.ROBOT_RADIUS_M / self.map.scale)  # Same functionality as .dilated last year: expands the walls by 1.5 times the radius of the robot
         self.astar_grid = self.transform_for_astar(self.bgrid.copy())
 
         self.path = None

@@ -76,30 +76,36 @@ class CVService:
         if len(boxes) == 0:
             logger.info('Predicted None due to no bbox')
             return image, "none"  # no box at all, return none
-        box = boxes[boxes[:, 4].argsort()][-1]  # take the highest confidence box
         query = [self.load_img(q) for q in suspect]  # 2, first is suspect, second is hostage
-        x1, y1, x2, y2 = box[:4].astype(np.int32)  # throw away the confidence
-        gallery = image[y1:y2, x1:x2]
+        gallery = []
+        for box in boxes:
+            x1, y1, x2, y2 = box[:4].astype(np.int32)  # throw away the confidence
+            gallery.append(image[y1:y2, x1:x2])
 
-        inputs = query + [self.load_img(gallery)]
+        inputs = query + [self.load_img(pic) for pic in gallery]
         inputs = np.stack(inputs, axis=0)  # stack the query and gallery images as batch dim
 
         features = self.REID(torch.from_numpy(inputs).to('cuda'))[0]
         self.REID_postprocessor.update(features.detach())  # postprocessor expects Torch tensor as it uses torch to compute stuff
-        dist_mat = self.REID_postprocessor.compute()  # (2, 1) array, 2 queries, 1 gallery image
-        dist_mat = np.squeeze(dist_mat)  # (2,)
+        dist_mat = self.REID_postprocessor.compute()  # (2, x) array, 2 queries, x gallery image
         logger.debug(f'Distance matrix: {dist_mat}')
         self.REID_postprocessor.reset()  # reset the postprocessor for next query
 
         # take the lowest distance one
-        min_id = np.argmin(dist_mat)
+        min_id = np.unravel_index(dist_mat.argmin(), dist_mat.shape)
+        os.makedirs('CV_output', exist_ok=True)
         if dist_mat[min_id] > self.REIDThreshold:  # the min one still fail threshold so return none
             logger.info('Predicted None due to threshold')
+            if not cv2.imwrite(f"CV_output/{int(time.time())}.png", image):
+                logger.warning('Failed to save image')
             return image, "none"
-        img_with_bbox = cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        os.makedirs('CV_output', exist_ok=True)
+        # take the class and gallery image with min dist
+        pred = "suspect" if min_id[0] == 0 else "hostage"
+        box = boxes[min_id[1]]  # choose the corresponding box that has the min dist
+        x1, y1, x2, y2 = box[:4].astype(np.int32)
+        img_with_bbox = cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255 if pred == 'hostage' else 0, 255 if pred == 'suspect' else 0), 2)
+
         if not cv2.imwrite(f"CV_output/{int(time.time())}.png", img_with_bbox):
             logger.warning('Failed to save image')
-        pred = "suspect" if min_id == 0 else "hostage"
         logger.info(f'Predicted {pred}')
         return img_with_bbox, pred

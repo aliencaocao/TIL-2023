@@ -23,7 +23,7 @@ for l in loggers:
     l.setLevel(logging.DEBUG)
 
 # planner related
-print('Testing planner...')
+logger.info('Testing planner...')
 import pyastar2d
 import numpy as np
 weights = np.array([[1, 3, 3, 3, 3],
@@ -34,26 +34,28 @@ weights = np.array([[1, 3, 3, 3, 3],
 assert (pyastar2d.astar_path(weights, (0, 0), (4, 4), allow_diagonal=True) == np.array([[0, 0], [1, 1], [2, 2], [3, 3], [4, 4]])).all()
 
 # NLP services
-print('Testing NLP...')
+logger.info('Testing NLP...')
 from nlp_service import SpeakerIDService, ASRService
 
 ASR_MODEL_DIR = '../ASR/wav2vec2-conformer'
 SPEAKERID_RUN_DIR = '../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc'
 SPEAKERID_MODEL_FILENAME = 'weights_ep866it1-0.90000_loss0.0160.pth' # this is a FILENAME, not a full path
 SPEAKERID_CONFIG_PATH = '../SpeakerID/m2d/evar/config/m2d.yaml'
+FRCRN_path = '../SpeakerID/speech_frcrn_ans_cirm_16k'
+DeepFilterNet3_path = '../SpeakerID/DeepFilterNet3/'
 
 asr_service = ASRService(ASR_MODEL_DIR)
-speakerid_service = SpeakerIDService(SPEAKERID_CONFIG_PATH, SPEAKERID_RUN_DIR, SPEAKERID_MODEL_FILENAME)
-print('Predicting ASR...')
+speakerid_service = SpeakerIDService(SPEAKERID_CONFIG_PATH, SPEAKERID_RUN_DIR, SPEAKERID_MODEL_FILENAME, FRCRN_path, DeepFilterNet3_path)
+logger.info('Predicting ASR...')
 r = asr_service.predict(['data/audio/evala_00001.wav'])
 assert r == (9,), r
-print('Predicting SpeakerID...')
+logger.info('Predicting SpeakerID...')
 r = speakerid_service.predict(['data/audio/audio1.wav', 'data/audio/audio2.wav'])
 assert r == 'audio2_ACESOFSPADES_memberA', r
 asr_service.language_tool.close()
 
 # CV service
-print('Testing CV...')
+logger.info('Testing CV...')
 import cv2
 from cv_service import CVService
 OD_CONFIG_PATH = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py'
@@ -67,4 +69,4 @@ img = cv2.imread('data/imgs/image_0000.png')
 answer = cv_service.predict([suspect_img, hostage_img], img)[1]
 assert answer == 'suspect', answer
 
-print('All tests passed!')
+logger.info('All tests passed!')

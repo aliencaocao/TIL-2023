@@ -14,7 +14,12 @@ from tilsdk.localization.types import *
 from transformers import pipeline
 import language_tool_python
 import numpy as np
-
+from df.enhance import enhance, init_df, load_audio, save_audio
+from modelscope.pipelines import pipeline as FRCRN_pipeline
+from modelscope.utils.constant import Tasks
+import soundfile as sf
+import pyloudnorm as pyln
+import librosa
 import torch
 import torch.nn.functional as F
 import torchaudio
@@ -28,12 +33,22 @@ from evar.common import kwarg_cfg
 logger = logging.getLogger('NLPService')
 
 class SpeakerIDService:
-    def __init__(self, config_path: str, run_dir: str, model_filename: str):
+    def __init__(self, config_path: str, run_dir: str, model_filename: str, FRCRN_path: str, DeepFilterNet3_path: str):
         logger.info('Initializing SpeakerID service...')
 
+        self.denoise_output_dir = Path("denoised")
+        os.makedirs(self.denoise_output_dir, exist_ok=True)
+        rate = 16000
+        self.loudness_meter = pyln.Meter(rate)  # create BS.1770 meter
+
+        logger.debug('Loading FRCRN...')
+        self.FRCRN = FRCRN_pipeline(Tasks.acoustic_noise_suppression, model=FRCRN_path)
+        logger.debug('Loading DeepFilterNet3...')
+        self.DeepFilterNet3, self.df_state, _ = init_df(model_base_dir=DeepFilterNet3_path)
+
         run_dir = Path(run_dir)
-        self.segment_length_seconds = 3. # TODO: change according to slice length
-        
+        self.segment_length_seconds = 3.0
+
         logger.debug(f'Loading SpeakerID config from {config_path}...')
         device = torch.device("cuda")
         cfg, n_folds, activation, balanced = make_cfg(
@@ -42,7 +57,7 @@ class SpeakerIDService:
             options="",
         )
         cfg.weight_file = "../SpeakerID/m2d/weights/msm_mae_vit_base-80x608p16x16-220924-mr75/checkpoint-300.pth"
-        cfg.unit_sec = self.segment_length_seconds # TODO: change unit_sec according to slice length
+        cfg.unit_sec = self.segment_length_seconds  # TODO: change unit_sec according to slice length
         cfg.runtime_cfg = kwarg_cfg(n_class=32, hidden=())
 
         state_dict_path = run_dir / model_filename
@@ -83,16 +98,68 @@ class SpeakerIDService:
     def predict(self, audio_path: List[str]) -> Optional[str]:
         """Takes in a list of audio paths and return a string in format audio1_teamNameOne_member2, where the Team is the opponent"""
         # load a full-length audio from DSTA
+        audio_path_denoised = []
+        results = {}
+        logits = {}
         try:
-            # assert len(audio_path) == 2, "There should be 2 audio files"
-            results = {}
-            logits = {}
+            # Denoise audio first
+            logger.debug("Denoising audio...")
             for path in audio_path:
+                # get the audio filename without .wav extension
+                audio_filename = os.path.splitext(os.path.basename(path))[0]
+                output_path = self.denoise_output_dir / f"{audio_filename}.wav"
+                audio_path_denoised.append(output_path)
+
+                # FRCRN
+                self.FRCRN(path, output_path=output_path)
+
+                data, rate = sf.read(output_path)  # load audio
+                # peak normalize audio to -0.1 dB as frcrn tend to output very soft
+                peak_normalized_audio = pyln.normalize.peak(data, -0.1)  # not using loudness norm here as it causes a bit of clipping
+                sf.write(output_path, peak_normalized_audio, rate)
+
+                # DF3
+                audio, _ = load_audio(output_path, sr=self.df_state.sr())
+                enhanced = enhance(self.DeepFilterNet3, self.df_state, audio)
+                # Save for listening
+                save_audio(output_path, enhanced, self.df_state.sr(), dtype=torch.float16)  # default is torch.int16 which causes clipping on some audios
+
+                # Resample to 16khz
+                audio, sr = librosa.load(output_path, sr=16000)  # downsample to 16Khz
+                sf.write(output_path, audio, sr)  # save the downsampled one
+
+                data, rate = sf.read(output_path)  # load audio
+                loudness = self.loudness_meter.integrated_loudness(data)
+                if loudness < -35:  # could be PALMTREE or TOMATOFARMER D
+                    logger.debug(f"Audio {path} is PALMTREE or TOMATOFARMER D")
+                    # do FRCRN only without DF3 for all PALMTREE ones
+                    self.FRCRN(path, output_path=output_path)
+                    data, rate = sf.read(output_path)  # load audio
+                    # peak normalize audio to -0.1 dB as frcrn tend to output very soft
+                    normalized_audio = pyln.normalize.peak(data, -0.1)  # not using loudness norm here as it causes a bit of clipping on non palmtree clips
+                    sf.write(output_path, normalized_audio, rate)
+
+                    # measure again after norm
+                    data, rate = sf.read(output_path)  # load audio
+                    loudness = self.loudness_meter.integrated_loudness(data)
+                    if loudness > -45:  # PALMTREE
+                        logger.debug(f"Audio {path} is PALMTREE")
+                        # loudness normalize audio to -18 dB LUFS
+                        normalized_audio = pyln.normalize.loudness(data, loudness, -18.0)
+                    else:  # only can be TOMATOFARMER D
+                        logger.debug(f"Audio {path} is TOMATOFARMER D")
+                        results[os.path.split(path)[-1][:-4]] = "TOMATOFARMER_memberD"
+                        logits[os.path.split(path)[-1][:-4]] = np.zeros(32, dtype=float)  # 32 classes all set to 0
+                        logits[os.path.split(path)[-1][:-4]][self.class_names == 'TOMATOFARMER_memberD'] = 1.0  # set the TOMATOFARMER_memberD class to 1 since we are certain here
+                        audio_path_denoised.remove(output_path)  # no need predict below alr
+                else:  # normalize all other classes to -0.1 normally
+                    normalized_audio = pyln.normalize.peak(data, -0.1)
+                sf.write(output_path, normalized_audio, rate)
+
+            assert len(audio_path_denoised) + len(results) == 2, "There should be 2 audio files"
+            logger.debug('Predicting SpeakerID...')
+            for path in audio_path_denoised:
                 wav, sr = torchaudio.load(path)
-                
-                # resample to 16kHz because that's what our model expects
-                wav = torchaudio.functional.resample(wav, orig_freq=sr, new_freq=16000, lowpass_filter_width=128)
-                sr = 16000
 
                 # get the length of each segment in samples
                 segment_length_samples = int(self.segment_length_seconds * sr)
@@ -117,8 +184,8 @@ class SpeakerIDService:
                 logits_averaged = torch.mean(model_output, dim=0)
                 pred_idx = torch.argmax(logits_averaged)
                 pred = self.class_names[pred_idx]
-                results[path.split(os.sep)[-1][:-4]] = pred
-                logits[path.split(os.sep)[-1][:-4]] = logits_averaged.cpu().numpy()
+                results[os.path.split(path)[-1][:-4]] = pred
+                logits[os.path.split(path)[-1][:-4]] = logits_averaged.cpu().numpy()
             logger.info(f'Predicted: {results}')
 
             # Post-processing to ensure exactly one not-our-team speaker is predicted

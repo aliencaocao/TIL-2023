@@ -45,3 +45,5 @@ SpeakerID/DeepFilterNet3/*.log
 SpeakerID/m2d/evar/logs/*
 SpeakerID/m2d/evar/work/*
 !SpeakerID/speech_frcrn_ans_cirm_16k/*.bin
+Robot/denoised
+Robot/CV_output
