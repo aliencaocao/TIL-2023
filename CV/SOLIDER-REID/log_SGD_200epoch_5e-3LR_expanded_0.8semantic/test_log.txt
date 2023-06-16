@@ -1,0 +1,156 @@
+2023-06-16 09:32:55 reid INFO: Namespace(config_file='TIL.yml', opts=['MODEL.SEMANTIC_WEIGHT', '0.8', 'DATASETS.ROOT_DIR', '../RT-DETR/dataset/reid/test_old'])
+2023-06-16 09:32:55 reid INFO: Loaded configuration file TIL.yml
+2023-06-16 09:32:55 reid INFO: 
+MODEL:
+  PRETRAIN_HW_RATIO: 2
+  METRIC_LOSS_TYPE: 'triplet'
+  IF_LABELSMOOTH: 'off'
+  IF_WITH_CENTER: 'no'
+  NAME: 'transformer'
+  NO_MARGIN: True
+  DEVICE_ID: ('0')
+  TRANSFORMER_TYPE: 'swin_base_patch4_window7_224'
+  STRIDE_SIZE: [16, 16]
+  SIE_CAMERA: True
+
+INPUT:
+  SIZE_TRAIN: [224, 224]
+  SIZE_TEST: [224, 224]
+  HFLIP_PROB: 0.5 # random horizontal flip
+  VFLIP_PROB: 0.5 # random vertical flip
+  RE_PROB: 0.5 # random erasing
+  PADDING: 10
+  PIXEL_MEAN: [0.5, 0.5, 0.5]
+  PIXEL_STD: [0.5, 0.5, 0.5]
+
+DATASETS:
+  NAMES: ('TILCustomDataset')  # follow the market1501.py filename since TIL custom mods are all in that file
+  ROOT_DIR: ('../RT-DETR/dataset/reid_rotation_expansion/')
+
+DATALOADER:
+  SAMPLER: 'softmax_triplet'
+  NUM_INSTANCE: 1
+  NUM_WORKERS: 2
+
+SOLVER:
+  OPTIMIZER_NAME: 'SGD'  # SGD
+  MAX_EPOCHS: 200
+  BASE_LR: 0.005 # 0.0008
+  # BASE_LR: 8e-4  # if using Lion, the actual LR is this /10, because of how Lion works it needs a much lower lr
+  WARMUP_EPOCHS: 3
+  IMS_PER_BATCH: 128
+  WARMUP_METHOD: 'cosine'
+  LARGE_FC_LR: False
+  CHECKPOINT_PERIOD: 1
+  LOG_PERIOD: 20
+  EVAL_PERIOD: 1
+  WEIGHT_DECAY:  1e-4
+  WEIGHT_DECAY_BIAS: 1e-4
+  BIAS_LR_FACTOR: 2
+
+TEST:
+  EVAL: True
+  IMS_PER_BATCH: 128
+  RE_RANKING: False
+  WEIGHT: 'log_SGD_200epoch_5e-3LR_expanded_0.8semantic/transformer_116_map0.922111551596076_acc0.5785081386566162.pth'
+  # WEIGHT: ''
+  NECK_FEAT: 'before'
+  FEAT_NORM: 'yes'
+  # THRESHOLD: 0.0013236288040655365 # without RR transformer_29 0.0013236288040655365
+  THRESHOLD: 0.8669 # with RR, transformer_29 0.7868934651156535
+
+OUTPUT_DIR: 'log_SGD_200epoch_5e-3LR_expanded_0.8semantic'
+
+2023-06-16 09:32:55 reid INFO: Running with config:
+DATALOADER:
+  NUM_INSTANCE: 1
+  NUM_WORKERS: 2
+  REMOVE_TAIL: 0
+  SAMPLER: softmax_triplet
+DATASETS:
+  NAMES: TILCustomDataset
+  ROOT_DIR: ../RT-DETR/dataset/reid/test_old
+  ROOT_TRAIN_DIR: ../data
+  ROOT_VAL_DIR: ../data
+EXECUTION_MODE: batch_inference
+INPUT:
+  HFLIP_PROB: 0.5
+  PADDING: 10
+  PIXEL_MEAN: [0.5, 0.5, 0.5]
+  PIXEL_STD: [0.5, 0.5, 0.5]
+  RE_PROB: 0.5
+  SIZE_TEST: [224, 224]
+  SIZE_TRAIN: [224, 224]
+  VFLIP_PROB: 0.5
+MODEL:
+  ATT_DROP_RATE: 0.0
+  COS_LAYER: False
+  DEVICE: cuda
+  DEVICE_ID: 0
+  DEVIDE_LENGTH: 4
+  DIST_TRAIN: False
+  DROPOUT_RATE: 0.0
+  DROP_OUT: 0.0
+  DROP_PATH: 0.1
+  FEAT_DIM: 512
+  GEM_POOLING: False
+  ID_LOSS_TYPE: softmax
+  ID_LOSS_WEIGHT: 1.0
+  IF_LABELSMOOTH: off
+  IF_WITH_CENTER: no
+  JPM: False
+  LAST_STRIDE: 1
+  METRIC_LOSS_TYPE: triplet
+  NAME: transformer
+  NECK: bnneck
+  NO_MARGIN: True
+  PRETRAIN_CHOICE: imagenet
+  PRETRAIN_HW_RATIO: 2
+  PRETRAIN_PATH: 
+  REDUCE_FEAT_DIM: False
+  RE_ARRANGE: True
+  SEMANTIC_WEIGHT: 0.8
+  SHIFT_NUM: 5
+  SHUFFLE_GROUP: 2
+  SIE_CAMERA: True
+  SIE_COE: 3.0
+  SIE_VIEW: False
+  STEM_CONV: False
+  STRIDE_SIZE: [16, 16]
+  TRANSFORMER_TYPE: swin_base_patch4_window7_224
+  TRIPLET_LOSS_WEIGHT: 1.0
+OUTPUT_DIR: log_SGD_200epoch_5e-3LR_expanded_0.8semantic
+SOLVER:
+  BASE_LR: 0.005
+  BIAS_LR_FACTOR: 2
+  CENTER_LOSS_WEIGHT: 0.0005
+  CENTER_LR: 0.5
+  CHECKPOINT_PERIOD: 1
+  COSINE_MARGIN: 0.5
+  COSINE_SCALE: 30
+  EVAL_PERIOD: 1
+  GAMMA: 0.1
+  IMS_PER_BATCH: 128
+  LARGE_FC_LR: False
+  LOG_PERIOD: 20
+  MARGIN: 0.3
+  MAX_EPOCHS: 200
+  MOMENTUM: 0.9
+  OPTIMIZER_NAME: SGD
+  SEED: 1234
+  STEPS: (40, 70)
+  TRP_L2: False
+  WARMUP_EPOCHS: 3
+  WARMUP_FACTOR: 0.01
+  WARMUP_METHOD: cosine
+  WEIGHT_DECAY: 0.0001
+  WEIGHT_DECAY_BIAS: 0.0001
+TEST:
+  DIST_MAT: dist_mat.npy
+  EVAL: True
+  FEAT_NORM: yes
+  IMS_PER_BATCH: 128
+  NECK_FEAT: before
+  RE_RANKING: False
+  THRESHOLD: 0.8669
+  WEIGHT: log_SGD_200epoch_5e-3LR_expanded_0.8semantic/transformer_116_map0.922111551596076_acc0.5785081386566162.pth

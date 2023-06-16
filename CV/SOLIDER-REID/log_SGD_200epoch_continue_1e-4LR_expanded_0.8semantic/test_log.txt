@@ -1,0 +1,1 @@
+2023-06-16 10:47:53 reid INFO: Namespace(config_file='TIL.yml', batched=True, opts=['MODEL.SEMANTIC_WEIGHT', '0.8', 'DATASETS.ROOT_DIR', '../RT-DETR/dataset/reid/test_old'])

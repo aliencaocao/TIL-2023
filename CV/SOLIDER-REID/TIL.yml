@@ -33,7 +33,7 @@ SOLVER:
   OPTIMIZER_NAME: 'Amos'  # SGD
   MAX_EPOCHS: 200
   # BASE_LR: 0.005 # 0.0008
-  BASE_LR: 8e-4  # if using Lion, the actual LR is this /10, because of how Lion works it needs a much lower lr
+  BASE_LR: 8e-4  # if using Lion, the actual LR is this /100, because of how Lion works it needs a much lower lr
   WARMUP_EPOCHS: 3
   IMS_PER_BATCH: 128
   WARMUP_METHOD: 'cosine'
