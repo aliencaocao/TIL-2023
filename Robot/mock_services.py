@@ -24,7 +24,7 @@ class CVService:
         return image, 'suspect'
 
 class SpeakerIDService:
-    def __init__(self, config_path: str, run_dir: str, model_filename: str):
+    def __init__(self, config_path: str, run_dir: str, model_filename: str, FRCRN_path: str, DeepFilterNet3_path: str, current_opponent: str):
         pass
 
     def predict(self, audio_path: str) -> str:
@@ -40,7 +40,7 @@ class ASRService:
         Path of model weights.
     '''
 
-    def __init__(self, preprocessor_dir: str = 'wav2vec2-conformer', model_dir: str = 'wav2vec2-conformer.trt'):
+    def __init__(self, model_dir: str = 'wav2vec2-conformer'):
         '''
         Parameters
         ----------

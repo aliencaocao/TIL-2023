@@ -8,6 +8,7 @@ sys.path.insert(0, "../SpeakerID/m2d/evar")
 
 import logging
 import subprocess
+import random
 
 import Levenshtein
 from tilsdk.localization.types import *
@@ -33,7 +34,7 @@ from evar.common import kwarg_cfg
 logger = logging.getLogger('NLPService')
 
 class SpeakerIDService:
-    def __init__(self, config_path: str, run_dir: str, model_filename: str, FRCRN_path: str, DeepFilterNet3_path: str):
+    def __init__(self, config_path: str, run_dir: str, model_filename: str, FRCRN_path: str, DeepFilterNet3_path: str, current_opponent: str):
         logger.info('Initializing SpeakerID service...')
 
         self.denoise_output_dir = Path("denoised")
@@ -68,13 +69,13 @@ class SpeakerIDService:
         logger.debug(f"Loading normalization stats from {norm_stats_path}")
         norm_stats = torch.load(norm_stats_path)
 
-        self.teamname = '10000SGDMRT'
+        self.opponent_teamname = current_opponent
         classes_pickle_path = run_dir / "classes.pkl"
         logger.debug(f"Loading class names pickle from {classes_pickle_path}")
         with open(classes_pickle_path, "rb") as classes_pickle:
             self.class_names = pickle.load(classes_pickle).astype(str)
-        self.our_team_ids = np.where(np.char.startswith(self.class_names, self.teamname))[0]
-        assert len(self.our_team_ids) == 4, "There should be 4 members in our team"
+        self.opp_team_ids = np.where(np.char.startswith(self.class_names, self.opponent_teamname))[0]
+        assert len(self.opp_team_ids) == 4, f"There should be 4 members in opponent team, but got {len(self.opp_team_ids)}"
 
         logger.debug(f"Instantiating AR_M2D backbone")
         backbone = AR_M2D(cfg, inference_mode=True, norm_stats=norm_stats).to(device)
@@ -91,7 +92,7 @@ class SpeakerIDService:
         logger.debug("Warming up...")
         with torch.no_grad():
             for _ in range(3):
-                self.model(torch.randn(3, 22050).to(device))
+                self.model(torch.randn(4, 16000).to(device))  # cut 15s into 5 pieces of 3 seconds, ditch first one so batch size is 4
 
         logger.info("SpeakerID service successfully initialized.")
     
@@ -130,7 +131,7 @@ class SpeakerIDService:
 
                 data, rate = sf.read(output_path)  # load audio
                 loudness = self.loudness_meter.integrated_loudness(data)
-                if loudness < -35:  # could be PALMTREE or TOMATOFARMER D
+                if loudness < -35 and self.opponent_teamname in ['PALMTREE', 'TOMATOFARMER']:  # could be PALMTREE or TOMATOFARMER D
                     logger.debug(f"Audio {path} is PALMTREE or TOMATOFARMER D")
                     # do FRCRN only without DF3 for all PALMTREE ones
                     self.FRCRN(path, output_path=output_path)
@@ -142,7 +143,7 @@ class SpeakerIDService:
                     # measure again after norm
                     data, rate = sf.read(output_path)  # load audio
                     loudness = self.loudness_meter.integrated_loudness(data)
-                    if loudness > -45:  # PALMTREE
+                    if loudness > -45 and self.opponent_teamname == 'PALMTREE':  # PALMTREE
                         logger.debug(f"Audio {path} is PALMTREE")
                         # loudness normalize audio to -18 dB LUFS
                         normalized_audio = pyln.normalize.loudness(data, loudness, -18.0)
@@ -186,28 +187,25 @@ class SpeakerIDService:
                 pred = self.class_names[pred_idx]
                 results[os.path.split(path)[-1][:-4]] = pred
                 logits[os.path.split(path)[-1][:-4]] = logits_averaged.cpu().numpy()
-            logger.info(f'Predicted: {results}')
+            logger.info(f'Raw prediction: {results}')
 
-            # Post-processing to ensure exactly one not-our-team speaker is predicted
-            our_team_counts = len([i for i in results.values() if i.startswith(self.teamname)])
-            if our_team_counts == 1:
-                result = [k + '_' + v for k, v in results.items() if not v.startswith(self.teamname)][0]  # audio1_teamNameOne_member2
-            else:  # more than 1 OR no one predicted is our team, take the one with highest confidence as our team and return the other one to be the opponent team
-                logger.warning(f'Predicted {our_team_counts} audios to be from {self.teamname}! Choosing the one with lowest confidence in {self.teamname} members as opponent.')
-                min_confidence = 0
-                for k, v in results.items():
-                    min_our_team_confidence = np.min(logits[k][self.our_team_ids])
-                    if min_our_team_confidence < min_confidence:
-                        min_confidence = min_our_team_confidence
-                        result = k
-                logits_without_our_team = logits[result].copy()
-                logits_without_our_team[self.our_team_ids] = -1e99  # set to very low value so that np.argmax will not choose our team
-                result = result + '_' + self.class_names[np.argmax(logits_without_our_team)]
-                logger.info(f'Predicted after choosing lowest conf: {result}')
+            # Post-processing to take the one with highest confidence in opp team members
+            max_confidence = 0
+            for audio_fname in results.keys():
+                max_opp_team_confidence = np.max(logits[audio_fname][self.opp_team_ids])
+                if max_opp_team_confidence > max_confidence:
+                    max_confidence = max_opp_team_confidence
+                    result = audio_fname
+            logits_with_max_opp_conf = logits[result].copy()
+            result = result + '_' + self.class_names[np.argmax(logits_with_max_opp_conf)]  # fname_team_member
+            logger.info(f'Prediction after limiting to opp team: {result}')
+            assert self.opponent_teamname in result, 'Did not predict an opponent team!'
             return result
         except Exception as e:
-            logger.error(f'Error while predicting: {e}')
-            return None
+            logger.error(f'Error while predicting: {e}')  # RNG an opponent team member
+            guess = os.path.split(audio_path[0])[-1][:-4] + '_' + self.opponent_teamname + '_member' + random.choice(['A', 'B', 'C', 'D'])
+            logger.info(f'Guessing {guess}...')
+            return guess
 
 
 class ASRService:

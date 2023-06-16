@@ -43,9 +43,10 @@ SPEAKERID_MODEL_FILENAME = 'weights_ep866it1-0.90000_loss0.0160.pth' # this is a
 SPEAKERID_CONFIG_PATH = '../SpeakerID/m2d/evar/config/m2d.yaml'
 FRCRN_path = '../SpeakerID/speech_frcrn_ans_cirm_16k'
 DeepFilterNet3_path = '../SpeakerID/DeepFilterNet3/'
+current_opponent = 'ACESOFSPADES'
 
 asr_service = ASRService(ASR_MODEL_DIR)
-speakerid_service = SpeakerIDService(SPEAKERID_CONFIG_PATH, SPEAKERID_RUN_DIR, SPEAKERID_MODEL_FILENAME, FRCRN_path, DeepFilterNet3_path)
+speakerid_service = SpeakerIDService(SPEAKERID_CONFIG_PATH, SPEAKERID_RUN_DIR, SPEAKERID_MODEL_FILENAME, FRCRN_path, DeepFilterNet3_path, current_opponent)
 logger.info('Predicting ASR...')
 r = asr_service.predict(['data/audio/evala_00001.wav'])
 assert r == (9,), r

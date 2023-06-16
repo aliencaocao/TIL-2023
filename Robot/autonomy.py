@@ -57,6 +57,7 @@ REID_CONFIG_PATH = '../CV/SOLIDER-REID/TIL.yml'
 SPEAKERID_RUN_DIR = '../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc'
 SPEAKERID_MODEL_FILENAME = 'weights_ep866it1-0.90000_loss0.0160.pth'  # this is a FILENAME, not a full path
 SPEAKERID_CONFIG_PATH = '../SpeakerID/m2d/evar/config/m2d.yaml'
+current_opponent = 'ACESOFSPADES'
 robot = Robot()
 
 
@@ -68,7 +69,7 @@ def main():
     # Initialize services
     cv_service = CVService(OD_CONFIG_PATH, OD_MODEL_PATH, REID_MODEL_PATH, REID_CONFIG_PATH)
     asr_service = ASRService(ASR_MODEL_DIR)
-    speakerid_service = SpeakerIDService(SPEAKERID_CONFIG_PATH, SPEAKERID_RUN_DIR, SPEAKERID_MODEL_FILENAME)
+    speakerid_service = SpeakerIDService(SPEAKERID_CONFIG_PATH, SPEAKERID_RUN_DIR, SPEAKERID_MODEL_FILENAME, current_opponent)
     if SIMULATOR_MODE:
         loc_service = LocalizationService(host='localhost', port=5566)  # for simulator
         rep_service = ReportingService(host='localhost', port=5501)
@@ -315,7 +316,6 @@ def main():
                 if not save_dir: continue  # still within 1second rate limit, skip to next iteration
 
                 pred = speakerid_service.predict(glob.glob(os.path.join(save_dir, '*.wav')))
-                pred = pred or 'audio1_teamName One_member2'  # if predict errored, it will return None, in this case just submit a dummy string and continue
                 save_dir = rep_service.report_audio(pose, pred, ZIP_SAVE_DIR)
 
                 # ASR password digits task
