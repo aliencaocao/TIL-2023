@@ -46,8 +46,8 @@ for l in loggers:
     l.setLevel(logging.DEBUG)
 
 # TODO: update the paths of imgs here. Model path are already simulated
-suspect_img = cv2.imread('data/imgs/suspect1.png')
-hostage_img = cv2.imread('data/imgs/targetmario.png')
+suspect_img = cv2.imread('TIL-2023/Robot/data/imgs/suspect1.png')
+hostage_img = cv2.imread('TIL-2023/Robot/data/imgs/targetmario.png')
 ZIP_SAVE_DIR = Path("data/temp").absolute()
 ASR_MODEL_DIR = '../ASR/wav2vec2-conformer'
 OD_CONFIG_PATH = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py'
@@ -57,6 +57,8 @@ REID_CONFIG_PATH = '../CV/SOLIDER-REID/TIL.yml'
 SPEAKERID_RUN_DIR = '../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc'
 SPEAKERID_MODEL_FILENAME = 'weights_ep866it1-0.90000_loss0.0160.pth'  # this is a FILENAME, not a full path
 SPEAKERID_CONFIG_PATH = '../SpeakerID/m2d/evar/config/m2d.yaml'
+FRCRN_path = '../SpeakerID/speech_frcrn_ans_cirm_16k'
+DeepFilterNet3_path = '../SpeakerID/DeepFilterNet3/'
 current_opponent = 'ACESOFSPADES'
 robot = Robot()
 
@@ -69,7 +71,7 @@ def main():
     # Initialize services
     cv_service = CVService(OD_CONFIG_PATH, OD_MODEL_PATH, REID_MODEL_PATH, REID_CONFIG_PATH)
     asr_service = ASRService(ASR_MODEL_DIR)
-    speakerid_service = SpeakerIDService(SPEAKERID_CONFIG_PATH, SPEAKERID_RUN_DIR, SPEAKERID_MODEL_FILENAME, current_opponent)
+    speakerid_service = SpeakerIDService(SPEAKERID_CONFIG_PATH, SPEAKERID_RUN_DIR, SPEAKERID_MODEL_FILENAME, FRCRN_path, DeepFilterNet3_path, current_opponent)
     if SIMULATOR_MODE:
         loc_service = LocalizationService(host='localhost', port=5566)  # for simulator
         rep_service = ReportingService(host='localhost', port=5501)
@@ -89,7 +91,8 @@ def main():
     path: List[RealLocation] = []
     prev_wp: RealLocation = None
     curr_wp: RealLocation = None
-    pose_filter = SimpleMovingAverage(n=20)
+    POSE_FILTER_N = 20
+    pose_filter = SimpleMovingAverage(n=POSE_FILTER_N)
     map_: SignedDistanceGrid = loc_service.get_map()  # Currently, it is in the same format as the 2022 one. The docs says it's a new format.
 
     # If they update get_map() to match the description in the docs, we will need to write a function to convert it back to the 2022 format.
@@ -103,7 +106,7 @@ def main():
     OUTLIER_THRESH = 0.75  # max euclidean distance in meters robot should move between 2 iteration of main loop
     USE_OPTICAL_FLOW = False  # uses camera feed and optical flow to calculate motion vector
     FLOW_PIXEL_TO_M_FACTOR = 0.0014  # how many meter does 1 pixel in 720p camera feed represent. Camera feed is 720p. Current estimate is 216 pixel (30% of height) / 0.15m seen in that crop
-    POSE_DIFF_THRESH = 0.0
+    POSE_DIFF_THRESH = 0.2
     USE_SPEED_ESTIMATION = True  # uses the robot's movement speed to track motion internally to reduce loc service noise
 
     tracker = PIDController(Kp=(0.25, 0.2), Ki=(0.1, 0.0), Kd=(0, 0))
@@ -114,7 +117,7 @@ def main():
     spin_sign = 0  # -1 or 1 when spin_direction_lock is active
 
     # To detect stuck and perform unstucking
-    use_stuck_detection = True
+    use_stuck_detection = False
     log_x = []
     log_y = []
     log_time = []
@@ -193,12 +196,14 @@ def main():
         # crop out the floor part only
         prev = prev[int(crop_box[1]):int(crop_box[1] + crop_box[3]), int(crop_box[0]):int(crop_box[0] + crop_box[2]), :]
         prev_gray = cv2.cvtColor(prev, cv2.COLOR_BGR2GRAY)
-        prev_start = None
+    prev_drive_cmd_time = None
+    prev_prev_drive_cmd_time = None
     prev_vel_cmd = (0.0, 0.0)
+    prev_prev_vel_cmd = (0.0, 0.0)
     # Main loop
     while True:
-        start = time.time()
         if USE_OPTICAL_FLOW:
+            start_for_flow = time.time()
             # Get new camera feed for OpticalFlow
             new = robot.camera.read_cv2_image(strategy='newest')
             new = new[int(crop_box[1]):int(crop_box[1] + crop_box[3]), int(crop_box[0]):int(crop_box[0] + crop_box[2]), :]
@@ -208,7 +213,7 @@ def main():
             # flow is of shape (h, w, 2), where flow[:,:,0] is the x axis movement and flow[:,:,1] is the y axis movement
             prev_gray = new_gray
             end = time.time()  # this end is purely for FPS calculation, NOT for timing the entire loop
-            fps = 1 / (end - start)
+            fps = 1 / (end - start_for_flow)
             drawn = draw_flow(new, flow)
             cv2.putText(drawn, f"FPS: {fps:.2f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
             cv2.imshow('OpticalFlow', drawn)
@@ -219,14 +224,14 @@ def main():
         loc_svc_pose = loc_service.get_pose()
         if USE_SPEED_ESTIMATION:
             # Calculate a new pose using our own last known pose
-            if prev_start is None:
+            if prev_prev_drive_cmd_time is None:
                 new_pose = loc_svc_pose
             else:
-                dt = (start - prev_start) * 1e6
+                dt = prev_drive_cmd_time - prev_prev_drive_cmd_time
                 calc_new_pose = RealPose(
-                    pose[0] + prev_vel_cmd[0] * np.cos(np.radians(pose[2])) * dt,
-                    pose[1] + prev_vel_cmd[0] * np.sin(np.radians(pose[2])) * dt,
-                    pose[2] + prev_vel_cmd[1] * dt
+                    pose[0] + prev_prev_vel_cmd[0] * np.cos(np.radians(pose[2])) * dt,
+                    pose[1] + prev_prev_vel_cmd[0] * np.sin(np.radians(pose[2])) * dt,
+                    pose[2] - prev_prev_vel_cmd[1] * dt
                 )
                 # compare the new loc data from localization service against our calculated one
                 diff = euclidean_distance(loc_svc_pose, calc_new_pose)
@@ -238,6 +243,8 @@ def main():
                     new_pose = calc_new_pose
                 else:
                     new_pose = loc_svc_pose
+        else:
+            new_pose = loc_svc_pose
 
         if USE_OUTLIER_DETECTION:
             pose_dist = euclidean_distance(new_pose, pose)
@@ -245,9 +252,9 @@ def main():
                 if new_pose: logger.warning(f"Pose outlier detected from euclidean dist: {new_pose}, dist: {pose_dist}")
                 # no new data or is outlier, continue to next iteration.
                 continue
-        if USE_OPTICAL_FLOW and not SIMULATOR_MODE and prev_start and pose_dist > flow_y_mean * FLOW_PIXEL_TO_M_FACTOR * (start-prev_start):  # s = vt
+        if USE_OPTICAL_FLOW and not SIMULATOR_MODE and prev_prev_drive_cmd_time and pose_dist > flow_y_mean * FLOW_PIXEL_TO_M_FACTOR * (prev_drive_cmd_time-prev_prev_drive_cmd_time):  # s = vt
             # if the robot is moving faster than the flow * time, then it is an outlier. Doesnt work in simulator as image is stationary
-            logger.warning(f"Pose outlier detected from OpticalFlow: {new_pose}, dist: {pose_dist}, calculated motion vector: {flow_y_mean * FLOW_PIXEL_TO_M_FACTOR * (prev_start-start)}, flow_y_mean: {flow_y_mean}, time: {prev_start-start}")
+            logger.warning(f"Pose outlier detected from OpticalFlow: {new_pose}, dist: {pose_dist}, calculated motion vector: {flow_y_mean * FLOW_PIXEL_TO_M_FACTOR * (prev_prev_drive_cmd_time-prev_drive_cmd_time)}, flow_y_mean: {flow_y_mean}, time: {prev_prev_drive_cmd_time-prev_drive_cmd_time}")
             continue
         pose = new_pose
         pose = pose_filter.update(pose)
@@ -341,7 +348,7 @@ def main():
 
             logger.info('Next checkpoint location: {}'.format(curr_loi))
             # Reset the pose filter
-            pose_filter = SimpleMovingAverage(n=10)
+            pose_filter = SimpleMovingAverage(n=POSE_FILTER_N)
 
             # Plan a path to the new LOI
             logger.info('Planning path to: {}'.format(curr_loi))
@@ -464,13 +471,15 @@ def main():
                 # Send command to robot
                 logger.debug(f"Moving the robot at forward speed {vel_cmd[0]} and ang velocity {vel_cmd[1]}")
                 robot.chassis.drive_speed(x=vel_cmd[0], z=vel_cmd[1])
-
+                prev_prev_drive_cmd_time = prev_drive_cmd_time
+                prev_drive_cmd_time = time.time()
+                prev_prev_vel_cmd = prev_vel_cmd
                 prev_vel_cmd = vel_cmd
             else:
                 logger.debug('End of path.')
                 prev_loi = curr_loi
                 curr_loi = None
-        prev_start = start  # end of loop
+        # prev_start = start  # end of loop
 
     rep_service.end_run()  # Call this only after receiving confirmation from the scoring server that you have reached the maze's last checkpoint.
     robot.chassis.drive_speed(x=0.0, y=0.0, z=0.0)  # set stop for safety
