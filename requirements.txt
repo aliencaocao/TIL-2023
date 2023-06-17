@@ -6,7 +6,7 @@ torchvision
 torchaudio
 pycuda
 pyctcdecode
-transformers
+transformers >= 4.30
 datasets
 evaluate
 hf_transfer

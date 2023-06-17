@@ -6,8 +6,8 @@ import math
 from datasets import load_dataset
 from transformers import Wav2Vec2Processor, Wav2Vec2ConformerForCTC, TrainingArguments, Trainer
 import torch
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Union
+from dataclasses import dataclass
+from typing import Dict, List, Union
 import numpy as np
 import evaluate
 
@@ -169,44 +169,6 @@ training_args = TrainingArguments(
     # resume_from_checkpoint=checkpoint_name
 ) # since num threads is 16
 
-class CTCTrainer(Trainer):
-    def training_step(self, model: torch.nn.Module, inputs: Dict[str, Union[torch.Tensor, Any]]) -> torch.Tensor:
-        """
-        Perform a training step on a batch of inputs.
-
-        Subclass and override to inject custom behavior.
-
-        Args:
-            model (:obj:`nn.Module`):
-                The model to train.
-            inputs (:obj:`Dict[str, Union[torch.Tensor, Any]]`):
-                The inputs and targets of the model.
-
-                The dictionary will be unpacked before being fed to the model. Most models expect the targets under the
-                argument :obj:`labels`. Check your model's documentation for all accepted arguments.
-
-        Return:
-            :obj:`torch.Tensor`: The tensor with training loss on this batch.
-        """
-
-        model.train()
-        inputs = self._prepare_inputs(inputs)
-        loss = self.compute_loss(model, inputs)
-
-        if self.args.gradient_accumulation_steps > 1:
-            loss = loss / self.args.gradient_accumulation_steps
-
-        if os.name != 'nt':
-            accelerator.backward(self.scaler.scale(loss))
-            # self.scaler.scale(loss).backward()
-        else:
-            self.scaler.scale(loss).backward()
-        return loss.detach()
-    
-if os.name != 'nt':
-    from accelerate import Accelerator
-    accelerator = Accelerator(mixed_precision='fp16', dynamo_backend='eager')  # FP8 needs transformer_engine package which is only on Linux with Hopper GPUs
-
 # max_steps = math.ceil(training_args.num_train_epochs * len(ds['train']) / training_args.gradient_accumulation_steps / min(training_args.per_device_train_batch_size, len(ds['train'])))
 # optimizer = Ranger21(model.parameters(), num_iterations=max_steps, lr=1e-4)
 # optimizer = torch.optim.Adam(model.parameters(), lr=1e-4, betas=(0.9, 0.98), eps=1e-8, foreach=False)  # https://github.com/facebookresearch/fairseq/blob/main/examples/wav2vec/config/finetuning/base_960h.yaml
@@ -214,7 +176,7 @@ if os.name != 'nt':
 # scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=tri_stage_schedule)  # following FAIR finetuning settings
 # scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda x: x)  # constant LR, stays same throughout, for Ranger21
 
-trainer = CTCTrainer(
+trainer = Trainer(
     model=model,
     args=training_args,
     train_dataset=ds['train'],
@@ -224,10 +186,5 @@ trainer = CTCTrainer(
     compute_metrics=compute_metrics,
     # optimizers=(optimizer, scheduler),
 )
-if os.name != 'nt':  # windows does not support torch.compile yet
-    # pass
-    trainer.model_wrapped, trainer.optimizer, trainer.lr_scheduler = accelerator.prepare(trainer.model_wrapped, trainer.optimizer, trainer.lr_scheduler)
 # trainer.train(checkpoint_name)  # resume from checkpoint
 trainer.train()
-if os.name != 'nt':
-    accelerator.wait_for_everyone()
