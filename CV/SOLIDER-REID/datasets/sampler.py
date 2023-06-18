@@ -53,6 +53,9 @@ class RandomIdentitySampler(Sampler):
         avai_pids = copy.deepcopy(self.pids)
         final_idxs = []
 
+        if len(avai_pids) < self.num_pids_per_batch:
+            raise Exception(f"Your batch size of {self.batch_size} and NUM_INSTANCE of {self.num_instances} is not compatible with the number of personIDs in your dataset, which is {len(avai_pids)}.")
+
         while len(avai_pids) >= self.num_pids_per_batch:
             selected_pids = random.sample(avai_pids, self.num_pids_per_batch)
             for pid in selected_pids:
@@ -60,7 +63,6 @@ class RandomIdentitySampler(Sampler):
                 final_idxs.extend(batch_idxs)
                 if len(batch_idxs_dict[pid]) == 0:
                     avai_pids.remove(pid)
-
         return iter(final_idxs)
 
     def __len__(self):
