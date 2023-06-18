@@ -117,7 +117,7 @@ def main():
     spin_sign = 0  # -1 or 1 when spin_direction_lock is active
 
     # To detect stuck and perform unstucking
-    use_stuck_detection = False
+    use_stuck_detection = True
     log_x = []
     log_y = []
     log_time = []
@@ -131,10 +131,10 @@ def main():
                         astargrid_threshold_dist_cm=10,
                         path_opt_min_straight_deg=170,
                         path_opt_max_safe_dist_cm=24,
-                        ROBOT_RADIUS_M=0.17)  # Participant may tune. 0.390 * 0.245 (L x W)
+                        ROBOT_RADIUS_M=0.22 if USE_SPEED_ESTIMATION else 0.17)  # Participant may tune. 0.390 * 0.245 (L x W)
 
     logger.info(f"Warming up pose filter to initialise position + reduce initial noise.")
-    for _ in range(15):
+    for _ in range(20):
         pose = loc_service.get_pose()
         time.sleep(0.1)
         pose = pose_filter.update(pose)
@@ -241,6 +241,7 @@ def main():
                 if diff > POSE_DIFF_THRESH:
                     logger.warning(f"diff > {POSE_DIFF_THRESH}, using the calc_new_pose")
                     new_pose = calc_new_pose
+                    pose_filter = SimpleMovingAverage(n=POSE_FILTER_N)
                 else:
                     new_pose = loc_svc_pose
         else:
