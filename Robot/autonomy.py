@@ -46,8 +46,8 @@ for l in loggers:
     l.setLevel(logging.DEBUG)
 
 # TODO: update the paths of imgs here. Model path are already simulated
-suspect_img = cv2.imread('TIL-2023/Robot/data/imgs/suspect1.png')
-hostage_img = cv2.imread('TIL-2023/Robot/data/imgs/targetmario.png')
+suspect_img = cv2.imread('data/imgs/suspect1.png')
+hostage_img = cv2.imread('data/imgs/targetmario.png')
 ZIP_SAVE_DIR = Path("data/temp").absolute()
 ASR_MODEL_DIR = '../ASR/wav2vec2-conformer'
 OD_CONFIG_PATH = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py'

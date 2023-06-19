@@ -6,7 +6,7 @@ MODEL:
   NAME: 'transformer'
   NO_MARGIN: True
   DEVICE_ID: ('0')
-  TRANSFORMER_TYPE: 'swin_tiny_patch4_window7_224'
+  TRANSFORMER_TYPE: 'swin_base_patch4_window7_224'
   STRIDE_SIZE: [16, 16]
   SIE_CAMERA: True
   ID_LOSS_WEIGHT: 1.0  # 1.0
@@ -32,10 +32,10 @@ DATALOADER:
 
 SOLVER:
   OPTIMIZER_NAME: 'SGD'  # SGD
-  MAX_EPOCHS: 200
-  BASE_LR: 2e-4 # 0.0008
+  MAX_EPOCHS: 300
+  BASE_LR: 5e-3 # 0.0002
   WARMUP_EPOCHS: 20
-  IMS_PER_BATCH: 128
+  IMS_PER_BATCH: 64
   WARMUP_METHOD: 'cosine'
   LARGE_FC_LR: False
   CHECKPOINT_PERIOD: 1
@@ -56,4 +56,4 @@ TEST:
   # THRESHOLD: 0.0013236288040655365 # without RR transformer_29 0.0013236288040655365
   THRESHOLD: 0.8669 # with RR, transformer_29 0.7868934651156535
 
-OUTPUT_DIR: 'log_SGD_200epoch_2e-4LR_swinT'
+OUTPUT_DIR: 'log_SGD_300_epoch_1e-4LR_cont_epoch39_expanded_awb'

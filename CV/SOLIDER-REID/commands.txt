@@ -1,7 +1,6 @@
 # TRAINING
 python train.py --config_file TIL.yml MODEL.PRETRAIN_CHOICE 'self' MODEL.PRETRAIN_PATH 'swin_base_msmt17.pth' MODEL.SEMANTIC_WEIGHT 0.1
 
-python train.py --config_file TIL.yml MODEL.PRETRAIN_CHOICE 'self' MODEL.PRETRAIN_PATH 'log_SGD_500epoch_5e-3LR_expanded/transformer_189_map0.936082144024757_acc0.8284107446670532.pth' MODEL.SEMANTIC_WEIGHT 0.1
 
 
 python plot_val_separation_chart.py --config_file TIL.yml  MODEL.SEMANTIC_WEIGHT 0.1 DATASETS.ROOT_DIR ../RT-DETR/dataset/reid/
