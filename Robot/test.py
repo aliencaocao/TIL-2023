@@ -61,7 +61,7 @@ import cv2
 from cv_service import CVService
 OD_CONFIG_PATH = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py'
 OD_MODEL_PATH = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/InternImage-L epoch_12 stripped.pth'
-REID_MODEL_PATH = '../CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth'
+REID_MODEL_PATH = '../CV/SOLIDER-REID/log_SGD_200epoch_5e-4_test_hand_labeled/transformer_12_map0.931630612762169_acc0.9921742677688599.pth'
 REID_CONFIG_PATH = '../CV/SOLIDER-REID/TIL.yml'
 suspect_img = cv2.imread('data/imgs/suspect1.png')
 hostage_img = cv2.imread('data/imgs/targetmario.png')

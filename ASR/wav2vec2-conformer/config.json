@@ -1,5 +1,5 @@
 {
-  "_name_or_path": "facebook/wav2vec2-conformer-rel-pos-large-960h-ft",
+  "_name_or_path": "wav2vec2-checkpoints-audiomentations/checkpoint-2337/",
   "activation_dropout": 0.1,
   "adapter_kernel_size": 3,
   "adapter_stride": 2,
@@ -107,7 +107,7 @@
     1
   ],
   "torch_dtype": "float32",
-  "transformers_version": "4.30.2",
+  "transformers_version": "4.29.1",
   "use_weighted_layer_sum": false,
   "vocab_size": 32,
   "xvector_output_dim": 512

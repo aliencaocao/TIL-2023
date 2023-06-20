@@ -1,5 +1,4 @@
-from setuptools import setup, find_packages
-
+from setuptools import find_packages, setup
 
 setup(name='TranReID',
       version='1.0.0',
@@ -8,8 +7,8 @@ setup(name='TranReID',
       author_email='xxx',
       url='xxx',
       install_requires=[
-          'numpy', 'torch==1.6.0', 'torchvision==0.7.0',
-          'h5py', 'opencv-python', 'yacs', 'timm==0.3.2'
+          'numpy', 'torch', 'torchvision',
+          'h5py', 'opencv-python', 'yacs', 'timm'
           ],
       packages=find_packages(),
       keywords=[
