@@ -107,7 +107,7 @@ def main():
     USE_OPTICAL_FLOW = False  # uses camera feed and optical flow to calculate motion vector
     FLOW_PIXEL_TO_M_FACTOR = 0.0014  # how many meter does 1 pixel in 720p camera feed represent. Camera feed is 720p. Current estimate is 216 pixel (30% of height) / 0.15m seen in that crop
     POSE_DIFF_THRESH = 0.2
-    USE_SPEED_ESTIMATION = True  # uses the robot's movement speed to track motion internally to reduce loc service noise
+    USE_SPEED_ESTIMATION = False  # uses the robot's movement speed to track motion internally to reduce loc service noise
 
     tracker = PIDController(Kp=(0.25, 0.2), Ki=(0.1, 0.0), Kd=(0, 0))
 
