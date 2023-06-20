@@ -59,7 +59,7 @@ SPEAKERID_MODEL_FILENAME = 'weights_ep866it1-0.90000_loss0.0160.pth'  # this is 
 SPEAKERID_CONFIG_PATH = '../SpeakerID/m2d/evar/config/m2d.yaml'
 FRCRN_path = '../SpeakerID/speech_frcrn_ans_cirm_16k'
 DeepFilterNet3_path = '../SpeakerID/DeepFilterNet3/'
-current_opponent = 'ACESOFSPADES'
+current_opponent = 'ACESOFSPADES'  # TODO: ACESOFSPADES ANYTHING BRIANWACK HUGGINGROBOT IMAGINELOSIN PALMTREE TOMATOFARMER
 robot = Robot()
 
 
@@ -79,7 +79,7 @@ def main():
         import torch
         print(torch.cuda.memory_summary())
         del torch
-        loc_service = LocalizationService(host='localhost', port=5566)  # need change on spot
+        loc_service = LocalizationService(host='localhost', port=5566)  # need change the simulator config on spot, not here as using pass through
         rep_service = ReportingService(host='172.16.118.20', port=5511)  # need change on spot
 
     # Initialize variables
@@ -105,10 +105,16 @@ def main():
     # Localization noise related solutions
     USE_OUTLIER_DETECTION = False  # uses euclidean distance to eliminate large outliers like jumping loc
     OUTLIER_THRESH = 0.75  # max euclidean distance in meters robot should move between 2 iteration of main loop
+    if USE_OUTLIER_DETECTION:
+        logger.info(f'Using outlier detection with threshold of {OUTLIER_THRESH}m')
     USE_OPTICAL_FLOW = False  # uses camera feed and optical flow to calculate motion vector
     FLOW_PIXEL_TO_M_FACTOR = 0.0014  # how many meter does 1 pixel in 720p camera feed represent. Camera feed is 720p. Current estimate is 216 pixel (30% of height) / 0.15m seen in that crop
+    if USE_OPTICAL_FLOW:
+        logger.info(f'Using optical flow assisted positioning with pixel to meter factor of {FLOW_PIXEL_TO_M_FACTOR}m/pixel')
     POSE_DIFF_THRESH = 0.2
     USE_SPEED_ESTIMATION = False  # uses the robot's movement speed to track motion internally to reduce loc service noise
+    if USE_SPEED_ESTIMATION:
+        logger.info(f'Using speed assisted positioning with difference threshold of {POSE_DIFF_THRESH}m')
 
     tracker = PIDController(Kp=(0.25, 0.2), Ki=(0.1, 0.0), Kd=(0, 0))
 
@@ -116,6 +122,8 @@ def main():
     use_spin_direction_lock = False
     spin_direction_lock = False
     spin_sign = 0  # -1 or 1 when spin_direction_lock is active
+    if use_spin_direction_lock:
+        logger.info(f'Using spin direction lock')
 
     # To detect stuck and perform unstucking
     use_stuck_detection = True
@@ -124,6 +132,8 @@ def main():
     log_time = []
     stuck_threshold_time_s = 15  # Minimum seconds to be considered stuck
     stuck_threshold_area_m = 0.1  # Considered stuck if it stays within a 15cm*15cm square
+    if use_stuck_detection:
+        logger.info(f'Using stuck detection with threshold of {stuck_threshold_time_s}s and {stuck_threshold_area_m}m^2')
 
     # Initialise planner
     # Planner-related config here
@@ -150,8 +160,8 @@ def main():
         path = planner.plan(pose[:2], curr_loi, display=True)
         if path is None:
             logger.info('Error, no possible path found to the first location!')
-            #It should never come to this!
-            #Re-initialise the map and planner with a smaller dilation (smaller robo radius) which I've done below (untested)
+            # It should never come to this!
+            # Re-initialise the map and planner with a smaller dilation (smaller robo radius)
             planner.bgrid = planner.bgrid_original + (1.5 * planner.ROBOT_RADIUS_M / planner.map.scale)
             planner.ROBOT_RADIUS_M *= 2 / 3
             planner.bgrid = planner.bgrid - (1.5 * planner.ROBOT_RADIUS_M / planner.map.scale)

@@ -58,7 +58,7 @@ class SpeakerIDService:
             options="",
         )
         cfg.weight_file = "../SpeakerID/m2d/weights/msm_mae_vit_base-80x608p16x16-220924-mr75/checkpoint-300.pth"
-        cfg.unit_sec = self.segment_length_seconds  # TODO: change unit_sec according to slice length
+        cfg.unit_sec = self.segment_length_seconds
         cfg.runtime_cfg = kwarg_cfg(n_class=32, hidden=())
 
         state_dict_path = run_dir / model_filename
