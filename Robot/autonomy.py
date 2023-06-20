@@ -93,6 +93,7 @@ def main():
     curr_wp: RealLocation = None
     POSE_FILTER_N = 20
     pose_filter = SimpleMovingAverage(n=POSE_FILTER_N)
+    loc_svc_pose_filter_only_for_stuck_detection = SimpleMovingAverage(n=10)
     map_: SignedDistanceGrid = loc_service.get_map()  # Currently, it is in the same format as the 2022 one. The docs says it's a new format.
 
     # If they update get_map() to match the description in the docs, we will need to write a function to convert it back to the 2022 format.
@@ -247,6 +248,9 @@ def main():
         else:
             new_pose = loc_svc_pose
 
+        # update the SimpleMovingAverage that tracks loc_svc_pose for stuck detection
+        loc_svc_pose = loc_svc_pose_filter_only_for_stuck_detection.update(loc_svc_pose)
+
         if USE_OUTLIER_DETECTION:
             pose_dist = euclidean_distance(new_pose, pose)
             if not new_pose or pose_dist > OUTLIER_THRESH:
@@ -257,6 +261,7 @@ def main():
             # if the robot is moving faster than the flow * time, then it is an outlier. Doesnt work in simulator as image is stationary
             logger.warning(f"Pose outlier detected from OpticalFlow: {new_pose}, dist: {pose_dist}, calculated motion vector: {flow_y_mean * FLOW_PIXEL_TO_M_FACTOR * (prev_prev_drive_cmd_time-prev_drive_cmd_time)}, flow_y_mean: {flow_y_mean}, time: {prev_prev_drive_cmd_time-prev_drive_cmd_time}")
             continue
+
         pose = new_pose
         pose = pose_filter.update(pose)
         pose = RealPose(min(pose[0], 6.99), min(pose[1], 4.99), pose[2])  # prevents out of bounds errors
@@ -267,6 +272,14 @@ def main():
             # We are at a checkpoint! Either the first one when just starting, or reached here after navigation.
             # Could be task or detour checkpoint or the end
             logger.info("Reached checkpoint")
+            
+            if use_stuck_detection:
+                # Reset lists to ensure that robot won't think it is stuck immediately after reaching a checkpoint
+                # then it suddenly reverses
+                log_x.clear()
+                log_y.clear()
+                log_time.clear()
+            
             is_task_not_detour = None
             target_pose = None  # Next location to go to which we'll receive soon
             info = rep_service.check_pose(pose)
@@ -366,7 +379,6 @@ def main():
                 path.reverse()  # reverse so closest wp is last so that pop() is cheap , waypoint
                 curr_wp = None
                 logger.info('Path planned.')
-
         else:
             # There is a current destination.
             # Continue with navigation along current path.
@@ -382,8 +394,12 @@ def main():
 
                 # Log location (for stuck detection purpose), delete old logs
                 if use_stuck_detection:
-                    log_x.append(pose[0])
-                    log_y.append(pose[1])
+                    # use loc_svc_pose for stuck detection
+                    # otherwise, we run into a problem where the robot can be driving into a wall with a positive speed
+                    # and the calc_new_pose will be updating due to the positive speed
+                    # yet the robot is stuck and not moving
+                    log_x.append(loc_svc_pose[0]) 
+                    log_y.append(loc_svc_pose[1])
                     now = time.time()
                     log_time.append(now)
 
