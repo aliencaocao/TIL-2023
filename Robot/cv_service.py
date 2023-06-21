@@ -23,6 +23,8 @@ from utils.metrics import Postprocessor
 logger = logging.getLogger('CVService')
 assert mmdet_custom
 assert mmcv_custom
+sys.path.pop(0)
+sys.path.pop(0)
 
 
 class CVService:
@@ -42,8 +44,8 @@ class CVService:
         logger.info('Initializing CV service...')
         logger.debug(f'Loading object detection model from {model} using config {config}')
         self.ODModel = init_detector(config, model, device="cuda:0")
-        self.ODConfidenceThreshold = 0.9  # more lenient than 0.99 used in quals as we are taking one with highest conf later
-        self.REIDThreshold = 1.05
+        self.ODConfidenceThreshold = 0.95 # more lenient than 0.99 used in quals as we are taking one with highest conf later
+        self.REIDThreshold = 1.0
 
         logger.debug(f'Loading SOLIDER-REID model from {reid_model} using config {reid_config}')
         cfg.merge_from_file(reid_config)
@@ -53,12 +55,13 @@ class CVService:
         self.REID.to('cuda')
         self.REID.eval()
         self.REID_postprocessor = Postprocessor(num_query=2, max_rank=50, feat_norm=cfg.TEST.FEAT_NORM, reranking=False)  # in finals cannot use RR as threshold will be changed based on gallery size, num_query is 2 as we have 1 suspect and 1 hostage
+        os.makedirs('CV_output', exist_ok=True)
         logger.info('CV service initialized.')
 
     @staticmethod
     def load_img(img: np.ndarray):  # for REID only
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img = cv2.resize(img, (224, 224))
+        img = cv2.resize(img, (224, 224), interpolation=cv2.INTER_AREA)
         img = np.transpose(img, (2, 0, 1))  # HWC -> CHW
         # normalize with mean and std supplied in cfg
         img = img / 255.0
@@ -67,15 +70,22 @@ class CVService:
             img[channel] /= cfg.INPUT.PIXEL_STD[channel]
         return img.astype(np.float32)
 
-    def predict(self, suspect: List[np.ndarray], image: np.ndarray) -> Tuple[np.ndarray, str]:
+    def predict(self, suspect: List[np.ndarray], image_orig: np.ndarray, crop_from_top_pixels: int, crop_from_bottom_pixels: int) -> Tuple[np.ndarray, str]:
         """Returns image drawn with bbox and class “suspect”/”hostage”/"none". Assume image only contains 1 gallery plushie"""
         logger.info('Predicting CV...')
         assert len(suspect) == 2, f'Expecting 2 suspects, got {len(suspect)}'
+
+        # crop the image
+        image = image_orig[crop_from_top_pixels:-crop_from_bottom_pixels, ...]
+
         result = inference_detector(self.ODModel, image)[0][0]
+        logger.debug(f"OD bbox result: {result}")
         boxes = result[result[:, 4] > self.ODConfidenceThreshold]
         if len(boxes) == 0:
             logger.info('Predicted None due to no bbox')
-            return image, "none"  # no box at all, return none
+            if not cv2.imwrite(f"CV_output/{int(time.time())}.png", image_orig):
+                logger.warning('Failed to save image')
+            return image_orig, "none"  # no box at all, return none
         query = [self.load_img(q) for q in suspect]  # 2, first is suspect, second is hostage
         gallery = []
         for box in boxes:
@@ -93,17 +103,19 @@ class CVService:
 
         # take the lowest distance one
         min_id = np.unravel_index(dist_mat.argmin(), dist_mat.shape)
-        os.makedirs('CV_output', exist_ok=True)
         if dist_mat[min_id] > self.REIDThreshold:  # the min one still fail threshold so return none
             logger.info('Predicted None due to threshold')
-            if not cv2.imwrite(f"CV_output/{int(time.time())}.png", image):
+            if not cv2.imwrite(f"CV_output/{int(time.time())}.png", image_orig):
                 logger.warning('Failed to save image')
-            return image, "none"
+            return image_orig, "none"
         # take the class and gallery image with min dist
         pred = "suspect" if min_id[0] == 0 else "hostage"
         box = boxes[min_id[1]]  # choose the corresponding box that has the min dist
         x1, y1, x2, y2 = box[:4].astype(np.int32)
-        img_with_bbox = cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255 if pred == 'hostage' else 0, 255 if pred == 'suspect' else 0), 2)
+        # correct for cropping
+        y1 += crop_from_top_pixels
+        y2 += crop_from_top_pixels
+        img_with_bbox = cv2.rectangle(image_orig, (x1, y1), (x2, y2), (0, 255 if pred == 'hostage' else 0, 255 if pred == 'suspect' else 0), 2)
 
         if not cv2.imwrite(f"CV_output/{int(time.time())}.png", img_with_bbox):
             logger.warning('Failed to save image')

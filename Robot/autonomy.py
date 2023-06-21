@@ -11,7 +11,7 @@ from tilsdk.utilities import PIDController, SimpleMovingAverage  # import option
 
 from planner import MyPlanner
 
-SIMULATOR_MODE = True  # Change to False for real robomaster
+SIMULATOR_MODE = False  # Change to False for real robomaster
 
 import cv2
 import numpy as np
@@ -45,21 +45,24 @@ for l in loggers:
     l.addHandler(file_handler)
     l.setLevel(logging.DEBUG)
 
-# TODO: update the paths of imgs here. Model path are already simulated
-suspect_img = cv2.imread('data/imgs/suspect1.png')
-hostage_img = cv2.imread('data/imgs/targetmario.png')
+# Cropping configs
+CROP_FROM_TOP_PIXELS = 100
+CROP_FROM_BOTTOM_PIXELS = 200
+
+suspect_img = cv2.imread('data/imgs/SUSPECT_1.jpg')
+hostage_img = cv2.imread('data/imgs/HOSTAGE.jpg')
 ZIP_SAVE_DIR = Path("data/temp").absolute()
 ASR_MODEL_DIR = '../ASR/wav2vec2-conformer'
 OD_CONFIG_PATH = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py'
 OD_MODEL_PATH = '../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/InternImage-L epoch_12 stripped.pth'
-REID_MODEL_PATH = '../CV/SOLIDER-REID/log_SGD_200epoch_5e-4_test_hand_labeled/transformer_12_map0.931630612762169_acc0.9921742677688599.pth'
+REID_MODEL_PATH = '../CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth'
 REID_CONFIG_PATH = '../CV/SOLIDER-REID/TIL.yml'
 SPEAKERID_RUN_DIR = '../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc'
 SPEAKERID_MODEL_FILENAME = 'weights_ep866it1-0.90000_loss0.0160.pth'  # this is a FILENAME, not a full path
 SPEAKERID_CONFIG_PATH = '../SpeakerID/m2d/evar/config/m2d.yaml'
 FRCRN_path = '../SpeakerID/speech_frcrn_ans_cirm_16k'
 DeepFilterNet3_path = '../SpeakerID/DeepFilterNet3/'
-current_opponent = 'ACESOFSPADES'  # TODO: ACESOFSPADES ANYTHING BRIANWACK HUGGINGROBOT IMAGINELOSIN PALMTREE TOMATOFARMER
+current_opponent = 'BRIANWACK'  # TODO: ACESOFSPADES ANYTHING BRIANWACK HUGGINGROBOT IMAGINELOSIN PALMTREE TOMATOFARMER
 robot = Robot()
 
 
@@ -79,8 +82,8 @@ def main():
         import torch
         print(torch.cuda.memory_summary())
         del torch
-        loc_service = LocalizationService(host='localhost', port=5566)  # need change the simulator config on spot, not here as using pass through
-        rep_service = ReportingService(host='172.16.118.20', port=5511)  # need change on spot
+        loc_service = LocalizationService(host='localhost', port=5567)  # need change the simulator config on spot, not here as using pass through
+        rep_service = ReportingService(host='172.16.18.20', port=5501)  # need change on spot
 
     # Initialize variables
     prev_img_rpt_time = 0
@@ -179,9 +182,16 @@ def main():
         if not prev_img_rpt_time or time.time() - prev_img_rpt_time >= 1:  # throttle to 1 submission per second, and only read img if necessary
             # ensure that the robot is stationary prior to taking a photo
             robot.chassis.drive_speed(x=0, y=0, z=0)
-            time.sleep(5)
+            time.sleep(15)
             img = robot.camera.read_cv2_image(strategy='newest')
-            img_with_bbox, answer = cv_service.predict([suspect_img, hostage_img], img)
+            
+            img_with_bbox, answer = cv_service.predict(
+                [suspect_img, hostage_img],
+                img,
+                CROP_FROM_TOP_PIXELS,
+                CROP_FROM_BOTTOM_PIXELS,
+            )
+
             prev_img_rpt_time = time.time()
             return rep_service.report_situation(img_with_bbox, pose, answer, ZIP_SAVE_DIR)
 
@@ -487,7 +497,7 @@ def main():
                     NavLogger.debug(f'MAX_DEVIATION_THRESH_M: {MAX_DEVIATION_THRESH_M}, ANGLE_THRESHOLD_DEG: {ANGLE_THRESHOLD_DEG}')
                     prev_wp = curr_wp
                 if abs(ang_diff) > ANGLE_THRESHOLD_DEG:
-                    logger.debug("ROBOT CAN ONLY ROTATE")
+                    # logger.debug("ROBOT CAN ONLY ROTATE")
                     vel_cmd[0] = 0.0  # Robot can only rotate; set speed to 0
                     spin_direction_lock = True
                     spin_sign = np.sign(ang_diff)
@@ -496,7 +506,7 @@ def main():
                     spin_sign = 0
 
                 # Send command to robot
-                logger.debug(f"Moving the robot at forward speed {vel_cmd[0]} and ang velocity {vel_cmd[1]}")
+                # logger.debug(f"Moving the robot at forward speed {vel_cmd[0]} and ang velocity {vel_cmd[1]}")
                 robot.chassis.drive_speed(x=vel_cmd[0], z=vel_cmd[1])
                 prev_prev_drive_cmd_time = prev_drive_cmd_time
                 prev_drive_cmd_time = time.time()

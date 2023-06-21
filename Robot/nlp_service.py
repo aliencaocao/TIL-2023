@@ -30,6 +30,8 @@ from evar.ar_m2d import AR_M2D
 from finetune import TaskNetwork
 from lineareval import make_cfg
 from evar.common import kwarg_cfg
+sys.path.pop(0)
+sys.path.pop(0)
 
 logger = logging.getLogger('NLPService')
 
@@ -74,7 +76,8 @@ class SpeakerIDService:
         logger.debug(f"Loading class names pickle from {classes_pickle_path}")
         with open(classes_pickle_path, "rb") as classes_pickle:
             self.class_names = pickle.load(classes_pickle).astype(str)
-        self.opp_team_ids = np.where(np.char.startswith(self.class_names, self.opponent_teamname))[0]
+        self.opp_team_mask = np.char.startswith(self.class_names, self.opponent_teamname)
+        self.opp_team_ids = np.where(self.opp_team_mask)[0]
         assert len(self.opp_team_ids) == 4, f"There should be 4 members in opponent team, but got {len(self.opp_team_ids)}"
 
         logger.debug(f"Instantiating AR_M2D backbone")
@@ -197,6 +200,7 @@ class SpeakerIDService:
                     max_confidence = max_opp_team_confidence
                     result = audio_fname
             logits_with_max_opp_conf = logits[result].copy()
+            logits_with_max_opp_conf[~self.opp_team_mask] = 0  # set all non opp team logits to 0
             result = result + '_' + self.class_names[np.argmax(logits_with_max_opp_conf)]  # fname_team_member
             logger.info(f'Prediction after limiting to opp team: {result}')
             assert self.opponent_teamname in result, 'Did not predict an opponent team!'

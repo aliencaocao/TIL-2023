@@ -1,12 +1,12 @@
 ---
 # network
 host: '0.0.0.0'
-port: 5566
+port: 5567
 
 # map
-map_file: './data/maps/map_complex_1cm.png'
+map_file: './data/maps/Day2_AM_advanced_rr_1_flipped.png'
 map_scale: 0.01
-image_file: '/mnt/c/Users/alien/Documents/PyCharm-Projects/TIL-2023/Robot/data/imgs/image_0000.png'
+image_file: '/home/advanced-10000sgdmrt/Desktop/TIL Finals/Robot/data/imgs/image_0000.png'
 # display
 robot_radius: 17
 
@@ -15,14 +15,14 @@ start_pose:
   x: 1.0
   y: 1.0
   z: 0.0
-use_noisy_pose: true
+use_noisy_pose: false
 robot_phy_length: 0.32
 position_noise_stddev: 0.2
 
 # localization proxy
-proxy_real_robot: off
-proxy_host: 'localhost'
-proxy_port: 5567
+proxy_real_robot: on
+proxy_host: '172.16.18.20'
+proxy_port: 5566
 
 # logging
 log_level: 'debug'
