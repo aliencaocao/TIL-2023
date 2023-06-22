@@ -1,7 +1,0 @@
-{
-  "python.linting.enabled": false,
-  "python.analysis.typeCheckingMode": "off",
-  "python.analysis.extraPaths": [
-    "./SpeakerID/m2d/evar"
-  ]
-}
