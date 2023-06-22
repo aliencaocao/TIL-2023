@@ -44,7 +44,7 @@ class CVService:
         logger.info('Initializing CV service...')
         logger.debug(f'Loading object detection model from {model} using config {config}')
         self.ODModel = init_detector(config, model, device="cuda:0")
-        self.ODConfidenceThreshold = 0.95 # more lenient than 0.99 used in quals as we are taking one with highest conf later
+        self.ODConfidenceThreshold = 0.9 # more lenient than 0.99 used in quals as we are taking one with highest conf later
         self.REIDThreshold = 1.0
 
         logger.debug(f'Loading SOLIDER-REID model from {reid_model} using config {reid_config}')
@@ -70,13 +70,22 @@ class CVService:
             img[channel] /= cfg.INPUT.PIXEL_STD[channel]
         return img.astype(np.float32)
 
-    def predict(self, suspect: List[np.ndarray], image_orig: np.ndarray, crop_from_top_pixels: int, crop_from_bottom_pixels: int) -> Tuple[np.ndarray, str]:
+    def predict(self, 
+                suspect: List[np.ndarray], 
+                image_orig: np.ndarray, 
+                crop_from_top_pixels: int, 
+                crop_from_bottom_pixels: int,
+                crop_from_left_pixels: int,
+                crop_from_right_pixels: int,
+        ) -> Tuple[np.ndarray, str]:
         """Returns image drawn with bbox and class “suspect”/”hostage”/"none". Assume image only contains 1 gallery plushie"""
         logger.info('Predicting CV...')
         assert len(suspect) == 2, f'Expecting 2 suspects, got {len(suspect)}'
 
         # crop the image
-        image = image_orig[crop_from_top_pixels:-crop_from_bottom_pixels, ...]
+        image = image_orig[crop_from_top_pixels:-crop_from_bottom_pixels,
+                           crop_from_left_pixels:-crop_from_right_pixels,
+                           :]
 
         result = inference_detector(self.ODModel, image)[0][0]
         logger.debug(f"OD bbox result: {result}")
@@ -115,6 +124,8 @@ class CVService:
         # correct for cropping
         y1 += crop_from_top_pixels
         y2 += crop_from_top_pixels
+        x1 += crop_from_left_pixels
+        x2 += crop_from_left_pixels
         img_with_bbox = cv2.rectangle(image_orig, (x1, y1), (x2, y2), (0, 255 if pred == 'hostage' else 0, 255 if pred == 'suspect' else 0), 2)
 
         if not cv2.imwrite(f"CV_output/{int(time.time())}.png", img_with_bbox):

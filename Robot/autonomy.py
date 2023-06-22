@@ -47,9 +47,11 @@ for l in loggers:
 
 # Cropping configs
 CROP_FROM_TOP_PIXELS = 100
-CROP_FROM_BOTTOM_PIXELS = 200
+CROP_FROM_BOTTOM_PIXELS = 280
+CROP_FROM_LEFT_PIXELS = 100
+CROP_FROM_RIGHT_PIXELS = 100
 
-suspect_img = cv2.imread('data/imgs/SUSPECT_1.jpg')
+suspect_img = cv2.imread('data/imgs/SUSPECT_4.jpg')
 hostage_img = cv2.imread('data/imgs/HOSTAGE.jpg')
 ZIP_SAVE_DIR = Path("data/temp").absolute()
 ASR_MODEL_DIR = '../ASR/wav2vec2-conformer'
@@ -62,7 +64,7 @@ SPEAKERID_MODEL_FILENAME = 'weights_ep866it1-0.90000_loss0.0160.pth'  # this is 
 SPEAKERID_CONFIG_PATH = '../SpeakerID/m2d/evar/config/m2d.yaml'
 FRCRN_path = '../SpeakerID/speech_frcrn_ans_cirm_16k'
 DeepFilterNet3_path = '../SpeakerID/DeepFilterNet3/'
-current_opponent = 'BRIANWACK'  # TODO: ACESOFSPADES ANYTHING BRIANWACK HUGGINGROBOT IMAGINELOSIN PALMTREE TOMATOFARMER
+current_opponent = 'PALMTREE'  # TODO: ACESOFSPADES ANYTHING BRIANWACK HUGGINGROBOT IMAGINELOSIN PALMTREE TOMATOFARMER
 robot = Robot()
 
 
@@ -83,7 +85,7 @@ def main():
         print(torch.cuda.memory_summary())
         del torch
         loc_service = LocalizationService(host='localhost', port=5567)  # need change the simulator config on spot, not here as using pass through
-        rep_service = ReportingService(host='172.16.18.20', port=5501)  # need change on spot
+        rep_service = ReportingService(host='172.16.118.20', port=5501)  # need change on spot
 
     # Initialize variables
     prev_img_rpt_time = 0
@@ -142,7 +144,7 @@ def main():
     # Planner-related config here
     planner = MyPlanner(map_,
                         waypoint_sparsity_m=0.4,
-                        astargrid_threshold_dist_cm=10,
+                        astargrid_threshold_dist_cm=15,
                         path_opt_min_straight_deg=170,
                         path_opt_max_safe_dist_cm=24,
                         ROBOT_RADIUS_M=0.22 if USE_SPEED_ESTIMATION else 0.17)  # Participant may tune. 0.390 * 0.245 (L x W)
@@ -183,13 +185,18 @@ def main():
             # ensure that the robot is stationary prior to taking a photo
             robot.chassis.drive_speed(x=0, y=0, z=0)
             time.sleep(15)
+
+            robot.camera.start_video_stream(display=False, resolution='720p')
             img = robot.camera.read_cv2_image(strategy='newest')
+            robot.camera.stop_video_stream()
             
             img_with_bbox, answer = cv_service.predict(
                 [suspect_img, hostage_img],
                 img,
                 CROP_FROM_TOP_PIXELS,
                 CROP_FROM_BOTTOM_PIXELS,
+                CROP_FROM_LEFT_PIXELS,
+                CROP_FROM_RIGHT_PIXELS
             )
 
             prev_img_rpt_time = time.time()
@@ -209,7 +216,7 @@ def main():
         return img
 
     # Before main loop, read 1 prev image first to define the prev variable properly. This is for OpticalFlow
-    robot.camera.start_video_stream(display=False, resolution='720p')
+    # robot.camera.start_video_stream(display=False, resolution='720p')
     if USE_OPTICAL_FLOW:
         prev = robot.camera.read_cv2_image(strategy='newest')
         h, w = prev.shape[:2]
