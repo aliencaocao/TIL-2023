@@ -44,9 +44,11 @@ The finals is split into 2 groups. First, round-robin is carried out within each
 
 ### Finals leaderboard
 Novice:
+
 ![Novice](leaderboards/Novice.png)
 
 Advanced:
+
 ![Advanced](leaderboards/Advanced.png)
 
 ## Our solution
@@ -163,9 +165,11 @@ Continued run of LR=1e-4 training log can be found [here](CV/SOLIDER-REID/log_SG
 We uses the [k-reciprocal Encoding for Re-ranking](https://arxiv.org/abs/1701.08398) algorithm and it improved mAP slightly for us. In order to find the right threshold, we plotted the distance distribution like this:
 
 On validation set:
+
 ![distance distribution](CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/21_val/reranking_separation_chart.png)
 
 On test set:
+
 ![distance distribution](CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/21_test/reranking_test_set_separation_chart.png)
 
 Initially this did not gave us a very high score. We suspect it is due to too many false positives, thus we assumed and limited the number of suspects per image to 1 (even though the competition rule did not specify) and used a more loose threshold to reduce false negatives. Doing so greatly improve our score by about 10mAP.
