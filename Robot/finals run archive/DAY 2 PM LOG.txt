@@ -1,0 +1,238 @@
+[INFO][15:36:40][CVService]: Initializing CV service...
+[DEBUG][15:36:40][CVService]: Loading object detection model from ../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/InternImage-L epoch_12 stripped.pth using config ../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py
+[DEBUG][15:36:43][CVService]: Loading SOLIDER-REID model from ../CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth using config ../CV/SOLIDER-REID/TIL.yml
+[INFO][15:36:43][CVService]: CV service initialized.
+[INFO][15:36:43][NLPService]: Initializing ASR service...
+[DEBUG][15:36:44][NLPService]: Loading model from ../ASR/wav2vec2-conformer...
+[DEBUG][15:36:46][NLPService]: Warming up...
+[DEBUG][15:36:47][NLPService]: Starting language tool...
+[INFO][15:36:48][NLPService]: NLP service initialized.
+[INFO][15:36:48][NLPService]: Initializing SpeakerID service...
+[DEBUG][15:36:48][NLPService]: Loading FRCRN...
+[DEBUG][15:36:48][NLPService]: Loading DeepFilterNet3...
+[DEBUG][15:36:48][NLPService]: Loading SpeakerID config from ../SpeakerID/m2d/evar/config/m2d.yaml...
+[DEBUG][15:36:48][NLPService]: Loading model state_dict from ../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc/weights_ep866it1-0.90000_loss0.0160.pth
+[DEBUG][15:36:48][NLPService]: Loading normalization stats from ../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc/norm_stats.pt
+[DEBUG][15:36:48][NLPService]: Loading class names pickle from ../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc/classes.pkl
+[DEBUG][15:36:48][NLPService]: Instantiating AR_M2D backbone
+[DEBUG][15:36:49][NLPService]: Instantiating TaskNetwork
+[DEBUG][15:36:49][NLPService]: Loading TaskNetwork state_dict
+[DEBUG][15:36:49][NLPService]: Warming up...
+[INFO][15:36:49][NLPService]: SpeakerID service successfully initialized.
+[INFO][15:36:49][Main]: Using stuck detection with threshold of 15s and 0.1m^2
+[INFO][15:36:49][Main]: Warming up pose filter to initialise position + reduce initial noise.
+[INFO][15:36:51][Main]: First location: RealPose(x=3.0, y=4.0, z=135.0)
+[INFO][15:36:51][Main]: Path planned.
+[DEBUG][15:36:52][Navigation]: New waypoint: RealLocation(x=1.07, y=4.07)
+[DEBUG][15:36:52][Navigation]: Reached wp: RealLocation(x=1.07, y=4.07)
+[DEBUG][15:36:52][Navigation]: New waypoint: RealLocation(x=1.47, y=3.67)
+[DEBUG][15:36:52][Navigation]: MAX_DEVIATION_THRESH_M: 0.335, ANGLE_THRESHOLD_DEG: 25.0
+[DEBUG][15:37:01][Navigation]: Reached wp: RealLocation(x=1.47, y=3.67)
+[DEBUG][15:37:01][Navigation]: New waypoint: RealLocation(x=1.87, y=3.56)
+[DEBUG][15:37:01][Navigation]: MAX_DEVIATION_THRESH_M: 0.225, ANGLE_THRESHOLD_DEG: 17.976687201190344
+[DEBUG][15:37:06][Navigation]: Reached wp: RealLocation(x=1.87, y=3.56)
+[DEBUG][15:37:06][Navigation]: New waypoint: RealLocation(x=2.27, y=3.5700000000000003)
+[DEBUG][15:37:06][Navigation]: MAX_DEVIATION_THRESH_M: 0.205, ANGLE_THRESHOLD_DEG: 16.495554003344626
+[DEBUG][15:37:09][Navigation]: Reached wp: RealLocation(x=2.27, y=3.5700000000000003)
+[DEBUG][15:37:09][Navigation]: New waypoint: RealLocation(x=3.0, y=4.0)
+[DEBUG][15:37:09][Navigation]: MAX_DEVIATION_THRESH_M: 0.185, ANGLE_THRESHOLD_DEG: 10.0
+[DEBUG][15:37:19][Navigation]: Reached wp: RealLocation(x=3.0, y=4.0)
+[DEBUG][15:37:19][Navigation]: New waypoint: RealLocation(x=3.0, y=4.0)
+[DEBUG][15:37:19][Navigation]: Reached wp: RealLocation(x=3.0, y=4.0)
+[DEBUG][15:37:19][Main]: End of path.
+[INFO][15:37:20][Main]: Reached checkpoint
+[DEBUG][15:37:20][Main]: Turning towards CV target
+[INFO][15:37:22][Main]: Starting AI tasks
+[INFO][15:37:39][CVService]: Predicting CV...
+[DEBUG][15:37:39][CVService]: OD bbox result: [[2.9315109e+02 1.5168576e+02 3.5575626e+02 2.2974724e+02 9.9881327e-01]
+ [2.9217041e+02 1.4466782e+02 3.5560092e+02 3.3110510e+02 7.4694566e-02]]
+[DEBUG][15:37:39][CVService]: Distance matrix: [[1.2613988]
+ [1.2838451]]
+[INFO][15:37:39][CVService]: Predicted None due to threshold
+[DEBUG][15:37:39][NLPService]: Denoising audio...
+[DEBUG][15:37:41][NLPService]: Audio /home/advanced-10000sgdmrt/Desktop/TIL Finals/Robot/data/temp/audio_files_identify/audio1.wav is PALMTREE or TOMATOFARMER D
+[DEBUG][15:37:41][NLPService]: Audio /home/advanced-10000sgdmrt/Desktop/TIL Finals/Robot/data/temp/audio_files_identify/audio1.wav is PALMTREE
+[DEBUG][15:37:41][NLPService]: Predicting SpeakerID...
+[INFO][15:37:41][NLPService]: Raw prediction: {'audio2': 'IMAGINELOSIN_memberB', 'audio1': 'PALMTREE_memberB'}
+[INFO][15:37:41][NLPService]: Prediction after limiting to opp team: audio1_PALMTREE_memberB
+[INFO][15:37:41][NLPService]: Predicting 3 audio(s)...
+[DEBUG][15:37:43][NLPService]: Predicted texts: ('THE BUS ARRIVES EVERY ONE HOUR AT THIS STATION', 'THEY WERE FOUR PAGES INTO THE BOOK', 'WE PLANTED EIGHT APPLE TREES IN THE GARDEN')
+[INFO][15:37:43][NLPService]: Predicted digits: (1, 4, 8)
+[INFO][15:37:43][Main]: Correct password! Moving to next task checkpoint at RealPose(x=3.0, y=2.0, z=0.0)
+[INFO][15:37:43][Main]: Next checkpoint location: RealLocation(x=3.0, y=2.0)
+[INFO][15:37:43][Main]: Planning path to: RealLocation(x=3.0, y=2.0)
+[INFO][15:37:43][Main]: Path planned.
+[DEBUG][15:37:43][Navigation]: New waypoint: RealLocation(x=2.89, y=4.01)
+[DEBUG][15:37:43][Navigation]: MAX_DEVIATION_THRESH_M: 0.495, ANGLE_THRESHOLD_DEG: 25.0
+[DEBUG][15:37:43][Navigation]: Reached wp: RealLocation(x=2.89, y=4.01)
+[DEBUG][15:37:43][Navigation]: New waypoint: RealLocation(x=3.37, y=3.21)
+[DEBUG][15:37:43][Navigation]: MAX_DEVIATION_THRESH_M: 0.14462482405376173, ANGLE_THRESHOLD_DEG: 10.0
+[DEBUG][15:37:58][Navigation]: Reached wp: RealLocation(x=3.37, y=3.21)
+[DEBUG][15:37:58][Navigation]: New waypoint: RealLocation(x=3.39, y=2.81)
+[DEBUG][15:37:58][Navigation]: MAX_DEVIATION_THRESH_M: 0.11378177829171549, ANGLE_THRESHOLD_DEG: 10.0
+[DEBUG][15:38:07][Navigation]: Reached wp: RealLocation(x=3.39, y=2.81)
+[DEBUG][15:38:07][Navigation]: New waypoint: RealLocation(x=3.0700000000000003, y=2.41)
+[DEBUG][15:38:07][Navigation]: MAX_DEVIATION_THRESH_M: 0.06949961479175905, ANGLE_THRESHOLD_DEG: 10.0
+[DEBUG][15:38:15][Navigation]: Reached wp: RealLocation(x=3.0700000000000003, y=2.41)
+[DEBUG][15:38:15][Navigation]: New waypoint: RealLocation(x=3.0100000000000002, y=2.0100000000000002)
+[DEBUG][15:38:15][Navigation]: MAX_DEVIATION_THRESH_M: 0.04913812651491099, ANGLE_THRESHOLD_DEG: 10.0
+[DEBUG][15:38:27][Navigation]: Reached wp: RealLocation(x=3.0100000000000002, y=2.0100000000000002)
+[DEBUG][15:38:27][Navigation]: New waypoint: RealLocation(x=3.0, y=2.0)
+[DEBUG][15:38:27][Navigation]: MAX_DEVIATION_THRESH_M: 0.4002098900352466, ANGLE_THRESHOLD_DEG: 25.0
+[DEBUG][15:38:30][Navigation]: Reached wp: RealLocation(x=3.0, y=2.0)
+[DEBUG][15:38:30][Navigation]: New waypoint: RealLocation(x=3.0, y=2.0)
+[DEBUG][15:38:30][Navigation]: Reached wp: RealLocation(x=3.0, y=2.0)
+[DEBUG][15:38:30][Main]: End of path.
+[INFO][15:38:30][Main]: Reached checkpoint
+[DEBUG][15:38:30][Main]: Turning towards CV target
+[INFO][15:38:33][Main]: Starting AI tasks
+[INFO][15:38:50][CVService]: Predicting CV...
+[DEBUG][15:38:50][CVService]: OD bbox result: [[7.2084058e+02 2.4654880e+02 8.0764526e+02 3.4000000e+02 9.9394095e-01]
+ [2.8849960e+02 1.6404626e+02 5.4171045e+02 3.0298224e+02 9.6465945e-01]
+ [6.3220746e+02 1.3946591e+02 8.1605884e+02 3.4000000e+02 1.1039276e-01]
+ [7.1955292e+02 1.6035147e+02 8.0999341e+02 3.3941064e+02 8.9235917e-02]
+ [5.1953442e+02 1.4259369e+02 7.4263562e+02 3.0350067e+02 7.9832189e-02]
+ [1.6408043e+02 1.7981027e+02 3.5392001e+02 2.9943243e+02 7.9313368e-02]]
+[DEBUG][15:38:50][CVService]: Distance matrix: [[1.4964917 1.3052882]
+ [1.112524  1.2096835]]
+[INFO][15:38:50][CVService]: Predicted None due to threshold
+[DEBUG][15:38:50][NLPService]: Denoising audio...
+[DEBUG][15:38:51][NLPService]: Audio /home/advanced-10000sgdmrt/Desktop/TIL Finals/Robot/data/temp/audio_files_identify/audio2.wav is PALMTREE or TOMATOFARMER D
+[DEBUG][15:38:51][NLPService]: Audio /home/advanced-10000sgdmrt/Desktop/TIL Finals/Robot/data/temp/audio_files_identify/audio2.wav is PALMTREE
+[DEBUG][15:38:52][NLPService]: Predicting SpeakerID...
+[INFO][15:38:52][NLPService]: Raw prediction: {'audio2': 'PALMTREE_memberD', 'audio1': '10000SGDMRT_memberB'}
+[INFO][15:38:52][NLPService]: Prediction after limiting to opp team: audio2_PALMTREE_memberD
+[INFO][15:38:52][NLPService]: Predicting 3 audio(s)...
+[DEBUG][15:38:52][NLPService]: Predicted texts: ('WE ONLY HAD THREE DAYS TO FINISH THE PROJECT', 'HE HAD ZERO PATIENCE FOR PEOPLE WHO WERE INCOMPETENT AT THEIR JOBS', 'THE GAME HAD SIX LEVELS OF DIFFICULTY')
+[INFO][15:38:52][NLPService]: Predicted digits: (3, 0, 6)
+[INFO][15:38:52][Main]: Correct password! Moving to next task checkpoint at RealPose(x=2.0, y=1.0, z=-135.0)
+[INFO][15:38:52][Main]: Next checkpoint location: RealLocation(x=2.0, y=1.0)
+[INFO][15:38:52][Main]: Planning path to: RealLocation(x=2.0, y=1.0)
+[INFO][15:38:52][Main]: Path planned.
+[DEBUG][15:38:52][Navigation]: New waypoint: RealLocation(x=3.0500000000000003, y=2.09)
+[DEBUG][15:38:52][Navigation]: Reached wp: RealLocation(x=3.0500000000000003, y=2.09)
+[DEBUG][15:38:52][Navigation]: New waypoint: RealLocation(x=2.0, y=1.0)
+[DEBUG][15:38:52][Navigation]: MAX_DEVIATION_THRESH_M: 0.33896969619669987, ANGLE_THRESHOLD_DEG: 12.937203302972026
+[DEBUG][15:39:24][Navigation]: Reached wp: RealLocation(x=2.0, y=1.0)
+[DEBUG][15:39:24][Navigation]: New waypoint: RealLocation(x=2.0, y=1.0)
+[DEBUG][15:39:24][Navigation]: Reached wp: RealLocation(x=2.0, y=1.0)
+[DEBUG][15:39:24][Main]: End of path.
+[INFO][15:39:25][Main]: Reached checkpoint
+[DEBUG][15:39:25][Main]: Turning towards CV target
+[INFO][15:39:25][Main]: Starting AI tasks
+[INFO][15:39:42][CVService]: Predicting CV...
+[DEBUG][15:39:42][CVService]: OD bbox result: [[5.7177661e+02 8.8597092e+01 6.7979114e+02 1.8091620e+02 9.9958891e-01]
+ [7.6456842e+02 1.4810527e+02 8.4940027e+02 1.9178241e+02 8.3323246e-01]]
+[DEBUG][15:39:42][CVService]: Distance matrix: [[0.5146164]
+ [1.4922771]]
+[INFO][15:39:42][CVService]: Predicted suspect
+[DEBUG][15:39:42][NLPService]: Denoising audio...
+[DEBUG][15:39:43][NLPService]: Audio /home/advanced-10000sgdmrt/Desktop/TIL Finals/Robot/data/temp/audio_files_identify/audio2.wav is PALMTREE or TOMATOFARMER D
+[DEBUG][15:39:43][NLPService]: Audio /home/advanced-10000sgdmrt/Desktop/TIL Finals/Robot/data/temp/audio_files_identify/audio2.wav is PALMTREE
+[DEBUG][15:39:44][NLPService]: Predicting SpeakerID...
+[INFO][15:39:44][NLPService]: Raw prediction: {'audio2': 'PALMTREE_memberA', 'audio1': '10000SGDMRT_memberB'}
+[INFO][15:39:44][NLPService]: Prediction after limiting to opp team: audio2_PALMTREE_memberA
+[INFO][15:39:44][NLPService]: Predicting 3 audio(s)...
+[DEBUG][15:39:44][NLPService]: Predicted texts: ('HE DONATED SEVEN BAGS OF CLOTHES TO CHARITY', 'DROVE FOR EIGHT HOURS STRAIGHT TO GET TO OUR DESTINATION', 'THE GAME HAD SIX LEVELS OF DIFFICULTY')
+[INFO][15:39:44][NLPService]: Predicted digits: (7, 8, 6)
+[INFO][15:39:44][Main]: Correct password! Moving to next task checkpoint at RealPose(x=5.0, y=1.0, z=-135.0)
+[INFO][15:39:44][Main]: Next checkpoint location: RealLocation(x=5.0, y=1.0)
+[INFO][15:39:44][Main]: Planning path to: RealLocation(x=5.0, y=1.0)
+[INFO][15:39:44][Main]: Path planned.
+[DEBUG][15:39:44][Navigation]: New waypoint: RealLocation(x=2.1, y=1.09)
+[DEBUG][15:39:44][Navigation]: Reached wp: RealLocation(x=2.1, y=1.09)
+[DEBUG][15:39:44][Navigation]: New waypoint: RealLocation(x=2.5, y=1.48)
+[DEBUG][15:39:44][Navigation]: MAX_DEVIATION_THRESH_M: 0.32482756057296897, ANGLE_THRESHOLD_DEG: 25.0
+[DEBUG][15:39:56][Navigation]: Reached wp: RealLocation(x=2.5, y=1.48)
+[DEBUG][15:39:56][Navigation]: New waypoint: RealLocation(x=2.9, y=1.48)
+[DEBUG][15:39:56][Navigation]: MAX_DEVIATION_THRESH_M: 0.15292156108742277, ANGLE_THRESHOLD_DEG: 13.060839145939324
+[DEBUG][15:40:01][Navigation]: Reached wp: RealLocation(x=2.9, y=1.48)
+[DEBUG][15:40:01][Navigation]: New waypoint: RealLocation(x=3.3000000000000003, y=1.4000000000000001)
+[DEBUG][15:40:01][Navigation]: MAX_DEVIATION_THRESH_M: 0.02784271247461902, ANGLE_THRESHOLD_DEG: 10.0
+[DEBUG][15:40:11][Navigation]: Reached wp: RealLocation(x=3.3000000000000003, y=1.4000000000000001)
+[DEBUG][15:40:11][Navigation]: New waypoint: RealLocation(x=3.7, y=1.02)
+[DEBUG][15:40:11][Navigation]: MAX_DEVIATION_THRESH_M: 0.02284887978899608, ANGLE_THRESHOLD_DEG: 10.0
+[DEBUG][15:40:24][Navigation]: Reached wp: RealLocation(x=3.7, y=1.02)
+[DEBUG][15:40:24][Navigation]: New waypoint: RealLocation(x=5.0, y=1.0)
+[DEBUG][15:40:24][Navigation]: MAX_DEVIATION_THRESH_M: 0.2111544808322666, ANGLE_THRESHOLD_DEG: 10.0
+[DEBUG][15:41:10][Navigation]: Reached wp: RealLocation(x=5.0, y=1.0)
+[DEBUG][15:41:10][Navigation]: New waypoint: RealLocation(x=5.0, y=1.0)
+[DEBUG][15:41:10][Navigation]: Reached wp: RealLocation(x=5.0, y=1.0)
+[DEBUG][15:41:10][Main]: End of path.
+[INFO][15:41:10][Main]: Reached checkpoint
+[DEBUG][15:41:10][Main]: Turning towards CV target
+[INFO][15:41:13][Main]: Starting AI tasks
+[INFO][15:41:30][CVService]: Predicting CV...
+[DEBUG][15:41:30][CVService]: OD bbox result: [[4.2473276e+02 8.6618935e+01 4.9952908e+02 1.6035249e+02 9.9956483e-01]
+ [6.3014807e+02 7.3451019e+01 7.3513580e+02 1.7753123e+02 9.6929878e-01]
+ [1.0057576e+03 3.0020950e+02 1.0794044e+03 3.4000000e+02 9.1319323e-02]]
+[DEBUG][15:41:30][CVService]: Distance matrix: [[1.3837776  1.1965172 ]
+ [0.89870477 0.9882673 ]]
+[INFO][15:41:30][CVService]: Predicted hostage
+[DEBUG][15:41:31][NLPService]: Denoising audio...
+[DEBUG][15:41:31][NLPService]: Audio /home/advanced-10000sgdmrt/Desktop/TIL Finals/Robot/data/temp/audio_files_identify/audio2.wav is PALMTREE or TOMATOFARMER D
+[DEBUG][15:41:31][NLPService]: Audio /home/advanced-10000sgdmrt/Desktop/TIL Finals/Robot/data/temp/audio_files_identify/audio2.wav is PALMTREE
+[DEBUG][15:41:32][NLPService]: Predicting SpeakerID...
+[INFO][15:41:32][NLPService]: Raw prediction: {'audio2': 'PALMTREE_memberD', 'audio1': '10000SGDMRT_memberB'}
+[INFO][15:41:32][NLPService]: Prediction after limiting to opp team: audio2_PALMTREE_memberD
+[INFO][15:41:32][NLPService]: Predicting 3 audio(s)...
+[DEBUG][15:41:32][NLPService]: Predicted texts: ('WE PLANTED EIGHT APPLE TREES IN THE GARDEN', 'HE HAD ZERO PATIENCE FOR PEOPLE WHO WERE INCOMPETENT AT THEIR JOBS', 'THE GAME HAD SIX LEVELS OF DIFFICULTY')
+[INFO][15:41:32][NLPService]: Predicted digits: (8, 0, 6)
+[INFO][15:41:32][Main]: Correct password! Moving to next task checkpoint at RealPose(x=6.0, y=2.0, z=-45.0)
+[INFO][15:41:32][Main]: Next checkpoint location: RealLocation(x=6.0, y=2.0)
+[INFO][15:41:32][Main]: Planning path to: RealLocation(x=6.0, y=2.0)
+[INFO][15:41:32][Main]: Path planned.
+[DEBUG][15:41:32][Navigation]: New waypoint: RealLocation(x=4.88, y=1.06)
+[DEBUG][15:41:32][Navigation]: Reached wp: RealLocation(x=4.88, y=1.06)
+[DEBUG][15:41:32][Navigation]: New waypoint: RealLocation(x=4.88, y=1.06)
+[DEBUG][15:41:32][Navigation]: Reached wp: RealLocation(x=4.88, y=1.06)
+[DEBUG][15:41:33][Navigation]: New waypoint: RealLocation(x=5.68, y=1.86)
+[DEBUG][15:41:33][Navigation]: MAX_DEVIATION_THRESH_M: 0.16225292090050134, ANGLE_THRESHOLD_DEG: 10.0
+[DEBUG][15:41:47][Navigation]: Reached wp: RealLocation(x=5.68, y=1.86)
+[DEBUG][15:41:47][Navigation]: New waypoint: RealLocation(x=6.0, y=2.0)
+[DEBUG][15:41:47][Navigation]: MAX_DEVIATION_THRESH_M: 0.12235924528226412, ANGLE_THRESHOLD_DEG: 10.82783357615745
+[DEBUG][15:42:08][Navigation]: Reached wp: RealLocation(x=6.0, y=2.0)
+[DEBUG][15:42:08][Navigation]: New waypoint: RealLocation(x=6.0, y=2.0)
+[DEBUG][15:42:08][Navigation]: Reached wp: RealLocation(x=6.0, y=2.0)
+[DEBUG][15:42:08][Main]: End of path.
+[INFO][15:42:08][Main]: Reached checkpoint
+[DEBUG][15:42:08][Main]: Turning towards CV target
+[INFO][15:42:10][Main]: Starting AI tasks
+[INFO][15:42:27][CVService]: Predicting CV...
+[DEBUG][15:42:27][CVService]: OD bbox result: [[6.2314539e+02 1.7630624e+02 6.9630585e+02 2.5722058e+02 9.9966347e-01]
+ [7.5880432e+02 7.3170502e+01 8.5941327e+02 2.5056149e+02 9.2416316e-01]
+ [0.0000000e+00 0.0000000e+00 3.1936386e+02 2.3319315e+02 3.9838928e-01]]
+[DEBUG][15:42:27][CVService]: Distance matrix: [[1.5470518 1.2287116]
+ [1.153914  1.3689998]]
+[INFO][15:42:27][CVService]: Predicted None due to threshold
+[DEBUG][15:42:27][NLPService]: Denoising audio...
+[DEBUG][15:42:28][NLPService]: Audio /home/advanced-10000sgdmrt/Desktop/TIL Finals/Robot/data/temp/audio_files_identify/audio2.wav is PALMTREE or TOMATOFARMER D
+[DEBUG][15:42:28][NLPService]: Audio /home/advanced-10000sgdmrt/Desktop/TIL Finals/Robot/data/temp/audio_files_identify/audio2.wav is PALMTREE
+[DEBUG][15:42:29][NLPService]: Predicting SpeakerID...
+[INFO][15:42:29][NLPService]: Raw prediction: {'audio2': 'PALMTREE_memberD', 'audio1': 'IMAGINELOSIN_memberC'}
+[INFO][15:42:29][NLPService]: Prediction after limiting to opp team: audio2_PALMTREE_memberD
+[INFO][15:42:29][NLPService]: Predicting 3 audio(s)...
+[DEBUG][15:42:29][NLPService]: Predicted texts: ('HE WANTED TO BUY FOUR BOOKS FROM THE STORE', 'THEY HAD TO DRIVE TWO HOURS TO ATTEND A FAMILY REUNION', 'WE ONLY HAD THREE DAYS TO FINISH THE PROJECT')
+[INFO][15:42:29][NLPService]: Predicted digits: (4, 2, 3)
+[INFO][15:42:29][Main]: Correct password! Moving to final goal at RealPose(x=6.0, y=4.0, z=0.0)
+[INFO][15:42:29][Main]: Next checkpoint location: RealLocation(x=6.0, y=4.0)
+[INFO][15:42:29][Main]: Planning path to: RealLocation(x=6.0, y=4.0)
+[INFO][15:42:29][Main]: Path planned.
+[DEBUG][15:42:29][Navigation]: New waypoint: RealLocation(x=5.8500000000000005, y=1.98)
+[DEBUG][15:42:29][Navigation]: Reached wp: RealLocation(x=5.8500000000000005, y=1.98)
+[DEBUG][15:42:29][Navigation]: New waypoint: RealLocation(x=5.8500000000000005, y=1.98)
+[DEBUG][15:42:29][Navigation]: Reached wp: RealLocation(x=5.8500000000000005, y=1.98)
+[DEBUG][15:42:29][Navigation]: New waypoint: RealLocation(x=5.5600000000000005, y=2.38)
+[DEBUG][15:42:29][Navigation]: MAX_DEVIATION_THRESH_M: 0.195, ANGLE_THRESHOLD_DEG: 22.03956103835474
+[DEBUG][15:42:39][Navigation]: Reached wp: RealLocation(x=5.5600000000000005, y=2.38)
+[DEBUG][15:42:39][Navigation]: New waypoint: RealLocation(x=5.69, y=3.18)
+[DEBUG][15:42:39][Navigation]: MAX_DEVIATION_THRESH_M: 0.325, ANGLE_THRESHOLD_DEG: 18.276059311562534
+[DEBUG][15:42:52][Navigation]: Reached wp: RealLocation(x=5.69, y=3.18)
+[DEBUG][15:42:52][Navigation]: New waypoint: RealLocation(x=6.0, y=4.0)
+[DEBUG][15:42:52][Navigation]: MAX_DEVIATION_THRESH_M: 0.235, ANGLE_THRESHOLD_DEG: 11.338204097525766
+[DEBUG][15:43:12][Navigation]: Reached wp: RealLocation(x=6.0, y=4.0)
+[DEBUG][15:43:12][Navigation]: New waypoint: RealLocation(x=6.0, y=4.0)
+[DEBUG][15:43:12][Navigation]: Reached wp: RealLocation(x=6.0, y=4.0)
+[DEBUG][15:43:12][Main]: End of path.
+[INFO][15:43:12][Main]: Reached checkpoint
+[INFO][15:43:12][Main]: Mission Completed.

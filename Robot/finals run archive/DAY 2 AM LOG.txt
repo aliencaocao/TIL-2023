@@ -1,0 +1,317 @@
+[INFO][10:05:00][CVService]: Initializing CV service...
+[DEBUG][10:05:00][CVService]: Loading object detection model from ../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/InternImage-L epoch_12 stripped.pth using config ../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py
+[DEBUG][10:05:03][CVService]: Loading SOLIDER-REID model from ../CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth using config ../CV/SOLIDER-REID/TIL.yml
+[INFO][10:05:04][CVService]: CV service initialized.
+[INFO][10:05:04][NLPService]: Initializing ASR service...
+[DEBUG][10:05:04][NLPService]: Loading model from ../ASR/wav2vec2-conformer...
+[DEBUG][10:05:07][NLPService]: Warming up...
+[DEBUG][10:05:08][NLPService]: Starting language tool...
+[INFO][10:05:09][NLPService]: NLP service initialized.
+[INFO][10:05:09][NLPService]: Initializing SpeakerID service...
+[DEBUG][10:05:09][NLPService]: Loading FRCRN...
+[DEBUG][10:05:09][NLPService]: Loading DeepFilterNet3...
+[DEBUG][10:05:09][NLPService]: Loading SpeakerID config from ../SpeakerID/m2d/evar/config/m2d.yaml...
+[DEBUG][10:05:09][NLPService]: Loading model state_dict from ../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc/weights_ep866it1-0.90000_loss0.0160.pth
+[DEBUG][10:05:09][NLPService]: Loading normalization stats from ../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc/norm_stats.pt
+[DEBUG][10:05:09][NLPService]: Loading class names pickle from ../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc/classes.pkl
+[DEBUG][10:05:09][NLPService]: Instantiating AR_M2D backbone
+[DEBUG][10:05:10][NLPService]: Instantiating TaskNetwork
+[DEBUG][10:05:10][NLPService]: Loading TaskNetwork state_dict
+[DEBUG][10:05:10][NLPService]: Warming up...
+[INFO][10:05:10][NLPService]: SpeakerID service successfully initialized.
+[INFO][10:05:10][Main]: Using stuck detection with threshold of 15s and 0.1m^2
+[INFO][10:05:11][Main]: Warming up pose filter to initialise position + reduce initial noise.
+[INFO][10:05:13][Main]: First location: RealPose(x=4.0, y=1.0, z=180.0)
+[INFO][10:05:13][Main]: Path planned.
+[DEBUG][10:05:13][Navigation]: New waypoint: RealLocation(x=3.83, y=2.11)
+[DEBUG][10:05:13][Navigation]: Reached wp: RealLocation(x=3.83, y=2.11)
+[DEBUG][10:05:13][Navigation]: New waypoint: RealLocation(x=4.0, y=1.0)
+[DEBUG][10:05:13][Navigation]: MAX_DEVIATION_THRESH_M: 0.475, ANGLE_THRESHOLD_DEG: 23.09181437571025
+[DEBUG][10:05:21][Navigation]: Reached wp: RealLocation(x=4.0, y=1.0)
+[DEBUG][10:05:21][Navigation]: New waypoint: RealLocation(x=4.0, y=1.0)
+[DEBUG][10:05:21][Navigation]: Reached wp: RealLocation(x=4.0, y=1.0)
+[DEBUG][10:05:21][Main]: End of path.
+[INFO][10:05:21][Main]: Reached checkpoint
+[DEBUG][10:05:21][Main]: Turning towards CV target
+[INFO][10:05:23][Main]: Starting AI tasks
+[INFO][10:05:40][CVService]: Predicting CV...
+[DEBUG][10:05:40][CVService]: OD bbox result: [[5.1700092e+02 1.8528897e+02 6.5656000e+02 3.0276993e+02 9.9829406e-01]
+ [1.1097321e+03 2.3430054e+02 1.2241542e+03 3.2521918e+02 9.8589063e-01]]
+[DEBUG][10:05:40][CVService]: Distance matrix: [[0.9873862 1.5667655]
+ [1.0692073 1.3435524]]
+[INFO][10:05:40][CVService]: Predicted suspect
+[DEBUG][10:05:40][NLPService]: Denoising audio...
+[DEBUG][10:05:42][NLPService]: Predicting SpeakerID...
+[INFO][10:05:42][NLPService]: Raw prediction: {'audio2': '10000SGDMRT_memberB', 'audio1': 'IMAGINELOSIN_memberC'}
+[INFO][10:05:42][NLPService]: Prediction after limiting to opp team: audio1_BRIANWACK_memberC
+[INFO][10:05:42][NLPService]: Predicting 3 audio(s)...
+[DEBUG][10:05:44][NLPService]: Predicted texts: ('THE BUS ARRIVES EVERY ONE HOUR AT THIS STATION', 'HE DONATED SEVEN BAGS OF CLOTHES TO CHARITY', 'WE PLANTED EIGHT APPLE TREES IN THE GARDEN')
+[INFO][10:05:44][NLPService]: Predicted digits: (1, 7, 8)
+[INFO][10:05:44][Main]: Correct password! Moving to next task checkpoint at RealPose(x=6.0, y=2.0, z=0.0)
+[INFO][10:05:44][Main]: Next checkpoint location: RealLocation(x=6.0, y=2.0)
+[INFO][10:05:44][Main]: Planning path to: RealLocation(x=6.0, y=2.0)
+[INFO][10:05:44][Main]: Path planned.
+[DEBUG][10:05:44][Navigation]: New waypoint: RealLocation(x=4.05, y=1.1)
+[DEBUG][10:05:44][Navigation]: Reached wp: RealLocation(x=4.05, y=1.1)
+[DEBUG][10:05:44][Navigation]: New waypoint: RealLocation(x=5.25, y=1.6)
+[DEBUG][10:05:44][Navigation]: MAX_DEVIATION_THRESH_M: 0.1560960958218893, ANGLE_THRESHOLD_DEG: 10.0
+[DEBUG][10:06:02][Navigation]: Reached wp: RealLocation(x=5.25, y=1.6)
+[DEBUG][10:06:02][Navigation]: New waypoint: RealLocation(x=5.65, y=1.95)
+[DEBUG][10:06:02][Navigation]: MAX_DEVIATION_THRESH_M: 0.07786633954186478, ANGLE_THRESHOLD_DEG: 10.0
+[DEBUG][10:06:13][Navigation]: Reached wp: RealLocation(x=5.65, y=1.95)
+[DEBUG][10:06:13][Navigation]: New waypoint: RealLocation(x=6.0, y=2.0)
+[DEBUG][10:06:13][Navigation]: MAX_DEVIATION_THRESH_M: 0.16701895692018381, ANGLE_THRESHOLD_DEG: 15.496840028178696
+[INFO][10:06:33][CVService]: Initializing CV service...
+[DEBUG][10:06:33][CVService]: Loading object detection model from ../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/InternImage-L epoch_12 stripped.pth using config ../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py
+[DEBUG][10:06:36][CVService]: Loading SOLIDER-REID model from ../CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth using config ../CV/SOLIDER-REID/TIL.yml
+[INFO][10:06:36][CVService]: CV service initialized.
+[INFO][10:06:36][NLPService]: Initializing ASR service...
+[DEBUG][10:06:36][NLPService]: Loading model from ../ASR/wav2vec2-conformer...
+[DEBUG][10:06:39][NLPService]: Warming up...
+[DEBUG][10:06:40][NLPService]: Starting language tool...
+[INFO][10:06:41][NLPService]: NLP service initialized.
+[INFO][10:06:41][NLPService]: Initializing SpeakerID service...
+[DEBUG][10:06:41][NLPService]: Loading FRCRN...
+[DEBUG][10:06:41][NLPService]: Loading DeepFilterNet3...
+[DEBUG][10:06:41][NLPService]: Loading SpeakerID config from ../SpeakerID/m2d/evar/config/m2d.yaml...
+[DEBUG][10:06:41][NLPService]: Loading model state_dict from ../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc/weights_ep866it1-0.90000_loss0.0160.pth
+[DEBUG][10:06:41][NLPService]: Loading normalization stats from ../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc/norm_stats.pt
+[DEBUG][10:06:41][NLPService]: Loading class names pickle from ../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc/classes.pkl
+[DEBUG][10:06:41][NLPService]: Instantiating AR_M2D backbone
+[DEBUG][10:06:42][NLPService]: Instantiating TaskNetwork
+[DEBUG][10:06:42][NLPService]: Loading TaskNetwork state_dict
+[DEBUG][10:06:42][NLPService]: Warming up...
+[INFO][10:06:42][NLPService]: SpeakerID service successfully initialized.
+[INFO][10:06:42][Main]: Using stuck detection with threshold of 15s and 0.1m^2
+[INFO][10:06:42][Main]: Warming up pose filter to initialise position + reduce initial noise.
+[INFO][10:06:45][Main]: First location: RealPose(x=4.0, y=1.0, z=180.0)
+[INFO][10:06:45][Main]: Path planned.
+[DEBUG][10:06:45][Navigation]: New waypoint: RealLocation(x=6.09, y=2.5100000000000002)
+[DEBUG][10:06:45][Navigation]: Reached wp: RealLocation(x=6.09, y=2.5100000000000002)
+[DEBUG][10:06:45][Navigation]: New waypoint: RealLocation(x=4.57, y=0.91)
+[DEBUG][10:06:45][Navigation]: MAX_DEVIATION_THRESH_M: 0.09155446902326915, ANGLE_THRESHOLD_DEG: 10.0
+[DEBUG][10:07:06][Navigation]: Reached wp: RealLocation(x=4.57, y=0.91)
+[DEBUG][10:07:06][Navigation]: New waypoint: RealLocation(x=4.0, y=1.0)
+[DEBUG][10:07:06][Navigation]: MAX_DEVIATION_THRESH_M: 0.6138498144098322, ANGLE_THRESHOLD_DEG: 25.0
+[DEBUG][10:07:15][Navigation]: Reached wp: RealLocation(x=4.0, y=1.0)
+[DEBUG][10:07:15][Navigation]: New waypoint: RealLocation(x=4.0, y=1.0)
+[DEBUG][10:07:15][Navigation]: Reached wp: RealLocation(x=4.0, y=1.0)
+[DEBUG][10:07:15][Main]: End of path.
+[INFO][10:07:15][Main]: Reached checkpoint
+[DEBUG][10:07:15][Main]: Turning towards CV target
+[INFO][10:07:15][Main]: Starting AI tasks
+[INFO][10:07:32][CVService]: Predicting CV...
+[DEBUG][10:07:33][CVService]: OD bbox result: [[5.6977264e+02 1.7803445e+02 6.7795404e+02 2.8768726e+02 9.9951339e-01]
+ [1.0848223e+03 2.2063364e+02 1.1801692e+03 3.0141910e+02 9.9735272e-01]]
+[DEBUG][10:07:33][CVService]: Distance matrix: [[1.1768582 1.4417257]
+ [1.0087368 1.2303079]]
+[INFO][10:07:33][CVService]: Predicted None due to threshold
+[DEBUG][10:07:33][NLPService]: Denoising audio...
+[DEBUG][10:07:34][NLPService]: Predicting SpeakerID...
+[INFO][10:07:34][NLPService]: Raw prediction: {'audio2': '10000SGDMRT_memberB', 'audio1': 'IMAGINELOSIN_memberC'}
+[INFO][10:07:34][NLPService]: Prediction after limiting to opp team: audio1_BRIANWACK_memberC
+[INFO][10:07:34][NLPService]: Predicting 3 audio(s)...
+[DEBUG][10:07:36][NLPService]: Predicted texts: ('THE BUS ARRIVES EVERY ONE HOUR AT THIS STATION', 'HE DONATED SEVEN BAGS OF CLOTHES TO CHARITY', 'WE PLANTED EIGHT APPLE TREES IN THE GARDEN')
+[INFO][10:07:36][NLPService]: Predicted digits: (1, 7, 8)
+[INFO][10:07:36][Main]: Correct password! Moving to next task checkpoint at RealPose(x=6.0, y=2.0, z=0.0)
+[INFO][10:07:36][Main]: Next checkpoint location: RealLocation(x=6.0, y=2.0)
+[INFO][10:07:36][Main]: Planning path to: RealLocation(x=6.0, y=2.0)
+[INFO][10:07:36][Main]: Path planned.
+[DEBUG][10:07:36][Navigation]: New waypoint: RealLocation(x=4.13, y=1.01)
+[DEBUG][10:07:36][Navigation]: Reached wp: RealLocation(x=4.13, y=1.01)
+[DEBUG][10:07:36][Navigation]: New waypoint: RealLocation(x=4.53, y=1.41)
+[DEBUG][10:07:36][Navigation]: MAX_DEVIATION_THRESH_M: 0.4383974329343886, ANGLE_THRESHOLD_DEG: 25.0
+[INFO][10:08:43][CVService]: Initializing CV service...
+[DEBUG][10:08:43][CVService]: Loading object detection model from ../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/InternImage-L epoch_12 stripped.pth using config ../CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py
+[DEBUG][10:08:45][CVService]: Loading SOLIDER-REID model from ../CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/transformer_21_map0.941492492396344_acc0.8535950183868408.pth using config ../CV/SOLIDER-REID/TIL.yml
+[INFO][10:08:46][CVService]: CV service initialized.
+[INFO][10:08:46][NLPService]: Initializing ASR service...
+[DEBUG][10:08:46][NLPService]: Loading model from ../ASR/wav2vec2-conformer...
+[DEBUG][10:08:49][NLPService]: Warming up...
+[DEBUG][10:08:50][NLPService]: Starting language tool...
+[INFO][10:08:50][NLPService]: NLP service initialized.
+[INFO][10:08:50][NLPService]: Initializing SpeakerID service...
+[DEBUG][10:08:50][NLPService]: Loading FRCRN...
+[DEBUG][10:08:51][NLPService]: Loading DeepFilterNet3...
+[DEBUG][10:08:51][NLPService]: Loading SpeakerID config from ../SpeakerID/m2d/evar/config/m2d.yaml...
+[DEBUG][10:08:51][NLPService]: Loading model state_dict from ../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc/weights_ep866it1-0.90000_loss0.0160.pth
+[DEBUG][10:08:51][NLPService]: Loading normalization stats from ../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc/norm_stats.pt
+[DEBUG][10:08:51][NLPService]: Loading class names pickle from ../SpeakerID/m2d/evar/logs/til_ar_m2d.AR_M2D_cb0a37cc/classes.pkl
+[DEBUG][10:08:51][NLPService]: Instantiating AR_M2D backbone
+[DEBUG][10:08:52][NLPService]: Instantiating TaskNetwork
+[DEBUG][10:08:52][NLPService]: Loading TaskNetwork state_dict
+[DEBUG][10:08:52][NLPService]: Warming up...
+[INFO][10:08:52][NLPService]: SpeakerID service successfully initialized.
+[INFO][10:08:52][Main]: Using stuck detection with threshold of 15s and 0.1m^2
+[INFO][10:08:52][Main]: Warming up pose filter to initialise position + reduce initial noise.
+[INFO][10:08:54][Main]: First location: RealPose(x=4.0, y=1.0, z=180.0)
+[INFO][10:08:54][Main]: Path planned.
+[DEBUG][10:08:54][Navigation]: New waypoint: RealLocation(x=3.77, y=2.13)
+[DEBUG][10:08:54][Navigation]: Reached wp: RealLocation(x=3.77, y=2.13)
+[DEBUG][10:08:54][Navigation]: New waypoint: RealLocation(x=4.0, y=1.0)
+[DEBUG][10:08:54][Navigation]: MAX_DEVIATION_THRESH_M: 0.435, ANGLE_THRESHOLD_DEG: 20.689045068319246
+[DEBUG][10:09:02][Navigation]: Reached wp: RealLocation(x=4.0, y=1.0)
+[DEBUG][10:09:02][Navigation]: New waypoint: RealLocation(x=4.0, y=1.0)
+[DEBUG][10:09:02][Navigation]: Reached wp: RealLocation(x=4.0, y=1.0)
+[DEBUG][10:09:02][Main]: End of path.
+[INFO][10:09:02][Main]: Reached checkpoint
+[DEBUG][10:09:02][Main]: Turning towards CV target
+[INFO][10:09:04][Main]: Starting AI tasks
+[INFO][10:09:21][CVService]: Predicting CV...
+[DEBUG][10:09:21][CVService]: OD bbox result: [[6.7023566e+02 1.8719974e+02 7.8624542e+02 3.0037439e+02 9.9946779e-01]
+ [1.0299307e+03 1.2171733e+02 1.0900657e+03 2.5104054e+02 6.8927968e-01]]
+[DEBUG][10:09:22][CVService]: Distance matrix: [[1.1169288]
+ [1.1605146]]
+[INFO][10:09:22][CVService]: Predicted None due to threshold
+[DEBUG][10:09:22][NLPService]: Denoising audio...
+[DEBUG][10:09:23][NLPService]: Predicting SpeakerID...
+[INFO][10:09:23][NLPService]: Raw prediction: {'audio2': '10000SGDMRT_memberB', 'audio1': 'IMAGINELOSIN_memberC'}
+[INFO][10:09:23][NLPService]: Prediction after limiting to opp team: audio1_BRIANWACK_memberC
+[INFO][10:09:23][NLPService]: Predicting 3 audio(s)...
+[DEBUG][10:09:25][NLPService]: Predicted texts: ('THE BUS ARRIVES EVERY ONE HOUR AT THIS STATION', 'HE DONATED SEVEN BAGS OF CLOTHES TO CHARITY', 'WE PLANTED EIGHT APPLE TREES IN THE GARDEN')
+[INFO][10:09:25][NLPService]: Predicted digits: (1, 7, 8)
+[INFO][10:09:25][Main]: Correct password! Moving to next task checkpoint at RealPose(x=6.0, y=2.0, z=0.0)
+[INFO][10:09:25][Main]: Next checkpoint location: RealLocation(x=6.0, y=2.0)
+[INFO][10:09:25][Main]: Planning path to: RealLocation(x=6.0, y=2.0)
+[INFO][10:09:25][Main]: Path planned.
+[DEBUG][10:09:25][Navigation]: New waypoint: RealLocation(x=3.88, y=1.09)
+[DEBUG][10:09:25][Navigation]: Reached wp: RealLocation(x=3.88, y=1.09)
+[DEBUG][10:09:25][Navigation]: New waypoint: RealLocation(x=5.08, y=1.51)
+[DEBUG][10:09:25][Navigation]: MAX_DEVIATION_THRESH_M: 0.225, ANGLE_THRESHOLD_DEG: 10.1949983666432
+[DEBUG][10:09:42][Navigation]: Reached wp: RealLocation(x=5.08, y=1.51)
+[DEBUG][10:09:42][Navigation]: New waypoint: RealLocation(x=5.48, y=1.78)
+[DEBUG][10:09:42][Navigation]: MAX_DEVIATION_THRESH_M: 0.09841194094144584, ANGLE_THRESHOLD_DEG: 10.0
+[DEBUG][10:09:44][Navigation]: Reached wp: RealLocation(x=5.48, y=1.78)
+[DEBUG][10:09:44][Navigation]: New waypoint: RealLocation(x=6.0, y=2.0)
+[DEBUG][10:09:44][Navigation]: MAX_DEVIATION_THRESH_M: 0.20641087980237308, ANGLE_THRESHOLD_DEG: 14.071763709856972
+[DEBUG][10:09:51][Navigation]: Reached wp: RealLocation(x=6.0, y=2.0)
+[DEBUG][10:09:51][Navigation]: New waypoint: RealLocation(x=6.0, y=2.0)
+[DEBUG][10:09:51][Navigation]: Reached wp: RealLocation(x=6.0, y=2.0)
+[DEBUG][10:09:51][Main]: End of path.
+[INFO][10:09:51][Main]: Reached checkpoint
+[DEBUG][10:09:51][Main]: Turning towards CV target
+[INFO][10:09:52][Main]: Starting AI tasks
+[INFO][10:10:09][CVService]: Predicting CV...
+[DEBUG][10:10:09][CVService]: OD bbox result: [[557.5759     121.11179    663.2749     241.99307      0.99975973]
+ [295.1441     171.74326    426.91565    238.81604      0.9988827 ]]
+[DEBUG][10:10:09][CVService]: Distance matrix: [[1.507756   0.89589834]
+ [1.4328749  1.4131193 ]]
+[INFO][10:10:09][CVService]: Predicted suspect
+[DEBUG][10:10:09][NLPService]: Denoising audio...
+[DEBUG][10:10:10][NLPService]: Predicting SpeakerID...
+[INFO][10:10:10][NLPService]: Raw prediction: {'audio2': 'IMAGINELOSIN_memberB', 'audio1': 'BRIANWACK_memberB'}
+[INFO][10:10:10][NLPService]: Prediction after limiting to opp team: audio1_BRIANWACK_memberB
+[INFO][10:10:10][NLPService]: Predicting 3 audio(s)...
+[DEBUG][10:10:10][NLPService]: Predicted texts: ('SHE HAD FIVE DAYS UNTIL THE DEADLINE', 'HE DONATED SEVEN BAGS OF CLOTHES TO CHARITY', 'WE FOUND ZERO ERRORS IN HIS CALCULATIONS')
+[INFO][10:10:10][NLPService]: Predicted digits: (5, 7, 0)
+[INFO][10:10:10][Main]: Correct password! Moving to next task checkpoint at RealPose(x=6.0, y=4.0, z=-135.0)
+[INFO][10:10:10][Main]: Next checkpoint location: RealLocation(x=6.0, y=4.0)
+[INFO][10:10:10][Main]: Planning path to: RealLocation(x=6.0, y=4.0)
+[INFO][10:10:10][Main]: Path planned.
+[DEBUG][10:10:10][Navigation]: New waypoint: RealLocation(x=5.89, y=2.02)
+[DEBUG][10:10:10][Navigation]: MAX_DEVIATION_THRESH_M: 0.4098308055437865, ANGLE_THRESHOLD_DEG: 25.0
+[DEBUG][10:10:12][Navigation]: Reached wp: RealLocation(x=5.89, y=2.02)
+[DEBUG][10:10:12][Navigation]: New waypoint: RealLocation(x=6.0, y=4.0)
+[DEBUG][10:10:12][Navigation]: MAX_DEVIATION_THRESH_M: 0.37887695966961915, ANGLE_THRESHOLD_DEG: 10.0
+[DEBUG][10:10:43][Navigation]: Reached wp: RealLocation(x=6.0, y=4.0)
+[DEBUG][10:10:43][Navigation]: New waypoint: RealLocation(x=6.0, y=4.0)
+[DEBUG][10:10:43][Navigation]: Reached wp: RealLocation(x=6.0, y=4.0)
+[DEBUG][10:10:43][Main]: End of path.
+[INFO][10:10:43][Main]: Reached checkpoint
+[DEBUG][10:10:43][Main]: Turning towards CV target
+[INFO][10:10:46][Main]: Starting AI tasks
+[INFO][10:11:04][CVService]: Predicting CV...
+[DEBUG][10:11:04][CVService]: OD bbox result: [[5.5444519e+02 2.1721722e+02 6.2497644e+02 3.5647046e+02 1.7688921e-01]
+ [5.5547748e+02 2.2023613e+02 6.2186688e+02 2.8354047e+02 9.8169580e-02]]
+[INFO][10:11:04][CVService]: Predicted None due to no bbox
+[DEBUG][10:11:04][NLPService]: Denoising audio...
+[DEBUG][10:11:05][NLPService]: Predicting SpeakerID...
+[INFO][10:11:05][NLPService]: Raw prediction: {'audio2': 'IMAGINELOSIN_memberB', 'audio1': 'IMAGINELOSIN_memberC'}
+[INFO][10:11:05][NLPService]: Prediction after limiting to opp team: audio1_BRIANWACK_memberA
+[INFO][10:11:05][NLPService]: Predicting 3 audio(s)...
+[DEBUG][10:11:05][NLPService]: Predicted texts: ('SHE NEEDED NINE MORE POINTS TO WIN THE GAME', 'SHE NEEDED NINE MORE POINTS TO WIN THE GAME', 'SHE NEEDED NINE MORE POINTS TO WIN THE GAME')
+[INFO][10:11:05][NLPService]: Predicted digits: (9, 9, 9)
+[INFO][10:11:05][Main]: Correct password! Moving to next task checkpoint at RealPose(x=2.0, y=3.0, z=-45.0)
+[INFO][10:11:05][Main]: Next checkpoint location: RealLocation(x=2.0, y=3.0)
+[INFO][10:11:05][Main]: Planning path to: RealLocation(x=2.0, y=3.0)
+[INFO][10:11:05][Main]: Path planned.
+[DEBUG][10:11:05][Navigation]: New waypoint: RealLocation(x=5.91, y=3.89)
+[DEBUG][10:11:05][Navigation]: Reached wp: RealLocation(x=5.91, y=3.89)
+[DEBUG][10:11:05][Navigation]: New waypoint: RealLocation(x=5.51, y=3.49)
+[DEBUG][10:11:05][Navigation]: MAX_DEVIATION_THRESH_M: 0.31780013966478743, ANGLE_THRESHOLD_DEG: 24.25283514028224
+[DEBUG][10:11:09][Navigation]: Reached wp: RealLocation(x=5.51, y=3.49)
+[DEBUG][10:11:09][Navigation]: New waypoint: RealLocation(x=3.11, y=3.5500000000000003)
+[DEBUG][10:11:09][Navigation]: MAX_DEVIATION_THRESH_M: 0.215, ANGLE_THRESHOLD_DEG: 10.0
+[DEBUG][10:11:26][Navigation]: Reached wp: RealLocation(x=3.11, y=3.5500000000000003)
+[DEBUG][10:11:26][Navigation]: New waypoint: RealLocation(x=2.71, y=3.48)
+[DEBUG][10:11:26][Navigation]: MAX_DEVIATION_THRESH_M: 0.155, ANGLE_THRESHOLD_DEG: 12.526033895171613
+[DEBUG][10:11:34][Navigation]: Reached wp: RealLocation(x=2.71, y=3.48)
+[DEBUG][10:11:34][Navigation]: New waypoint: RealLocation(x=2.31, y=3.08)
+[DEBUG][10:11:34][Navigation]: MAX_DEVIATION_THRESH_M: 0.04913812651491099, ANGLE_THRESHOLD_DEG: 10.0
+[DEBUG][10:11:45][Navigation]: Reached wp: RealLocation(x=2.31, y=3.08)
+[DEBUG][10:11:45][Navigation]: New waypoint: RealLocation(x=2.0, y=3.0)
+[DEBUG][10:11:45][Navigation]: MAX_DEVIATION_THRESH_M: 0.09039832078341085, ANGLE_THRESHOLD_DEG: 10.0
+[DEBUG][10:11:56][Navigation]: Reached wp: RealLocation(x=2.0, y=3.0)
+[DEBUG][10:11:56][Navigation]: New waypoint: RealLocation(x=2.0, y=3.0)
+[DEBUG][10:11:56][Navigation]: Reached wp: RealLocation(x=2.0, y=3.0)
+[DEBUG][10:11:56][Main]: End of path.
+[INFO][10:11:57][Main]: Reached checkpoint
+[DEBUG][10:11:57][Main]: Turning towards CV target
+[INFO][10:11:59][Main]: Starting AI tasks
+[INFO][10:12:17][CVService]: Predicting CV...
+[DEBUG][10:12:17][CVService]: OD bbox result: [[586.5229     249.77206    668.2961     311.66672      0.99848145]
+ [820.19147    238.42163    869.2696     302.71393      0.9960233 ]]
+[DEBUG][10:12:17][CVService]: Distance matrix: [[1.3863385 1.4618124]
+ [1.3942196 1.1480575]]
+[INFO][10:12:17][CVService]: Predicted None due to threshold
+[DEBUG][10:12:17][NLPService]: Denoising audio...
+[DEBUG][10:12:18][NLPService]: Predicting SpeakerID...
+[INFO][10:12:18][NLPService]: Raw prediction: {'audio2': 'BRIANWACK_memberB', 'audio1': 'IMAGINELOSIN_memberB'}
+[INFO][10:12:18][NLPService]: Prediction after limiting to opp team: audio2_BRIANWACK_memberB
+[INFO][10:12:18][NLPService]: Predicting 3 audio(s)...
+[DEBUG][10:12:18][NLPService]: Predicted texts: ('WE PLANTED EIGHT APPLE TREES IN THE GARDEN', 'WE ONLY HAD THREE DAYS TO FINISH THE PROJECT', 'WE FOUND ZERO ERRORS IN HIS CALCULATIONS')
+[INFO][10:12:18][NLPService]: Predicted digits: (8, 3, 0)
+[INFO][10:12:18][Main]: Correct password! Moving to next task checkpoint at RealPose(x=1.0, y=2.0, z=-135.0)
+[INFO][10:12:18][Main]: Next checkpoint location: RealLocation(x=1.0, y=2.0)
+[INFO][10:12:18][Main]: Planning path to: RealLocation(x=1.0, y=2.0)
+[INFO][10:12:18][Main]: Path planned.
+[DEBUG][10:12:18][Navigation]: New waypoint: RealLocation(x=2.13, y=2.99)
+[DEBUG][10:12:18][Navigation]: Reached wp: RealLocation(x=2.13, y=2.99)
+[DEBUG][10:12:18][Navigation]: New waypoint: RealLocation(x=1.0, y=2.0)
+[DEBUG][10:12:18][Navigation]: MAX_DEVIATION_THRESH_M: 0.36022353661088097, ANGLE_THRESHOLD_DEG: 13.663968735610199
+[DEBUG][10:12:34][Navigation]: Reached wp: RealLocation(x=1.0, y=2.0)
+[DEBUG][10:12:34][Navigation]: New waypoint: RealLocation(x=1.0, y=2.0)
+[DEBUG][10:12:34][Navigation]: Reached wp: RealLocation(x=1.0, y=2.0)
+[DEBUG][10:12:34][Main]: End of path.
+[INFO][10:12:34][Main]: Reached checkpoint
+[DEBUG][10:12:34][Main]: Turning towards CV target
+[INFO][10:12:35][Main]: Starting AI tasks
+[INFO][10:12:52][CVService]: Predicting CV...
+[DEBUG][10:12:52][CVService]: OD bbox result: [[7.0065527e+02 1.2982524e+02 7.5071973e+02 1.7542683e+02 9.0401477e-01]
+ [0.0000000e+00 3.5143921e+02 7.6915426e+00 4.1557605e+02 2.7352813e-01]
+ [0.0000000e+00 3.7359140e+02 1.2500572e+01 4.1658945e+02 1.6995138e-01]
+ [0.0000000e+00 3.1096805e+02 1.1663667e+01 4.1275943e+02 1.3475257e-01]
+ [1.1185646e-02 3.8326791e+02 7.2076530e+00 4.1957791e+02 7.0896350e-02]
+ [0.0000000e+00 2.9280341e+02 5.8090339e+00 4.1562555e+02 5.6277849e-02]]
+[INFO][10:12:52][CVService]: Predicted None due to no bbox
+[DEBUG][10:12:52][NLPService]: Denoising audio...
+[DEBUG][10:12:53][NLPService]: Predicting SpeakerID...
+[INFO][10:12:53][NLPService]: Raw prediction: {'audio2': '10000SGDMRT_memberB', 'audio1': 'BRIANWACK_memberB'}
+[INFO][10:12:53][NLPService]: Prediction after limiting to opp team: audio1_BRIANWACK_memberB
+[INFO][10:12:53][NLPService]: Predicting 3 audio(s)...
+[DEBUG][10:12:54][NLPService]: Predicted texts: ('WE PLANTED EIGHT APPLE TREES IN THE GARDEN', 'SHE HAD FIVE DAYS UNTIL THE DEADLINE', 'SHE NEEDED NINE MORE POINTS TO WIN THE GAME')
+[INFO][10:12:54][NLPService]: Predicted digits: (8, 5, 9)
+[INFO][10:12:54][Main]: Correct password! Moving to final goal at RealPose(x=2.0, y=1.0, z=0.0)
+[INFO][10:12:54][Main]: Next checkpoint location: RealLocation(x=2.0, y=1.0)
+[INFO][10:12:54][Main]: Planning path to: RealLocation(x=2.0, y=1.0)
+[INFO][10:12:54][Main]: Path planned.
+[DEBUG][10:12:54][Navigation]: New waypoint: RealLocation(x=1.08, y=2.0)
+[DEBUG][10:12:54][Navigation]: Reached wp: RealLocation(x=1.08, y=2.0)
+[DEBUG][10:12:54][Navigation]: New waypoint: RealLocation(x=2.0, y=1.0)
+[DEBUG][10:12:54][Navigation]: MAX_DEVIATION_THRESH_M: 0.34707972893961475, ANGLE_THRESHOLD_DEG: 12.609798859285593
+[DEBUG][10:13:10][Navigation]: Reached wp: RealLocation(x=2.0, y=1.0)
+[DEBUG][10:13:10][Navigation]: New waypoint: RealLocation(x=2.0, y=1.0)
+[DEBUG][10:13:10][Navigation]: Reached wp: RealLocation(x=2.0, y=1.0)
+[DEBUG][10:13:10][Main]: End of path.
+[INFO][10:13:10][Main]: Reached checkpoint
+[INFO][10:13:10][Main]: Mission Completed.
