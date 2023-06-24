@@ -11,6 +11,44 @@
 * [Huang Qirui](https://github.com/hqrui): Robot
 * [Alistair Cheong](https://github.com/cheongalc): ASR/SpeakerID/OD/ReID/Robot
 
+## Contents
+<!-- TOC -->
+  * [Introduction](#introduction)
+    * [Qualifiers](#qualifiers)
+    * [Qualifiers private leaderboard](#qualifiers-private-leaderboard)
+    * [Finals](#finals)
+    * [Finals leaderboard](#finals-leaderboard)
+  * [ASR](#asr)
+    * [Data Augmentation](#data-augmentation)
+    * [Model](#model)
+    * [Training](#training)
+    * [Inference](#inference)
+    * [Finals-specific tuning](#finals-specific-tuning)
+  * [Object Detection](#object-detection)
+    * [Data Augmentation](#data-augmentation-1)
+    * [Model](#model-1)
+    * [Training](#training-1)
+    * [Inference](#inference-1)
+    * [Finals-specific tuning](#finals-specific-tuning-1)
+  * [Object Re-Identification (REID)](#object-re-identification-reid)
+    * [Data Augmentation](#data-augmentation-2)
+    * [Model](#model-2)
+    * [Training](#training-2)
+    * [Inference](#inference-2)
+    * [Finals-specific tuning](#finals-specific-tuning-2)
+  * [Speaker Identification](#speaker-identification)
+    * [Data Preprocessing - denoising](#data-preprocessing---denoising)
+    * [Data Augmentation](#data-augmentation-3)
+    * [Model](#model-3)
+    * [Training](#training-3)
+    * [Inference](#inference-3)
+    * [Finals-specific tuning](#finals-specific-tuning-3)
+  * [Robot](#robot)
+    * [Localization](#localization)
+    * [Path planning](#path-planning)
+    * [Movement](#movement)
+<!-- TOC -->
+
 ## Introduction
 This repository contains all the code used for our team at TIL 2023 except for model weights. If you would like the weights, you may email aliencaocao@gmail.com. 
 
@@ -33,7 +71,7 @@ The combined ranking is determined by the average ranking of a team in each task
 * [Advanced CV](leaderboards/adv_cv.json)
 * [Advanced Combined](leaderboards/adv_combined.json)
 
-Team 10000SGDMRT obtained 3rd on ASR with Word Error Rate (WER) of 1.4049318056670998%; 1st on CV with mean average precision @ IoU=0.5 (mAP=0.5) of 0.014049318056670998. This gave us a combined score of 0.9580472000864476 and placing us top in the Qualifiers in Advanced category.
+Team 10000SGDMRT obtained 3rd on ASR with Word Error Rate (WER) of 1.4049318056670998%; 1st on CV with mean average precision @ IoU=0.5 (mAP=0.5) of 0.9301437182295662. This gave us a combined score of 0.9580472000864476 and placing us top in the Qualifiers in Advanced category.
 
 ### Finals
 In finals, participants are given additional 2 tasks:
@@ -41,6 +79,8 @@ In finals, participants are given additional 2 tasks:
 2. Integration of ASR, Object Detection, Object Re-identification and Speaker Identification to drive a DJI Robomaster robot around a maze. The robot has to automatically plan paths and navigate to task checkpoints, then perform these tasks correctly there.
 
 The finals is split into 2 groups. First, round-robin is carried out within each group, then, top place of each group compete for 1st and 2nd place, while 2nd place from each group compete for 3rd and 4th place. Ranking within each group is determined by maze score, which is calculated by [10 * (correct OD+ReID tasks) + 5 * correct SpeakerID tasks]. The ASR task was used to determine whether the robot will receive the next task checkpoint or a detour checkpoint. Each run is capped to 10 minutes and teams in Advanced category has 5 checkpoints to clear. Time to finish all 5 checkpoints will be used as a tiebreaker.
+
+Our team's final run: https://www.youtube.com/watch?v=zCUGX4jAcEk
 
 ### Finals leaderboard
 Novice:
@@ -80,7 +120,7 @@ Training log for the 2nd part (20 epoch @ lr=1e-6) can be found [here](ASR/wav2v
 Although we managed to obtain and preprocess the [IMDA National Speech Corpus](https://www.imda.gov.sg/how-we-can-help/national-speech-corpus), our model failed to converage on these data, possibly due too low label quality, so we did not use them.
 
 ### Inference
-Iaddition to normal inference, we use [language-tool-python](https://pypi.org/project/language-tool-python/) to correct spelling and grammar errors automatically, although it's not perfect, it improved WER slightly. This is needed as our model uses character-based tokenization (E.g. letter based) instead of word-based like Whisper.
+In addition to normal inference, we use [language-tool-python](https://pypi.org/project/language-tool-python/) to correct spelling and grammar errors automatically, although it's not perfect, it improved WER slightly. This is needed as our model uses character-based tokenization (E.g. letter based) instead of word-based like Whisper.
 
 Model ensemble via logit averaging was found to be bad for character-based tokenization, so we did not use it.
 
@@ -98,12 +138,12 @@ All code can be found in [CV/InternImage](CV/InternImage). The `CV` folder also 
 * SAM: failed attempt to use zero-shot masks as bbox. We found that mask overlapping is a major issue and could not find a reliable NMS algorithm to handle them.
 * yolov7 and yolov8: both underperformed RT-DETR, even with gaussian noise augmentations.
 
-The other folders in `CV` are for ReID task. We will only explain our best performing model, InternImage.
+The other folders in `CV` are for ReID task. We will only explain our best performing model, [InternImage](https://github.com/OpenGVLab/InternImage).
 ### Data Augmentation
 Default used in InternImage, including RandomFlip and AutoAug. See [our config](CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/cascade_internimage_l_fpn_3x_coco_custom.py).
 
 ### Model
-We used InternImgae-L with Cascade Mask R-CNN with 3x schd. It has 56.1mAP on COCO, 277M parameters and 1399GFLOPS. The backbone is pretrained on ImageNet-22K on a variable input size between 192 to 384px.
+We used InternImage-L with Cascade Mask R-CNN with 3x schd. It has 56.1mAP on COCO, 277M parameters and 1399GFLOPS. The backbone is pretrained on ImageNet-22K on a variable input size between 192 to 384px.
 
 ### Training
 We used default hyperparameters except for batch size where we had to set to 1 for it to not OOM. We trained for 30 epochs but took the 12th epoch as it is the best checkpoint (val mAP@0.5-0.95 of 0.8652, mAP@0.5 of 1.0).
@@ -118,13 +158,14 @@ By visualizing and manually checking through every single bbox on test set, we f
 ### Finals-specific tuning
 Although the model is very good at the task already, during our first day in finals, we found that it struggles to detect very small targets, especially a bee plushie, since the robot's camera is wide angle and the plushie itself is much smaller than average. It also has some false positives caused by the aruco codes on the floor. To counter this issue, we applied cropping to the robot camera view, by cropping 100px from top, left and right, and 280px from bottom, making the effective image size to be 900x520. This effectively zooms in and enlarge all the targets, while cropping away the floor most of the time. We also reduced confidence threshold to 0.9 as the it still tend to give lower confidence on smaller objects.
 
-### Object Re-Identification (REID)
+## Object Re-Identification (REID)
 All code can be found in [CV/SOLIDER-REID](CV/SOLIDER-REID). This is a heavily modified fork from the [original repo](https://github.com/tinyvision/SOLIDER-REID). Specifically, we
 * Added batched inference support
 * Customized augmentations
 * Added TIL Custom dataset
 * Added plotting code for distance distribution
 * Various bug fixes for loading and saving models
+
 Nonetheless, we would like to thank the authors of the original repo for their work and their assistance in helping us debug our code.
 
 SOLIDER-REID is a downstream task of a greater pretraining framework called SOLIDER, developed by Alibaba DaMo Academy, published in their paper [Beyond Appearance: a Semantic Controllable Self-Supervised Learning Framework for Human-Centric Visual Tasks](https://arxiv.org/abs/2303.17602).
@@ -154,15 +195,16 @@ We modified the default hyperparameters through countless trial-and-error. Our f
 
 * Optimizer: SGD with weight decay=1e-4, 3 warm up epoch and cosine decay LR.
 * Batch size: 128
-* Loss: average of CrossEntropyLoss and TripletLoss. 
-  * The CrossEntropyLoss is calculated only on training data where number of class is known (200). The model has 2 output heads, 1 is features (1024-dim), another is softmax (200 classes). During training, sum of both loss are used for back-propagation. During inference, only the features head is used to get raw features. This guides the model to converge and generate more useful feature.
+* Loss: average of Cross Entropy Loss and Triplet Loss. 
+  * The Cross Entropy Loss is calculated only on training data where number of class is known (200). The model has 2 output heads, 1 is features (1024-dim), another is softmax (200 classes). During training, sum of both loss are used for back-propagation. During inference, only the features head is used to get raw features. This guides the model to converge and generate more useful feature.
+  * The Triplet Loss is a customized one that uses harder example mining to maximize the loss's effectiveness. See [here](CV/SOLIDER-REID/loss/triplet_loss.py) for implementation.
 
-Initial run of LR=5e-3 training log can be found [here](CV/SOLIDER-REID/archive models/log_SGD_500epoch_5e-3LR_expanded/initial_train_log.txt)
+Initial run of LR=5e-3 training log can be found [here](CV/SOLIDER-REID/archive models/log_SGD_500epoch_5e-3LR_expanded/initial_train_log.txt).
 
-Continued run of LR=1e-4 training log can be found [here](CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/continue_train_log.txt)
+Continued run of LR=1e-4 training log can be found [here](CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/continue_train_log.txt).
 
 ### Inference
-We uses the [k-reciprocal Encoding for Re-ranking](https://arxiv.org/abs/1701.08398) algorithm and it improved mAP slightly for us. In order to find the right threshold, we plotted the distance distribution like this:
+We uses the [K-reciprocal Encoding for Re-ranking](https://arxiv.org/abs/1701.08398) algorithm and it improved mAP slightly for us. In order to find the right threshold, we plotted the distance distribution like this:
 
 On validation set:
 
@@ -172,4 +214,82 @@ On test set:
 
 ![distance distribution](CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/21_test/reranking_test_set_separation_chart.png)
 
-Initially this did not gave us a very high score. We suspect it is due to too many false positives, thus we assumed and limited the number of suspects per image to 1 (even though the competition rule did not specify) and used a more loose threshold to reduce false negatives. Doing so greatly improve our score by about 10mAP.
+Initially using the thresholds directly found at the minium point did not gave us a very high score. We suspect it is due to too many false positives, thus we assumed and limited the number of suspects per image to 1 (even though the competition rule did not specify) and used a more loose threshold to reduce false negatives. Doing so greatly improved our score by about 10mAP.
+
+We also tried inferring on rotated image (4x90 degrees) and average their feature before calculating distance. This did not bring any improvement.
+
+### Finals-specific tuning
+For finals, we cannot use Reranking as the distance produced by RR changes with gallery size. In finals, we only have a gallery size of about 1-3 images, while in qualifiers we had 3417. Thus, we went to find the best threshold using euclidean distance based on leaderboard score, which turned out to be 1.05. However, this proved to be slightly off for finals, as we gathered data and analyzed the distance matrix produced during day 1's runs. Eventually, we reduced it slightly to be 1.0.
+
+We initially had issues of false positives in our Object Detection and it kept detecting the floor and black tapes as a plushie. Interestingly those floor images ended up having very high similarity as the hostage in our REID model, causing us to predict many false positive for `hostage`. Applying cropping solved this issue.
+
+We also realise that the query image given for finals is way higher resolution than the ones given during qualifiers, while the gallery image (crops of bbox from robot camera) is of much smaller resolution than the qualifier, partially due to robot's wide angle camera and far distance from the plushies.
+
+For example, a query image from qualifiers are around the size 170x160, and gallery are around 120x100. While in finals, the hostage Mr Dastan, is 1275x1280, and most of the bbox we get is around 70x70.
+
+Mr Dastan (1275x1280)
+
+![Mr Dastan](Robot/data/imgs/HOSTAGE.jpg)
+
+A bbox of a bee plushie (61x65)
+
+![Bee](Robot/data/imgs/bee_box.png)
+
+We hypothesis that this causes significant loss or instability in up/down scaling during resize operations, where images has to be resized to 224x224 for the REID model. We tried different resizing algorithms available in `OpenCV`, and they had shockingly large impact on our REID distance matrix:
+ 
+Below are the comparison of distance matrix produced by our REID model using different resizing algorithms. This is calculated on bbox crops of various plushies captured by the robot against a [green dinosaur suspect](Robot/data/imgs/SUSPECT_2.jpg) and the hostage [Mr Dastan](Robot/data/imgs/HOSTAGE.jpg). The threshold is 1.0 so anything below 1.0 will be a positive. The optimal goal is to make true positives close to 0 and true negatives close to infinity. The default is Linear and is used for both training and testing.
+
+2 bbox detected. First bbox has correct answer `none`:
+
+| Algorithm | Distance VS suspect | Distance VS hostage |
+|:---------:|:-------------------:|:-------------------:|
+|   Cubic   |        1.44         |        1.12         |
+|  Linear   |        1.46         |        1.15         |
+|  Nearest  |        1.34         |        0.97         |
+|   Area    |        1.36         |        1.09         |
+
+Using `Nearest` would have caused a FP on `hostage`, though very close to the threshold. However, `Nearest` clearly outperforms `Cubic` and `Linear` in other examples below.
+
+Second has correct answer `suspect`:
+
+| Algorithm | Distance VS suspect | Distance VS hostage |
+|:---------:|:-------------------:|:-------------------:|
+|   Cubic   |        1.44         |        1.56         |
+|  Linear   |        1.44         |        1.55         |
+|  Nearest  |        0.69         |        1.30         |
+|   Area    |        0.67         |        1.52         |
+
+In this case, `Cubic` and `Linear` clearly underperformed `Nearest` or `Area`. They produced shockingly different distances for the `suspect` query. `Area` outperformed `Nearest` as the distances are wider apart.
+
+We have done similar tests on samples of the hostage and result are in a uniform trend that clearly shows `Area` > `Nearest` > `Cubic` ~= `Linear`. If you would like more comparison data, you can open a Discussion. We also have compared cases where all 4 algorithms getting it correct, and the performance in terms of distance produced is on par. In other word, there is little downside but huge upside by switching from `Linear` to `Area`.
+
+This may be against many's intuition as `Linear` or `Cubic` are supposed to be of much finer detail than `Nearest` and `Area` when doing scaling, and are often much preferred over the latter 2. However, we think that the large difference between the source resolutions (1000+ px vs 100- px) made uniformity much more important than preserving details. Both `Cubic` and `Linear` can produce images that contains details which may actually negatively impact the model, since many details that are present in the query image may not exist in gallery, or exist in a very different form due to camera blur etc. While fast and less 'fine-grained' algorithms like `Nearest` and `Area` does not include these details that proved to be unnecessary for REID task, thus is able to perform better. This hypothesis can be supported by our leaderboard score produced on the qualifiers test set using different scaling algorithms, where `Linear` scored best and `Nearest` scored about 8mAP lower (which is a massive degradation). This shows that when query and gallery are of similar resolution, using a higher-identity algorithm is preferred, but when they are of very different resolution, using a lower-identity algorithm can be better.
+
+## Speaker Identification
+All the code for this task is in [SpeakerID](SpeakerID). It was only introduced to finalists and is not part of qualifiers.
+
+This task proved to be very challenging as:
+1. The noise injected into the training and test samples are very strong and overwhelms the speaking voice
+2. Team PALMTREE decided to whisper into all their recordings, and when overlaid with the noise, it is very hard to hear anything
+3. Very small training and validation dataset: one 15s sample per class for training, and total of five 15s samples for validation, covering only 5/32 classes.
+4. Shortage of time to train and experiment
+
+### Data Preprocessing - denoising
+
+### Data Augmentation
+
+### Model
+
+### Training
+
+### Inference
+
+### Finals-specific tuning
+
+## Robot
+
+### Localization
+
+### Path planning
+
+### Movement
