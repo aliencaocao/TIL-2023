@@ -117,7 +117,7 @@ We unfroze the entire network (instead of the classification layers only) and fi
 
 Training log for the 2nd part (20 epoch @ lr=1e-6) can be found [here](ASR/wav2vec2-conformer/trainer_state.json).
 
-Although we managed to obtain and preprocess the [IMDA National Speech Corpus](https://www.imda.gov.sg/how-we-can-help/national-speech-corpus), our model failed to converage on these data, possibly due too low label quality, so we did not use them.
+Although we managed to obtain and preprocess the [IMDA National Speech Corpus](https://www.imda.gov.sg/how-we-can-help/national-speech-corpus), our model failed to converage on these data, possibly due to low label quality, so we did not use them.
 
 ### Inference
 In addition to normal inference, we use [language-tool-python](https://pypi.org/project/language-tool-python/) to correct spelling and grammar errors automatically, although it's not perfect, it improved WER slightly. This is needed as our model uses character-based tokenization (E.g. letter based) instead of word-based like Whisper.
@@ -148,7 +148,7 @@ We used InternImage-L with Cascade Mask R-CNN with 3x schd. It has 56.1mAP on CO
 ### Training
 We used default hyperparameters except for batch size where we had to set to 1 for it to not OOM. We trained for 30 epochs but took the 12th epoch as it is the best checkpoint (val mAP@0.5-0.95 of 0.8652, mAP@0.5 of 1.0).
 
-Since the model n uses Mask R-CNN, we had to process the bbox label given into mask labels too, by simply taking the bbox as a rectangle mask. The model does output both bbox and mask, so during inference we took the bbox output only.
+Since the model uses Mask R-CNN, we had to process the bbox label given into mask labels too, by simply taking the bbox as a rectangle mask. The model does output both bbox and mask, so during inference we took the bbox output only.
 
 Our training log is [here](CV/InternImage/detection/work_dirs/cascade_internimage_l_fpn_3x_coco_custom/20230601_224318.log).
 
@@ -183,7 +183,7 @@ We added the following:
 
 We tried a bunch of other augmentations and all of them decreased performance so I will not list them here, however they are still in the codebase.
 
-We also tried to correct the white balance of images during train and test as they affect coloring of the plushies and could negatively affect the model. We used [Deep-White-Balance](https://github.com/mahmoudnafifi/Deep_White_Balance) and the results were visually satisfactory. See [here](CV/utils/awb exp) for sample images. Yet, this somehow significantly reduced our model performance, so we did not use it in the end. Our hypothesis is that the white balancing model actually causes different plushies to look a lot more similar (much more to the model's eye than to ours), and thus the model had a hard time differentiating them. We semi-verified this by plotting the distance distribution and seeing all of them are very close e.g. no clear separation. We also tried to use non-deep learning based apporaches like gray world or other algorithms in OpenCV and online, and none of them worked better than the DL approach visually.
+We also tried to correct the white balance of images during train and test as they affect coloring of the plushies and could negatively affect the model. We used [Deep-White-Balance](https://github.com/mahmoudnafifi/Deep_White_Balance) and the results were visually satisfactory. See [here](CV/utils/awb%20exp) for sample images. Yet, this somehow significantly reduced our model performance, so we did not use it in the end. Our hypothesis is that the white balancing model actually causes different plushies to look a lot more similar (much more to the model's eye than to ours), and thus the model had a hard time differentiating them. We semi-verified this by plotting the distance distribution and seeing all of them are very close e.g. no clear separation. We also tried to use non-deep learning based apporaches like gray world or other algorithms in OpenCV and online, and none of them worked better than the DL approach visually.
 
 ### Model
 We fine-tuned from the model pretrained on MSMT17 dataset as it is the largest. The model uses Swin-base transformer as backbone. We tried Swin-Large and found it underperformed slightly possibly due to overfitting.
@@ -199,7 +199,7 @@ We modified the default hyperparameters through countless trial-and-error. Our f
   * The Cross Entropy Loss is calculated only on training data where number of class is known (200). The model has 2 output heads, 1 is features (1024-dim), another is softmax (200 classes). During training, sum of both loss are used for back-propagation. During inference, only the features head is used to get raw features. This guides the model to converge and generate more useful feature.
   * The Triplet Loss is a customized one that uses harder example mining to maximize the loss's effectiveness. See [here](CV/SOLIDER-REID/loss/triplet_loss.py) for implementation.
 
-Initial run of LR=5e-3 training log can be found [here](CV/SOLIDER-REID/archive models/log_SGD_500epoch_5e-3LR_expanded/initial_train_log.txt).
+Initial run of LR=5e-3 training log can be found [here](CV/SOLIDER-REID/archive%20models/log_SGD_500epoch_5e-3LR_expanded/initial_train_log.txt).
 
 Continued run of LR=1e-4 training log can be found [here](CV/SOLIDER-REID/log_SGD_500epoch_continue_1e-4LR_expanded/continue_train_log.txt).
 
