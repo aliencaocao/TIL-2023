@@ -308,10 +308,21 @@ Team PALMTREE was being smart and utilized the competition rules fully, by whisp
 #### Effectiveness
 Denoising significantly improved our model training, boosting validation accuracy from 20% to 95%. Below are 2 samples, one from our own team, another from team PALMTREE. Our pipeline proved to be effective in both cases, and has maintained a surprising 100% accuracy during finals, especially against team PALMTREE.
 
-|       Sample        |                                              Original                                        |                                            Denoised                                          |
-|:-------------------:|:--------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------:|
-| 10000SGDMRT_memberA | https://github.com/aliencaocao/TIL-2023/assets/20109683/8ada57aa-5360-4a18-aa0c-749fcd571f7e | https://github.com/aliencaocao/TIL-2023/assets/20109683/c7dbd8b4-2ad9-4b04-ae56-532d1a51f055 |
-|  PALMTREE_memberA   | https://github.com/aliencaocao/TIL-2023/assets/20109683/77ab309f-803f-414d-bb71-22b51e4d8a13 | https://github.com/aliencaocao/TIL-2023/assets/20109683/90afb760-e9a4-4e79-ad09-234ce8905feb |
+10000SGDMRT before denoise:
+
+https://github.com/aliencaocao/TIL-2023/assets/20109683/8ada57aa-5360-4a18-aa0c-749fcd571f7e
+
+After denoise: 
+
+https://github.com/aliencaocao/TIL-2023/assets/20109683/c7dbd8b4-2ad9-4b04-ae56-532d1a51f055
+
+PALMTREE before denoise:
+
+https://github.com/aliencaocao/TIL-2023/assets/20109683/77ab309f-803f-414d-bb71-22b51e4d8a13
+
+After denoise:
+
+https://github.com/aliencaocao/TIL-2023/assets/20109683/90afb760-e9a4-4e79-ad09-234ce8905feb
 
 ### Data Augmentation
 Having only 1 sample per class is extremely limiting, therefore we employed many techniques to augment our data.
