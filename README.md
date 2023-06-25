@@ -320,19 +320,19 @@ Denoising significantly improved our model training, boosting validation accurac
 
 10000SGDMRT before denoise:
 
-https://github.com/aliencaocao/TIL-2023/assets/20109683/8ada57aa-5360-4a18-aa0c-749fcd571f7e
+https://github.com/aliencaocao/TIL-2023/assets/20109683/bd0ace0a-d0bd-4f8c-8bdb-172063432d6b
 
 After denoise: 
 
-https://github.com/aliencaocao/TIL-2023/assets/20109683/c7dbd8b4-2ad9-4b04-ae56-532d1a51f055
+https://github.com/aliencaocao/TIL-2023/assets/20109683/ea623591-8a04-45b0-be51-d8da899f8a45
 
 PALMTREE before denoise:
 
-https://github.com/aliencaocao/TIL-2023/assets/20109683/77ab309f-803f-414d-bb71-22b51e4d8a13
+https://github.com/aliencaocao/TIL-2023/assets/20109683/415aae34-ad1e-4ddd-8c55-cf63bf7c1e32
 
 After denoise:
 
-https://github.com/aliencaocao/TIL-2023/assets/20109683/90afb760-e9a4-4e79-ad09-234ce8905feb
+https://github.com/aliencaocao/TIL-2023/assets/20109683/7d53699b-e0ea-4b07-9817-c60b07c0d609
 
 ### Data Augmentation
 Having only 1 sample per class is extremely limiting, therefore we employed many techniques to augment our data.
