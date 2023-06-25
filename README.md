@@ -47,6 +47,7 @@
     * [Localization](#localization)
     * [Path planning](#path-planning)
     * [Movement](#movement)
+  * [Conclusion](#conclusion)
 <!-- TOC -->
 
 ## Introduction
@@ -78,16 +79,16 @@ In finals, participants are given additional 2 tasks:
 1. Speaker Identification: Identify the speaker of a given audio clip. These audio clips are recorded by finalists and teams need to identify the team and member ID of the speaker. For advanced category, the dataset has been mixed heavily with noise. Training data is extremely limited at 1 sample per class, and validation set is also limited at 5 samples (only 5/32 classes are covered).
 2. Integration of ASR, Object Detection, Object Re-identification and Speaker Identification to drive a DJI Robomaster robot around a maze. The robot has to automatically plan paths and navigate to task checkpoints, then perform these tasks correctly there.
 
-The finals is split into 2 groups. First, round-robin is carried out within each group, then, top place of each group compete for 1st and 2nd place, while 2nd place from each group compete for 3rd and 4th place. Ranking within each group is determined by maze score, which is calculated by `10 * (correct OD+ReID tasks) + 5 * correct SpeakerID tasks`. The ASR task was used to determine whether the robot will receive the next task checkpoint or a detour checkpoint. Each run is capped to 10 minutes and teams in Advanced category has 5 checkpoints to clear. Time to finish all 5 checkpoints will be used as a tiebreaker.
+The finals are split into 2 groups. First, round-robin is carried out within each group, then, top place of each group compete for 1st and 2nd place, while 2nd place from each group compete for 3rd and 4th place. Ranking within each group is determined by maze score, which is calculated by `10 * (correct OD+ReID tasks) + 5 * correct SpeakerID tasks`. The ASR task was used to determine whether the robot will receive the next task checkpoint or a detour checkpoint. Each run is capped to 10 minutes and teams in Advanced category has 5 checkpoints to clear. Time to finish all 5 checkpoints will be used as a tiebreaker.
 
 Our team's final run: https://www.youtube.com/watch?v=zCUGX4jAcEk
 
 ### Finals leaderboard
-Novice:
+Note that the scores under group A/B are not inclusive of top-3 matches, but only for round-robin matches that determines which team advances to the top-3 matches. Our team got perfect score of 75points in the final top-2 match against PALMTREE, with run time of 6 min 26 seconds.
+
+Team ANYTHING was disqualified due to their absence during finals.
 
 ![Novice](leaderboards/Novice.png)
-
-Advanced:
 
 ![Advanced](leaderboards/Advanced.png)
 
@@ -125,6 +126,8 @@ In addition to normal inference, we use [language-tool-python](https://pypi.org/
 Model ensemble via logit averaging was found to be bad for character-based tokenization, so we did not use it.
 
 ### Finals-specific tuning
+Code for finals deployment are in [Robot/nlp_service.py](Robot/nlp_service.py), under `ASRService`.
+
 The finals task is to recognize a digit from zero to nine in a given sentence. In other word, our model only has to get the digit part of the audio correct. Thus, we developed a fuzzy-retrival algorithm that uses string similarity to match and look for possible misspelled digits in the raw output. Again, this is only an issue as it is character-based tokenization.
 
 We used [Levenshtein distance](https://pypi.org/project/python-Levenshtein/) as a metric of string similarity, and computed it across every word in the raw output against every digit, forming a 2D matrix. Then we take the globally most similar word and assume that it is the misspelled version of that closest digit. In the event where multiple words has the same similarity, it ignores some common words that can happen to have a high similarity with certain digits, like 'To' and 'Two', only taking them if no other word has the same level of similarity. The common words list used was ['TO', 'THE', 'THEY', 'HE', 'SHE', 'A', 'WE'].
@@ -156,6 +159,8 @@ Our training log is [here](CV/InternImage/detection/work_dirs/cascade_internimag
 By visualizing and manually checking through every single bbox on test set, we found that this model produces exceptionally high confidence score, often above 0.999. We found some false positives with relatively high confidence of 0.8+. Therefore, for qualifiers, we inferred with confidence threshold of 0.99, and take the top 4 confidence one if there are more than 4 (competition rules specified this).
 
 ### Finals-specific tuning
+Code for finals deployment are in [Robot/cv_service.py](Robot/cv_service.py).
+
 Although the model is very good at the task already, during our first day in finals, we found that it struggles to detect very small targets, especially a bee plushie, since the robot's camera is wide angle and the plushie itself is much smaller than average. It also has some false positives caused by the aruco codes on the floor. To counter this issue, we applied cropping to the robot camera view, by cropping 100px from top, left and right, and 280px from bottom, making the effective image size to be 900x520. This effectively zooms in and enlarge all the targets, while cropping away the floor most of the time. We also reduced confidence threshold to 0.9 as it still tend to give lower confidence on smaller objects.
 
 ## Object Re-Identification (REID)
@@ -303,7 +308,9 @@ You can listen to samples in [denoised samples.zip](SpeakerID/denoised%20samples
 Although DF3 does not make output much softer like FRCRN does, it still helps for model training to normalize the loudness on final output to prevent the model from being sensitive to volume. This also helps to boost speech signal. This step is same as step 2.
 
 #### Special treatment for Team PALMTREE
-Team PALMTREE was being smart and utilized the competition rules fully, by whispering into the recording, making them almost inaudible when overlaid with noise. FRCRN proved to be effective in isolating their whispering, but DF3 will then remove them, thinking them as noise. Therefore, for PALMTREE samples, we only apply FRCRN denoising. In finals during inference, we employ additional measures to differentiate PALMTREE audio and other team, which will be described [below](#finals-specific-tuning-3).
+Team PALMTREE was being smart and utilized the competition rules fully, by whispering into the recording, making them almost inaudible when overlaid with noise. FRCRN proved to be effective in isolating their whispering, but DF3 will then remove them, thinking them as noise. Therefore, for PALMTREE samples, we only apply FRCRN denoising, skipping step 3. We also replaced step 4 (peak gain normalization) with ITU-R BS.1770 loudness meter, normalized to -18.0 LUFS, as it produces louder volume. We did not use this for other team's audio as it tend to cause clipping.
+
+In finals during inference, we employ additional measures to differentiate PALMTREE audio and other team, which will be described [below](#finals-specific-tuning-3).
 
 #### Effectiveness
 Denoising significantly improved our model training, boosting validation accuracy from 20% to 95%. Below are 2 samples, one from our own team, another from team PALMTREE. Our pipeline proved to be effective in both cases, and has maintained a surprising 100% accuracy during finals, especially against team PALMTREE.
@@ -375,7 +382,72 @@ For finals, we are given a pair of audio files at each task checkpoint, 1 of the
 We adapted our robotics code from TIL 2022 and made a number of improvements and changes based on TIL 2023's task. They can be found in [Robot](Robot).
 
 ### Localization
+During testing sessions, the localization service was extremely inaccurate, in the ranges of meters deviation and sudden jumps over a large range. To counter this behaviour, we developed serval noise-reduction mechanisms, but ended up disabling all of them but one during actual finals as the localization service there was much better. Nonetheless, we will introduce these mechanisms here.
+
+Code for this part are in [autonomy.py](Robot/autonomy.py).
+
+#### Simple moving average
+This comes with the boilerplate code provided and we used it with window size of 20. Before a fresh run, we will gather 2 seconds worth of pose data to warm up the filter. This is the only mechanism used during finals.
+
+#### Outlier detection
+To prevent issues of sudden jumps in localization pose, we calculate the euclidean distance between the new raw pose against the previous pose (filtered by moving average). If the difference is more than a threshold (0.75m), we discard this pose and continue to next iteration of mainloop as this is likely a sudden jump and not caused by robot movement. From our measurement, the main loop runs for about 30 iterations per second, this means the robot has to move 0.75m in 1/30 seconds, which is impossible.
+
+One downside is that we have to assume the initial pose received is accurate, which may not be, and we have no way to verify this. If the initial pose is already a noisy 'jump' then it jumps back to the actual correct one, this mechanism will wrongly remove the correct pose. The threshold was also not tested enough due to limited time.
+
+#### Speed-based internal tracking
+Since we are controlling the robot through drive_speed and time, we can calculate the expected pose based on the speed, current angle and time, since distance = speed * time. We do this for both x and y-axis using trigonometry. We then compare the expected pose against the actual pose received from localization service. If the difference is more than a threshold (0.2m), we switch to using the robot's internally calculated pose, until the localization service catches up/recalibrates itself such that our calculated pose is within the threshold. To prevent compounding errors, we do not do moving average on this calculated pose, and when switching to using calculated pose, we reset the moving average filter. Ideally, between refreshes of the localization service, we will be relying on our internal tracking, and when it refreshes, we calibrate our internal tracking to start from the new localization service pose.
+
+This mechanism operates on the assumption that robomaster firmware is reasonably accurate in controlling the robot's movement speed and the time taken to accelerate/decelerate until the constant target velocity is minimal. This was also not well tested so we disabled it during finals.
+
+#### Optical flow assisted tracking
+[Optical Flow](https://en.wikipedia.org/wiki/Optical_flow) is a technique to estimate the motion of pixels between 2 frames. It can be used for motion tracking too.
+
+We developed this mechanism first before speed-based tracking. Although it *theoretically* solves most limitations of speed-based tracking, it is very hard to calibrate and test, so we came up with speed-based tracking as a middle-ground.
+
+There can be case where a robot is stuck facing a wall yet the wheels still spins and tries to move forward. In this case, the speed-based tracking would fail, as it still thinks it is moving with a forward (often high) speed, when it is in fact not. It will discard the correct localization pose due to this too. Also, the assumption that the robot moves perfectly and the time taken to accelerate may not hold true and can cause compounding error.
+
+With optical flow, we can accurately determine the real motion of the robot through its real-time camera feed. We use OpenCV's [Farneback algorithm](https://docs.opencv.org/4.7.0/de/d9e/classcv_1_1FarnebackOpticalFlow.html) to calculate dense optical flow between 2 frames captured on successive iterations of main loop, and perform global averaging alone x and y-axis to calculate the motion vector of the robot. To prevent the issue where different part of the camera feed can be moving in different direction on a 2D plane, e.g. upper part will be moving up while bottom part will be moving down, and center will remain stationary, we crop out only the bottom 30% and middle 40% of the camera feed and calculate optical flow based on that.
+
+To convert the optical flow calculations into actual robot movement, we have to multiply that with a constant pixel to meter ratio, which is how long in meter each pixel can represent, since optical flow readings are in pixel. This ended up being about 0.000694, but during testing we found this to be way too conservative and did not arrive at a working yet reasonable estimation. We think it might be due to how most pixels will not have a proper optical flow reading as we were capturing the floor and the pattern are repetitive. We may end up better if we take the global max instead of mean.
+
+We then compare this calculated new motion vector against the localization service one. If localization service reports that the robot is moving further than what optical flow calculates, then we discard the localization pose, as the robot camera feed is likely more accurate.
+
+Again, due to limited time and testing, we did not use this during finals.
 
 ### Path planning
+Code for this part are in [planner.py](Robot/planner.py).
+
+We use the A star path finding algorithm combined with distance transformed map. For grids closer than 17cm (the robot's width) to the nearest wall, it is dilated and seen as part of the wall so that the robot never moves to there. From 17cm to 32cm away from the wall, the cost is the distance to the nearest wall. This encourages the path planner to not go too near to the wall unless necessary. Beyond 32cm, the cost is constant at 0. This prevents the robot from being forced to take a path exactly in between 2 far apart walls, which is safe but inefficient and unnecessary.
+
+We use a performant C++ implementation with Python binding [pyastar2d](https://github.com/hjweide/pyastar2d).
+
+The output path is then optimized through the following steps:
+1. Subsample the output waypoints at every 40th, each way point represents a 1cm^2 grid.
+2. Remove waypoints that lies on a reasonable straight line with the previous and next waypoint. The criteria we used was less than 10 degrees difference in the line formed by 3 consecutive waypoints. The first and last waypoint are always kept. The deletion of waypoints is filtered to be only done if the shortest distance alone the straight line formed by the 3 waypoints is more than 24cm. This reduces risk of robot deleting a waypoint that are too close to wall and if localization or movement are not perfect, robot may crash into walls.
+
+These optimizations allow the robot to move between waypoints faster as it does not have to keep stopping and adjusting at unnecessary waypoints. It also reduces impact of noisy localization service on robot movement.
+
+In cases where due to localization noise or other factors, the robot is unable to find a path to the next checkpoint, it will reduce the 17cm dilation by 1/3. However, this case is extremely rare and almost always caused by extremely noisy localization data. It was not activated once during finals.
 
 ### Movement
+Code for this part are in [autonomy.py](Robot/autonomy.py).
+
+The robot moves from waypoint to waypoint use a PID controller, with parameters (movement, angle) `Kp=(0.25, 0.2), Ki=(0.1, 0.0), Kd=(0, 0)`. These values are from intensive physical testing and are tuned to be conservative for high localization noise.
+
+During its movement, it will stop and make stationary turns if the angle difference between its heading and the target waypoint is more than a certain threshold, `ANGLE_THRESHOLD_DEG`. Otherwise, it will move forward with velocity reduced for the forward component of the vector to the next waypoint, while making slight turns on the way. In this case, the forward speed is capped at 0.3m/s to prevent localization service lagging due to high speed.
+
+`ANGLE_THRESHOLD_DEG` is dynamically calculated using the following method:
+1. Calculate the shortest distance to a wall from the straight line formed from robot's current location and the next waypoint. This is the maximum safe deviation the robot can take before reaching the next waypoint without crashing into walls, since it may be travelling with a heading that is not exactly aligned with the next waypoint. We call it `MAX_DEVIATION_THRESH_M`.
+2. Use inverse tangent to calculate the maximum allowed angle deviation given the length of the path to the next waypoint, so that as long as the difference between the robot's heading and required heading to next waypoint is within this angle, it will not exceed `MAX_DEVIATION_THRESH_M`. However, in some cases where it is too close to a wall or even 'inside' a wall due to localization noise, this angle can become too small. We thus clip it to between 10 and 25 degrees.
+
+This algorithm allows the robot to achieve 3 things:
+1. Move as quickly as possible by reducing the number of required turns, since turning is slow.
+2. Compared to a fixed angle threshold we used in TIL 2022, a dynamic one allows the robot to not turn when it doesn't have to, and turn when it has to, satisfying both speed and safety. It also requires less manual tuning.
+3. Reduce the impact of localization noise, especially angular. This is because a larger angle difference will be less noisy than a smaller one, thus comparing the robot's heading within single-digit degrees tend to be highly random and volatile, causing the robot to stay at the same place and turning left and right for long time; while comparing between 20+ degrees are much less prone to minor angular localization noise.
+
+All turning is done at constant 45 deg/s, during both navigation and turning to CV targets.
+
+These approaches allowed us to finish on average 5 waypoints within 6.5 minutes, with more than 75 seconds alone wasted on ensuring the robot camera stream to stabilize (we observed some blurred images captured and thinks the robot camera video stream has latency), with zero mistake made by the robot's movement. Some other teams were able to make it faster by using Robotmaster's `move`  function directly but those proved to be very unstable due to increased localization noise at high speeds.
+
+## Conclusion
+Team 10000SGDMRT would like to thank DSTA and Athena Dynamics for organizing this enriching and challenging competition, and we look forward to participating again next year! (Of course, under the name of 12000SGDPLUSHIE)

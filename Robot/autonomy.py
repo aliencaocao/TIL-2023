@@ -113,7 +113,7 @@ def main():
     if USE_OUTLIER_DETECTION:
         logger.info(f'Using outlier detection with threshold of {OUTLIER_THRESH}m')
     USE_OPTICAL_FLOW = False  # uses camera feed and optical flow to calculate motion vector
-    FLOW_PIXEL_TO_M_FACTOR = 0.0014  # how many meter does 1 pixel in 720p camera feed represent. Camera feed is 720p. Current estimate is 216 pixel (30% of height) / 0.15m seen in that crop
+    FLOW_PIXEL_TO_M_FACTOR = 0.000694  # how many meter does 1 pixel in 720p camera feed represent. Camera feed is 720p. Current estimate is 216 pixel (30% of height) / 0.15m seen in that crop
     if USE_OPTICAL_FLOW:
         logger.info(f'Using optical flow assisted positioning with pixel to meter factor of {FLOW_PIXEL_TO_M_FACTOR}m/pixel')
     POSE_DIFF_THRESH = 0.2
@@ -269,7 +269,7 @@ def main():
                 if diff > POSE_DIFF_THRESH:
                     logger.warning(f"diff > {POSE_DIFF_THRESH}, using the calc_new_pose")
                     new_pose = calc_new_pose
-                    pose_filter = SimpleMovingAverage(n=POSE_FILTER_N)
+                    pose_filter = SimpleMovingAverage(n=POSE_FILTER_N)  # reset the filter to prevent compounding error
                 else:
                     new_pose = loc_svc_pose
         else:
