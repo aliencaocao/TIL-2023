@@ -308,17 +308,17 @@ Team PALMTREE was being smart and utilized the competition rules fully, by whisp
 #### Effectiveness
 Denoising significantly improved our model training, boosting validation accuracy from 20% to 95%. Below are 2 samples, one from our own team, another from team PALMTREE. Our pipeline proved to be effective in both cases, and has maintained a surprising 100% accuracy during finals, especially against team PALMTREE.
 
-|       Sample        |                                       Original                                        |                                            Denoised                                            |
-|:-------------------:|:-------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------:|
-| 10000SGDMRT_memberA | <audio controls preload src="Robot/data/audio/10000SGDMRT_memberA_train.mp4"></audio> | <audio controls preload src="Robot/data/audio/10000SGDMRT_memberA_train_enhanced.mp4"></audio> |
-|  PALMTREE_memberA   |  <audio controls preload src="Robot/data/audio/PALMTREE_memberA_train.mp4"></audio>   |  <audio controls preload src="Robot/data/audio/PALMTREE_memberA_train_enhanced.mp4"></audio>   |
+|       Sample        |                                              Original                                        |                                            Denoised                                          |
+|:-------------------:|:--------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------:|
+| 10000SGDMRT_memberA | https://github.com/aliencaocao/TIL-2023/assets/20109683/8ada57aa-5360-4a18-aa0c-749fcd571f7e | https://github.com/aliencaocao/TIL-2023/assets/20109683/c7dbd8b4-2ad9-4b04-ae56-532d1a51f055 |
+|  PALMTREE_memberA   | https://github.com/aliencaocao/TIL-2023/assets/20109683/77ab309f-803f-414d-bb71-22b51e4d8a13 | https://github.com/aliencaocao/TIL-2023/assets/20109683/90afb760-e9a4-4e79-ad09-234ce8905feb |
 
 ### Data Augmentation
 Having only 1 sample per class is extremely limiting, therefore we employed many techniques to augment our data.
 
 Firstly, the competition rules banned usage of any TTS/self recorded/out-sourced datasets, so techniques like [VITS](https://github.com/jaywalnut310/vits) and [TorToiSe TTS](https://github.com/neonbjb/tortoise-tts) are not applicable.
 
-We decided to expand the dataset by slicing each 15s sample into 5 slices of 3s, since speech continuity/completeness is not crucial in SpeakerID, but rather the sound characteristics. A single sample of 15s is different from 5 samples of 3s in training as the context length and information will be isolated and thus provides more variety. We did the same to validation set and during inference. We find that the microphone used to record often peaks or produce noise in the first second, and that most of the first few seconds are silent. Thus, we remove the first 3s slice and only use the rest 4. This increased our sample count to 128.
+We decided to expand the dataset by slicing each 15s sample into 5 slices of 3s, since speech continuity/completeness is not crucial in SpeakerID, but rather the sound characteristics. A single sample of 15s is different from 5 samples of 3s in training as the context length and information will be isolated and thus provides more variety. We did the same to validation set and during inference. We find that the microphone used to record often peaks or produces noise in the first second, and that most of the first few seconds are silent. Thus, we remove the first 3s slice and only use the rest 4. This increased our sample count to 128.
 
 We want to avoid touching frequency-related or tone/pitch related features, so we only went with time domain.
 
