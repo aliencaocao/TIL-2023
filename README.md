@@ -4,12 +4,13 @@
 #### School: [Hwa Chong Institution Infocomm & Robotics Society (HCIRS)](https://github.com/hcirs) Machine Learning section
 #### Achievement: Champion in Advanced category, with a perfect score in the final match
 
-### Team members
+### Team members (in alphabetical order)
 * [Billy Cao](https://github.com/aliencaocao) (L): ASR/SpeakerID/OD/ReID/Robot
-* [Marcus Wee](https://github.com/Marcushadow): ASR
+* [Alistair Cheong](https://github.com/cheongalc): ASR/SpeakerID/OD/ReID/Robot
 * [Ho Wing Yip](https://github.com/HoWingYip): ASR/SpeakerID/OD/ReID/Robot
 * [Huang Qirui](https://github.com/hqrui): Robot
-* [Alistair Cheong](https://github.com/cheongalc): ASR/SpeakerID/OD/ReID/Robot
+* [Marcus Wee](https://github.com/Marcushadow): ASR
+
 
 ## Contents
 <!-- TOC -->
