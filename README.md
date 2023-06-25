@@ -310,8 +310,8 @@ Denoising significantly improved our model training, boosting validation accurac
 
 |       Sample        |                                       Original                                        |                                            Denoised                                            |
 |:-------------------:|:-------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------:|
-| 10000SGDMRT_memberA | <audio controls preload src="Robot/data/audio/10000SGDMRT_memberA_train.wav"></audio> | <audio controls preload src="Robot/data/audio/10000SGDMRT_memberA_train_enhanced.wav"></audio> |
-|  PALMTREE_memberA   |  <audio controls preload src="Robot/data/audio/PALMTREE_memberA_train.wav"></audio>   |  <audio controls preload src="Robot/data/audio/PALMTREE_memberA_train_enhanced.wav"></audio>   |
+| 10000SGDMRT_memberA | <audio controls preload src="Robot/data/audio/10000SGDMRT_memberA_train.mp4"></audio> | <audio controls preload src="Robot/data/audio/10000SGDMRT_memberA_train_enhanced.mp4"></audio> |
+|  PALMTREE_memberA   |  <audio controls preload src="Robot/data/audio/PALMTREE_memberA_train.mp4"></audio>   |  <audio controls preload src="Robot/data/audio/PALMTREE_memberA_train_enhanced.mp4"></audio>   |
 
 ### Data Augmentation
 Having only 1 sample per class is extremely limiting, therefore we employed many techniques to augment our data.
