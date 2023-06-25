@@ -275,7 +275,7 @@ This may be against many's intuition as `Linear` or `Cubic` are supposed to be o
 ## Speaker Identification
 All the code for this task is in [SpeakerID](SpeakerID). It was only introduced to finalists and is not part of qualifiers.
 
-For the core SpeakerID model, we forked and modified code from [m2d](https://github.com/nttcslab/m2d). More details are [below](#model-3). This is based on the ICASSP2023 paper [Masked Modeling Duo: Learning Representations by Encouraging Both Networks to Model the Input](https://arxiv.org/abs/2210.14648) by researchers from NTT Corporation, Japan.
+For the core SpeakerID model, we forked and modified code from [m2d](https://github.com/nttcslab/m2d). More details are [below](#model-3). This is based on the ICASSP 2023 paper [Masked Modeling Duo: Learning Representations by Encouraging Both Networks to Model the Input](https://arxiv.org/abs/2210.14648) by researchers from NTT Corporation, Japan.
 
 This task proved to be very challenging as:
 1. The noise injected into the training and test samples are very strong and overwhelms the speaking voice
@@ -284,7 +284,7 @@ This task proved to be very challenging as:
 4. Shortage of time to train and experiment
 
 ### Data Preprocessing - denoising
-The training and test data are injected with noise and our model failed to learn much from unprocessed audio. We had to do denoising or speech enhancement for the model to learn. We tried many different pretrained models and decided on using 2 of them combined with a chain of loudness-related processing as a multi-stage preprocessing. This pipeline is being used during inference and finals too.
+The training and test data are injected with noise and our model failed to learn much from unprocessed audio. We had to do denoising or speech enhancement for the model to learn. We tried many different pretrained models and decided on using 2 of them combined with a chain of loudness-related processing as a multi-stage preprocessing pipeline. This pipeline is being used during inference in finals too.
 
 The entire denoising pipeline is in [this notebook](SpeakerID/denoise.ipynb).
 
