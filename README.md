@@ -136,7 +136,7 @@ We used [Levenshtein distance](https://pypi.org/project/python-Levenshtein/) as 
 Eventually, this algorithm was never activated once during finals as our model was good enough that it predicted everything perfectly. We had a 100% accuracy for ASR during finals.
 
 ## Object Detection
-All code can be found in [CV/InternImage](CV/InternImage). InternImage is a series of transformer-based CV backbones proposed by Sensetime and Shanghai AI Lab in their CVPR 2023 paper [InternImage: Exploring Large-Scale Vision Foundation Models with Deformable Convolutions](https://github.com/OpenGVLab/InternImage). It uses the Deformable Convolution V3 (DCNv3) as the core operation. The largest 2.5B variant is the SOTA on more than 10 CV tasks.
+All code can be found in [CV/InternImage](CV/InternImage). InternImage is a series of transformer-based CV backbones proposed by Sensetime and Shanghai AI Lab in their CVPR 2023 paper [InternImage: Exploring Large-Scale Vision Foundation Models with Deformable Convolutions](https://github.com/OpenGVLab/InternImage). It uses the Deformable Convolution V3 (DCNv3) as the core operation. The largest 2.5B variant is the SOTA on more than 10 CV tasks, including COCO object detection and ImageNet-1K.
 
 The `CV` folder also contains some of our tried and ditched models:
 * GroundingDINO: zero shot object detection guided by text prompt. We prompted 'plushie'. It has 0.345255479 mAP on bbox only (no REID).
