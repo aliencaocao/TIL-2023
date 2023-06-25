@@ -447,7 +447,7 @@ This algorithm allows the robot to achieve 3 things:
 
 All turning is done at constant 45 deg/s, during both navigation and turning to CV targets.
 
-These approaches allowed us to finish on average 5 waypoints within 6.5 minutes, with more than 75 seconds alone wasted on ensuring the robot camera stream to stabilize (we observed some blurred images captured and thinks the robot camera video stream has latency), with zero mistake made by the robot's movement. Some other teams were able to make it faster by using Robotmaster's `move`  function directly but those proved to be very unstable due to increased localization noise at high speeds.
+These approaches allowed us to finish on average 5 waypoints within 6.5 minutes, with more than 75 seconds alone wasted on ensuring the robot camera stream is stabilized (we observed some blurred images captured and thought the robot camera video stream has latency), with zero mistake made by the robot's movement. Some other teams were able to make it faster by using Robotmaster's `move`  function directly but those proved to be very unstable due to increased localization noise at high speeds.
 
 ## Conclusion
 Team 10000SGDMRT would like to thank DSTA and Athena Dynamics for organizing this enriching and challenging competition, and we look forward to participating again next year! (Of course, under the name of 12000SGDPLUSHIE)
